@@ -1,26 +1,37 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #212121;
   --foreground: #171717;
 }
 
-@theme inline {
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+  --color-primary-100: #C7EDF6;
+  --color-primary-200: #93D6EE;
+  --color-primary-300: #57A7CC;
+  --color-primary-400: #2B719A;
+  --color-primary-500: #043458;
+  --color-primary-600: #02284B;
+  --color-primary-700: #021E3F;
+  --color-primary-800: #011533;
+  --color-primary-900: #000F2A;
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  --color-secondary-100: #FCF8CA;
+  --color-secondary-200: #FAF096;
+  --color-secondary-300: #F1E061;
+  --color-secondary-400: #E3CD39;
+  --color-secondary-500: #D2B301;
+  --color-secondary-600: #B49700;
+  --color-secondary-700: #977C00;
+  --color-secondary-800: #796200;
+  --color-secondary-900: #644F00;
+  
+  --font-sans: "Outfit", sans-serif;
+  --font-display: "Playfair Display", serif;
 }

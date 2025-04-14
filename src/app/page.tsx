@@ -1,102 +1,204 @@
-import Image from "next/image";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+import { createClient } from "@/utils/supabase/server";
+import DarkModeToggle from "@/components/ui/DarkModeToggle";
+
+export default async function Home() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    redirect("/dashboard");
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <header className="bg-white border-b border-neutral-200">
+        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <span className="text-2xl font-bold text-neutral-900">
+              RankRiot
+            </span>
+          </div>
+          <div className="flex items-center space-x-4">
+            <DarkModeToggle />
+            <Link
+              href={`/auth`}
+              className={`text-neutral-600 hover:text-neutral-900`}
+            >
+              Account
+            </Link>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </header>
+
+      {/* Hero Section */}
+      <section className={`py-20 grid place-content-center min-h-[600px]`}>
+        <div className="container mx-auto px-4 text-center">
+          <h1
+            className={`font-display text-5xl font-bold text-neutral-900 mb-6`}
+          >
+            Comprehensive SEO Analysis for Your Website
+          </h1>
+          <p className="text-xl text-neutral-600 max-w-3xl mx-auto mb-10">
+            Monitor, analyze and optimize your website's SEO performance with
+            our powerful platform. Find broken links, track keywords, and stay
+            ahead of your competition.
+          </p>
+          <Link
+            href="/auth"
+            className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-md text-lg font-medium"
+          >
+            Get Started
+          </Link>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-16 bg-neutral-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">Key Features</h2>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <div className="text-primary-600 mb-4">
+                <svg
+                  className="w-10 h-10"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                  <path
+                    fillRule="evenodd"
+                    d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                    clipRule="evenodd"
+                  ></path>
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">
+                Broken Link Detection
+              </h3>
+              <p className="text-neutral-600">
+                Automatically find and fix broken links (404s) on your website
+                to improve user experience and SEO.
+              </p>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <div className="text-primary-600 mb-4">
+                <svg
+                  className="w-10 h-10"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
+                  <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">
+                Comprehensive Analysis
+              </h3>
+              <p className="text-neutral-600">
+                Get detailed insights into your website's structure, content,
+                and technical SEO performance.
+              </p>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <div className="text-primary-600 mb-4">
+                <svg
+                  className="w-10 h-10"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Regular Monitoring</h3>
+              <p className="text-neutral-600">
+                Schedule automatic scans to monitor your website's SEO health
+                and detect issues before they impact your rankings.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-primary-600 text-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-6">
+            Ready to improve your website's SEO?
+          </h2>
+          <p className="text-xl max-w-2xl mx-auto mb-10">
+            Join thousands of businesses that use our platform to boost their
+            search engine rankings.
+          </p>
+          <Link
+            href="/auth"
+            className="bg-white text-primary-600 hover:bg-neutral-100 px-8 py-4 rounded-md text-lg font-medium"
+          >
+            Start Your Free Trial
+          </Link>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-neutral-800 text-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">RankRiot</h3>
+              <p className="text-neutral-400">
+                Comprehensive SEO analysis and monitoring platform for websites
+                of all sizes.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Features</h3>
+              <ul className="space-y-2 text-neutral-400">
+                <li>Broken Link Detection</li>
+                <li>SEO Analysis</li>
+                <li>Keyword Tracking</li>
+                <li>Competitor Analysis</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Resources</h3>
+              <ul className="space-y-2 text-neutral-400">
+                <li>Documentation</li>
+                <li>Blog</li>
+                <li>Support</li>
+                <li>FAQ</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Company</h3>
+              <ul className="space-y-2 text-neutral-400">
+                <li>About Us</li>
+                <li>Careers</li>
+                <li>Contact</li>
+                <li>Privacy Policy</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-neutral-700 mt-12 pt-8 text-center text-neutral-400">
+            <p>
+              &copy; {new Date().getFullYear()} RankRiot. All rights reserved.
+            </p>
+          </div>
+        </div>
       </footer>
     </div>
   );
