@@ -42,7 +42,7 @@ export default function Sidebar() {
   return (
     <div className="h-full w-64 bg-neutral-900 text-white flex flex-col">
       <div className="p-4 border-b border-neutral-800">
-        <h1 className="text-xl font-bold">SEO Platform</h1>
+        <h1 className="text-xl font-bold">RankRiot</h1>
       </div>
 
       <nav className="flex-1 pt-4">
