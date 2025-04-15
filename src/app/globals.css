@@ -5,13 +5,9 @@
   --foreground: #171717;
 }
 
-
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-
   --color-primary-100: #C7EDF6;
   --color-primary-200: #93D6EE;
   --color-primary-300: #57A7CC;

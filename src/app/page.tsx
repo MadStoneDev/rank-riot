@@ -17,18 +17,29 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white border-b border-neutral-200">
+      <header
+        className={`bg-neutral-50 dark:bg-primary-900 border-b border-neutral-200`}
+      >
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-neutral-900">
+          <div
+            className={`group py-1 px-2 relative flex items-center space-x-2 overflow-hidden z-10`}
+          >
+            <div
+              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0 group-hover:w-[110%] aspect-square bg-primary-500 dark:bg-neutral-50 rounded-full transition-all duration-300 ease-in-out -z-[1]`}
+            ></div>
+
+            <Link
+              href={`/`}
+              className={`text-2xl font-bold text-primary-500 group-hover:text-neutral-50 dark:text-neutral-50 dark:group-hover:text-primary-500 transition-all duration-300 ease-in-out z-50`}
+            >
               RankRiot
-            </span>
+            </Link>
           </div>
           <div className="flex items-center space-x-4">
             <DarkModeToggle />
             <Link
               href={`/auth`}
-              className={`text-neutral-600 hover:text-neutral-900`}
+              className={`text-primary-500 hover:text-primary-600 dark:text-neutral-400 dark:hover:text-neutral-200 transition-all duration-300 ease-in-out`}
             >
               Account
             </Link>
@@ -38,11 +49,13 @@ export default async function Home() {
 
       {/* Hero Section */}
       <section className={`py-20 grid place-content-center min-h-[600px]`}>
-        <div className="container mx-auto px-4 text-center">
+        <div
+          className={`flex flex-col items-center max-w-2xl px-4 text-center`}
+        >
           <h1
-            className={`font-display text-5xl font-bold text-neutral-900 mb-6`}
+            className={`mb-6 max-w-xl font-display text-5xl font-bold text-primary-500`}
           >
-            Comprehensive SEO Analysis for Your Website
+            SEO for small businesses by a small business
           </h1>
           <p className="text-xl text-neutral-600 max-w-3xl mx-auto mb-10">
             Monitor, analyze and optimize your website's SEO performance with
@@ -50,8 +63,8 @@ export default async function Home() {
             ahead of your competition.
           </p>
           <Link
-            href="/auth"
-            className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-md text-lg font-medium"
+            href={`/auth`}
+            className={`bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-md text-lg font-medium`}
           >
             Get Started
           </Link>
@@ -59,9 +72,13 @@ export default async function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-neutral-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Key Features</h2>
+      <section className={`py-16 bg-neutral-100`}>
+        <div className={`mx-auto px-4`}>
+          <h2
+            className={`text-primary-500 text-3xl font-bold text-center mb-12`}
+          >
+            Key Features
+          </h2>
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white p-6 rounded-lg shadow-md">
@@ -80,10 +97,10 @@ export default async function Home() {
                   ></path>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-2">
+              <h3 className="text-primary-500 text-xl font-semibold mb-2">
                 Broken Link Detection
               </h3>
-              <p className="text-neutral-600">
+              <p className="text-neutral-500">
                 Automatically find and fix broken links (404s) on your website
                 to improve user experience and SEO.
               </p>
@@ -101,10 +118,10 @@ export default async function Home() {
                   <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-2">
+              <h3 className="text-primary-500 text-xl font-semibold mb-2">
                 Comprehensive Analysis
               </h3>
-              <p className="text-neutral-600">
+              <p className="text-neutral-500">
                 Get detailed insights into your website's structure, content,
                 and technical SEO performance.
               </p>
@@ -121,8 +138,10 @@ export default async function Home() {
                   <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Regular Monitoring</h3>
-              <p className="text-neutral-600">
+              <h3 className="text-primary-500 text-xl font-semibold mb-2">
+                Regular Monitoring
+              </h3>
+              <p className="text-neutral-500">
                 Schedule automatic scans to monitor your website's SEO health
                 and detect issues before they impact your rankings.
               </p>
@@ -145,7 +164,7 @@ export default async function Home() {
             href="/auth"
             className="bg-white text-primary-600 hover:bg-neutral-100 px-8 py-4 rounded-md text-lg font-medium"
           >
-            Start Your Free Trial
+            Start Your Free Account
           </Link>
         </div>
       </section>

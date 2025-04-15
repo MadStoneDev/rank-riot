@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-
 import { IconArrowLeft } from "@tabler/icons-react";
 import { createClient } from "@/utils/supabase/server";
-
 import NewProjectForm from "@/components/projects/NewProjectForm";
 
 export default async function NewProjectPage() {
@@ -18,38 +16,38 @@ export default async function NewProjectPage() {
   }
 
   return (
-    <div>
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="mb-6">
         <Link
           href={`/dashboard/projects`}
-          className="inline-flex items-center text-sm text-neutral-500 hover:text-neutral-700"
+          className="inline-flex items-center text-sm text-primary-600 hover:text-primary-800"
         >
-          <IconArrowLeft className="h-4 w-4 mr-1" />
+          <IconArrowLeft className="mr-2 h-4 w-4" />
           Back to Projects
         </Link>
       </div>
 
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-neutral-900">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-neutral-900 mb-2">
           Create New Project
         </h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <p className="text-neutral-500">
           Set up a new project to start monitoring your website's SEO
           performance.
         </p>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="px-6 py-5 border-b border-neutral-200 bg-neutral-50">
-          <h3 className="text-lg font-medium leading-6 text-neutral-900">
+      <div className="bg-white shadow-sm rounded-lg p-6 mb-8">
+        <div className="mb-6">
+          <h2 className="text-lg font-medium text-neutral-900 mb-1">
             Project Details
-          </h3>
-          <p className="mt-1 text-sm text-neutral-500">
+          </h2>
+          <p className="text-sm text-neutral-500">
             Fill in the information below to create your new project.
           </p>
         </div>
 
-        <div className="px-6 py-6">
+        <div>
           <NewProjectForm />
         </div>
       </div>
