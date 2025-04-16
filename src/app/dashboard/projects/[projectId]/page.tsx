@@ -1,24 +1,23 @@
-import { createClient } from "@/utils/supabase/server";
 import { notFound, redirect } from "next/navigation";
+import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { format } from "date-fns";
 import {
   IconArrowLeft,
-  IconChartBar,
   IconLink,
   IconAlertTriangle,
   IconSettings,
   IconRefresh,
   IconFile,
-  IconSearch,
 } from "@tabler/icons-react";
+import StartScanButton from "@/components/projects/StartScanButton";
 
 export default async function ProjectDetailPage({
   params,
 }: {
   params: { projectId: string };
 }) {
-  const { projectId } = params;
+  const { projectId } = await params;
 
   // Check authentication
   const supabase = await createClient();
@@ -43,24 +42,18 @@ export default async function ProjectDetailPage({
   }
 
   // Get project statistics
-  const {
-    data: { count: pagesCount },
-  } = await supabase
+  const { count: pagesCount } = await supabase
     .from("pages")
     .select("*", { count: "exact", head: true })
     .eq("project_id", projectId);
 
-  const {
-    data: { count: issuesCount },
-  } = await supabase
+  const { count: issuesCount } = await supabase
     .from("issues")
     .select("*", { count: "exact", head: true })
     .eq("project_id", projectId)
     .eq("is_fixed", false);
 
-  const {
-    data: { count: brokenLinksCount },
-  } = await supabase
+  const { count: brokenLinksCount } = await supabase
     .from("page_links")
     .select("*", { count: "exact", head: true })
     .eq("project_id", projectId)
@@ -97,6 +90,32 @@ export default async function ProjectDetailPage({
     .order("started_at", { ascending: false })
     .limit(10);
 
+  const handleRunScan = async () => {
+    try {
+      const scanResponse = await fetch(
+        `${process.env.CRAWLER_API_URL}/api/scan`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            project_id: projectId,
+            notification_email: user.email,
+          }),
+        },
+      );
+
+      if (!scanResponse.ok) {
+        const errorText = await scanResponse.text();
+        console.error("Error triggering scan:", errorText);
+      } else {
+        const scanData = await scanResponse.json();
+        console.log("Scan triggered:", scanData);
+      }
+    } catch (error) {
+      console.error("Error initiating scan:", error);
+    }
+  };
+
   return (
     <div>
       <div className="mb-6">
@@ -127,10 +146,7 @@ export default async function ProjectDetailPage({
         </div>
 
         <div className="flex items-center space-x-3">
-          <button className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-            <IconRefresh className="h-4 w-4 mr-2" />
-            Start New Scan
-          </button>
+          <StartScanButton projectId={projectId} />
 
           <Link
             href={`/dashboard/projects/${projectId}/settings`}
@@ -175,13 +191,15 @@ export default async function ProjectDetailPage({
             <h3 className="text-lg font-medium text-neutral-900">
               Broken Links
             </h3>
-            <span
-              className={`text-2xl font-bold ${
-                brokenLinksCount > 0 ? "text-red-600" : "text-neutral-900"
-              }`}
-            >
-              {brokenLinksCount || 0}
-            </span>
+            {brokenLinksCount && (
+              <span
+                className={`text-2xl font-bold ${
+                  brokenLinksCount > 0 ? "text-red-600" : "text-neutral-900"
+                }`}
+              >
+                {brokenLinksCount || 0}
+              </span>
+            )}
           </div>
           <div className="flex items-center">
             <IconLink className="h-5 w-5 text-primary-600 mr-2" />
@@ -194,13 +212,15 @@ export default async function ProjectDetailPage({
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium text-neutral-900">Issues</h3>
-            <span
-              className={`text-2xl font-bold ${
-                issuesCount > 0 ? "text-yellow-600" : "text-neutral-900"
-              }`}
-            >
-              {issuesCount || 0}
-            </span>
+            {issuesCount && (
+              <span
+                className={`text-2xl font-bold ${
+                  issuesCount > 0 ? "text-yellow-600" : "text-neutral-900"
+                }`}
+              >
+                {issuesCount || 0}
+              </span>
+            )}
           </div>
           <div className="flex items-center">
             <IconAlertTriangle className="h-5 w-5 text-primary-600 mr-2" />
@@ -251,7 +271,7 @@ export default async function ProjectDetailPage({
                       <h4 className="text-sm font-medium text-neutral-900">
                         {issue.issue_type
                           .replace(/_/g, " ")
-                          .replace(/\b[a-z]/g, (c) => c.toUpperCase())}
+                          .replace(/\b[a-z]/g, (c: string) => c.toUpperCase())}
                       </h4>
                       <p className="mt-1 text-sm text-neutral-500">
                         {issue.description}
@@ -363,10 +383,7 @@ export default async function ProjectDetailPage({
           ) : (
             <div className="p-6 text-center">
               <p className="text-neutral-500">No scans have been run yet.</p>
-              <button className="mt-4 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                <IconRefresh className="h-4 w-4 mr-2" />
-                Run First Scan
-              </button>
+              <StartScanButton projectId={projectId} />
             </div>
           )}
         </div>

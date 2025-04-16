@@ -65,7 +65,7 @@ export default function NewProjectForm() {
               type="text"
               required
               placeholder="My Website"
-              className={`p-2 shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-neutral-300 rounded-md`}
+              className={`p-3 shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-neutral-300 rounded-md`}
               disabled={isLoading}
             />
           </div>
@@ -88,7 +88,7 @@ export default function NewProjectForm() {
               type="text"
               placeholder="https://example.com"
               required
-              className={`p-2 shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-neutral-300 rounded-md`}
+              className={`p-3 shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-neutral-300 rounded-md`}
               disabled={isLoading}
             />
           </div>
@@ -111,7 +111,7 @@ export default function NewProjectForm() {
               name="description"
               rows={3}
               placeholder="Brief description of your project..."
-              className={`p-2 shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-neutral-300 rounded-md`}
+              className={`p-3 shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-neutral-300 rounded-md`}
               disabled={isLoading}
             />
           </div>
@@ -128,7 +128,7 @@ export default function NewProjectForm() {
             <select
               id="scan_frequency"
               name="scan_frequency"
-              className={`p-2 shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-neutral-300 rounded-md`}
+              className={`p-3 shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-neutral-300 rounded-md`}
               disabled={isLoading}
               defaultValue="weekly"
             >

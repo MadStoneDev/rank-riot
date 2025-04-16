@@ -54,13 +54,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "backlinks_page_id_fkey"
-            columns: ["page_id"]
-            isOneToOne: false
-            referencedRelation: "pages"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "backlinks_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -149,13 +142,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "issues_page_id_fkey"
-            columns: ["page_id"]
-            isOneToOne: false
-            referencedRelation: "pages"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "issues_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -213,13 +199,6 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "keywords_target_page_id_fkey"
-            columns: ["target_page_id"]
-            isOneToOne: false
-            referencedRelation: "pages"
-            referencedColumns: ["id"]
-          },
         ]
       }
       page_links: {
@@ -267,24 +246,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "page_links_destination_page_id_fkey"
-            columns: ["destination_page_id"]
-            isOneToOne: false
-            referencedRelation: "pages"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "page_links_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "page_links_source_page_id_fkey"
-            columns: ["source_page_id"]
-            isOneToOne: false
-            referencedRelation: "pages"
             referencedColumns: ["id"]
           },
         ]
@@ -294,11 +259,12 @@ export type Database = {
           canonical_url: string | null
           content_length: number | null
           content_type: string | null
+          crawl_priority: number | null
           created_at: string | null
           css_count: number | null
           depth: number | null
           first_byte_time_ms: number | null
-          h1: string | null
+          h1s: Json | null
           h2s: Json | null
           h3s: Json | null
           has_robots_nofollow: boolean | null
@@ -324,11 +290,12 @@ export type Database = {
           canonical_url?: string | null
           content_length?: number | null
           content_type?: string | null
+          crawl_priority?: number | null
           created_at?: string | null
           css_count?: number | null
           depth?: number | null
           first_byte_time_ms?: number | null
-          h1?: string | null
+          h1s?: Json | null
           h2s?: Json | null
           h3s?: Json | null
           has_robots_nofollow?: boolean | null
@@ -354,11 +321,12 @@ export type Database = {
           canonical_url?: string | null
           content_length?: number | null
           content_type?: string | null
+          crawl_priority?: number | null
           created_at?: string | null
           css_count?: number | null
           depth?: number | null
           first_byte_time_ms?: number | null
-          h1?: string | null
+          h1s?: Json | null
           h2s?: Json | null
           h3s?: Json | null
           has_robots_nofollow?: boolean | null
@@ -436,6 +404,8 @@ export type Database = {
           id: string
           last_scan_at: string | null
           name: string
+          notification_email: string | null
+          robots_txt: Json | null
           scan_frequency: string | null
           settings: Json | null
           updated_at: string | null
@@ -448,6 +418,8 @@ export type Database = {
           id?: string
           last_scan_at?: string | null
           name: string
+          notification_email?: string | null
+          robots_txt?: Json | null
           scan_frequency?: string | null
           settings?: Json | null
           updated_at?: string | null
@@ -460,6 +432,8 @@ export type Database = {
           id?: string
           last_scan_at?: string | null
           name?: string
+          notification_email?: string | null
+          robots_txt?: Json | null
           scan_frequency?: string | null
           settings?: Json | null
           updated_at?: string | null
@@ -480,7 +454,7 @@ export type Database = {
         Row: {
           content_length: number | null
           created_at: string | null
-          h1: string | null
+          h1s: Json | null
           h2s: Json | null
           h3s: Json | null
           http_status: number | null
@@ -497,7 +471,7 @@ export type Database = {
         Insert: {
           content_length?: number | null
           created_at?: string | null
-          h1?: string | null
+          h1s?: Json | null
           h2s?: Json | null
           h3s?: Json | null
           http_status?: number | null
@@ -514,7 +488,7 @@ export type Database = {
         Update: {
           content_length?: number | null
           created_at?: string | null
-          h1?: string | null
+          h1s?: Json | null
           h2s?: Json | null
           h3s?: Json | null
           http_status?: number | null
@@ -554,6 +528,7 @@ export type Database = {
           links_scanned: number | null
           pages_scanned: number | null
           project_id: string
+          queue_position: number | null
           started_at: string | null
           status: string | null
           summary_stats: Json | null
@@ -567,6 +542,7 @@ export type Database = {
           links_scanned?: number | null
           pages_scanned?: number | null
           project_id: string
+          queue_position?: number | null
           started_at?: string | null
           status?: string | null
           summary_stats?: Json | null
@@ -580,6 +556,7 @@ export type Database = {
           links_scanned?: number | null
           pages_scanned?: number | null
           project_id?: string
+          queue_position?: number | null
           started_at?: string | null
           status?: string | null
           summary_stats?: Json | null

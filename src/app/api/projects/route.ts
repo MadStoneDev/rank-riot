@@ -47,6 +47,7 @@ export async function POST(request: Request) {
         url: formattedUrl,
         description,
         scan_frequency: scan_frequency || "weekly",
+        notification_email: user.email,
       })
       .select()
       .single();
@@ -56,13 +57,30 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    // Trigger a scan using the backend API (will implement later)
-    // This would be an API call to your crawler backend
-    // await fetch(`${process.env.CRAWLER_API_URL}/scan`, {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ project_id: data.id, url: formattedUrl }),
-    // });
+    // Trigger a scan using the backend API
+    try {
+      const scanResponse = await fetch(
+        `${process.env.CRAWLER_API_URL}/api/scan`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            project_id: data.id,
+            notification_email: user.email,
+          }),
+        },
+      );
+
+      if (!scanResponse.ok) {
+        const errorText = await scanResponse.text();
+        console.error("Error triggering scan:", errorText);
+      } else {
+        const scanData = await scanResponse.json();
+        console.log("Scan triggered:", scanData);
+      }
+    } catch (error) {
+      console.error("Error initiating scan:", error);
+    }
 
     return NextResponse.json(data);
   } catch (error) {

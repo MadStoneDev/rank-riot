@@ -4,6 +4,8 @@ import { createClient } from "@/utils/supabase/server";
 import Header from "@/components/dashboard/Header";
 import Sidebar from "@/components/dashboard/Sidebar";
 
+import { Toaster } from "sonner";
+
 export default async function DashboardLayout({
   children,
 }: {
@@ -28,6 +30,7 @@ export default async function DashboardLayout({
 
         <main className="flex-1 overflow-y-auto bg-neutral-50 p-6">
           {children}
+          <Toaster />
         </main>
       </div>
     </div>

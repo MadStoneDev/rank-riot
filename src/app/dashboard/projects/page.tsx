@@ -21,16 +21,7 @@ export default async function ProjectsPage() {
   // Get user's projects
   const { data: projects } = await supabase
     .from("projects")
-    .select(
-      `
-      *,
-      scans(
-        count,
-        status
-      ),
-      pages(count)
-    `,
-    )
+    .select()
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
