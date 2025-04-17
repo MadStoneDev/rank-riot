@@ -175,12 +175,12 @@ export default async function ProjectDetailPage({
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-neutral-900">
-              Broken Links
-            </h3>
-            {brokenLinksCount !== undefined && (
+        {brokenLinksCount && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium text-neutral-900">
+                Broken Links
+              </h3>
               <span
                 className={`text-2xl font-bold ${
                   brokenLinksCount > 0 ? "text-red-600" : "text-neutral-900"
@@ -188,20 +188,20 @@ export default async function ProjectDetailPage({
               >
                 {brokenLinksCount || 0}
               </span>
-            )}
+            </div>
+            <div className="flex items-center">
+              <IconLink className="h-5 w-5 text-primary-600 mr-2" />
+              <span className="text-sm text-neutral-500">
+                Links returning 404 status
+              </span>
+            </div>
           </div>
-          <div className="flex items-center">
-            <IconLink className="h-5 w-5 text-primary-600 mr-2" />
-            <span className="text-sm text-neutral-500">
-              Links returning 404 status
-            </span>
-          </div>
-        </div>
+        )}
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-neutral-900">Issues</h3>
-            {issuesCount !== undefined && (
+        {issuesCount && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium text-neutral-900">Issues</h3>
               <span
                 className={`text-2xl font-bold ${
                   issuesCount > 0 ? "text-yellow-600" : "text-neutral-900"
@@ -209,15 +209,15 @@ export default async function ProjectDetailPage({
               >
                 {issuesCount || 0}
               </span>
-            )}
+            </div>
+            <div className="flex items-center">
+              <IconAlertTriangle className="h-5 w-5 text-primary-600 mr-2" />
+              <span className="text-sm text-neutral-500">
+                SEO issues detected
+              </span>
+            </div>
           </div>
-          <div className="flex items-center">
-            <IconAlertTriangle className="h-5 w-5 text-primary-600 mr-2" />
-            <span className="text-sm text-neutral-500">
-              SEO issues detected
-            </span>
-          </div>
-        </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
