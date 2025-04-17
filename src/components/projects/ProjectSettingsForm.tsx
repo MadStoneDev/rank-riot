@@ -131,7 +131,7 @@ export default function ProjectSettingsForm({
               id="scan_frequency"
               name="scan_frequency"
               className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-neutral-300 rounded-md"
-              defaultValue={project.scan_frequency}
+              defaultValue={project.scan_frequency || ""}
               disabled={isLoading}
             >
               <option value="daily">Daily</option>

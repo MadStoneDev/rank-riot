@@ -8,9 +8,9 @@ import ProjectSettingsForm from "@/components/projects/ProjectSettingsForm";
 export default async function ProjectSettingsPage({
   params,
 }: {
-  params: { projectId: string };
+  params: Promise<{ projectId: string }>;
 }) {
-  const { projectId } = params;
+  const { projectId } = await params;
 
   // Check authentication
   const supabase = await createClient();

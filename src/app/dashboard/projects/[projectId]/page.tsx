@@ -20,8 +20,8 @@ import StartScanButton from "@/components/projects/StartScanButton";
 export async function generateMetadata({
   params,
 }: {
-  params: { projectId: string };
-}): Promise<Metadata> {
+  params: Promise<{ projectId: string }>;
+}) {
   const { projectId } = await params;
 
   // Fetch project data
@@ -43,8 +43,8 @@ export async function generateMetadata({
 export default async function ProjectDetailPage({
   params,
 }: {
-  params: { projectId: string };
-}): Promise<React.ReactElement> {
+  params: Promise<{ projectId: string }>;
+}) {
   const { projectId } = await params;
 
   // Check authentication

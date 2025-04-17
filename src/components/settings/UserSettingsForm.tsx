@@ -69,7 +69,7 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
               id="email"
               name="email"
               type="email"
-              defaultValue={profile.email}
+              defaultValue={profile.email || ""}
               disabled
               className="shadow-sm bg-neutral-50 block w-full sm:text-sm border-neutral-300 rounded-md"
             />
