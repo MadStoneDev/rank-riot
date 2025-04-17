@@ -4,6 +4,10 @@ import { IconArrowLeft } from "@tabler/icons-react";
 import { createClient } from "@/utils/supabase/server";
 import NewProjectForm from "@/components/projects/NewProjectForm";
 
+export const metadata = {
+  title: "Create a New Project | RankRiot",
+};
+
 export default async function NewProjectPage() {
   // Check authentication
   const supabase = await createClient();

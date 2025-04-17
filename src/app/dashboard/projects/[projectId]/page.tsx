@@ -7,12 +7,15 @@ import {
   IconLink,
   IconAlertTriangle,
   IconSettings,
-  IconRefresh,
   IconFile,
 } from "@tabler/icons-react";
 
 import StartScanButton from "@/components/projects/StartScanButton";
 import ScanProgress from "@/components/projects/ScanProgress";
+
+export const metadata = {
+  title: "Project | RankRiot",
+};
 
 export default async function ProjectDetailPage({
   params,

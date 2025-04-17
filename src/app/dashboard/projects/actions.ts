@@ -224,6 +224,9 @@ export async function startScan(projectId: string) {
 
   // Trigger a scan using the backend API
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
     const scanResponse = await fetch(
       `${process.env.CRAWLER_API_URL}/api/scan`,
       {
@@ -231,18 +234,38 @@ export async function startScan(projectId: string) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           project_id: projectId,
-          notification_email: user.email,
+          email: user.email,
         }),
+        signal: controller.signal,
       },
-    );
+    ).finally(() => {
+      clearTimeout(timeoutId);
+    });
 
-    if (!scanResponse.ok) {
-      const errorText = await scanResponse.text();
-      console.error("Error triggering scan:", errorText);
-      return { error: `Failed to start scan: ${errorText}` };
+    // Check if we got a non-JSON response (like HTML error page)
+    const contentType = scanResponse.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      console.error(
+        "Received non-JSON response:",
+        await scanResponse.text().catch(() => "Unable to get response text"),
+      );
+      return {
+        error:
+          "We couldn't connect to the scanning service. Our team has been notified.",
+      };
     }
 
+    // Parse the JSON response
     const scanData = await scanResponse.json();
+
+    if (!scanResponse.ok) {
+      console.error("Error triggering scan:", scanData);
+      return {
+        error:
+          scanData.error || "Failed to start scan. Please try again later.",
+      };
+    }
+
     console.log("Scan triggered:", scanData);
 
     // Revalidate project page
@@ -250,7 +273,27 @@ export async function startScan(projectId: string) {
 
     return { success: true, scanId: scanData.id };
   } catch (error) {
-    console.error("Error initiating scan:", error);
-    return { error: "Failed to connect to crawler service" };
+    // Handle different error types
+    if (error instanceof TypeError) {
+      // Network errors like DNS failures, refused connections, etc.
+      console.error("Network error when initiating scan:", error);
+      return {
+        error:
+          "Could not connect to the scanning service. Please check your network connection and try again.",
+      };
+    } else if (error instanceof DOMException && error.name === "AbortError") {
+      // Timeout errors
+      console.error("Scan request timed out:", error);
+      return {
+        error:
+          "The request timed out. The scanning service might be experiencing high load.",
+      };
+    } else {
+      // Other errors
+      console.error("Error initiating scan:", error);
+      return {
+        error: "An unexpected error occurred. Please try again later.",
+      };
+    }
   }
 }
