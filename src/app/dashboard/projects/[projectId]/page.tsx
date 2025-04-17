@@ -1,7 +1,10 @@
-import { notFound, redirect } from "next/navigation";
-import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
+import { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
+
 import { format } from "date-fns";
+import { createClient } from "@/utils/supabase/server";
+
 import {
   IconArrowLeft,
   IconLink,
@@ -10,21 +13,23 @@ import {
   IconFile,
 } from "@tabler/icons-react";
 
-import StartScanButton from "@/components/projects/StartScanButton";
 import ScanProgress from "@/components/projects/ScanProgress";
-import { Metadata, ResolvingMetadata } from "next";
+import StartScanButton from "@/components/projects/StartScanButton";
 
 // Generate dynamic metadata based on project name
-export async function generateMetadata(
-  { params }: { params: { projectId: string } },
-  parent: ResolvingMetadata,
-): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { projectId: string };
+}): Promise<Metadata> {
+  const { projectId } = await params;
+
   // Fetch project data
   const supabase = await createClient();
   const { data: project } = await supabase
     .from("projects")
     .select("name")
-    .eq("id", params.projectId)
+    .eq("id", projectId)
     .single();
 
   // Use project name in title if available, otherwise fallback
@@ -39,7 +44,7 @@ export default async function ProjectDetailPage({
   params,
 }: {
   params: { projectId: string };
-}) {
+}): Promise<React.ReactElement> {
   const { projectId } = await params;
 
   // Check authentication
@@ -175,49 +180,49 @@ export default async function ProjectDetailPage({
           </div>
         </div>
 
-        {brokenLinksCount && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium text-neutral-900">
-                Broken Links
-              </h3>
-              <span
-                className={`text-2xl font-bold ${
-                  brokenLinksCount > 0 ? "text-red-600" : "text-neutral-900"
-                }`}
-              >
-                {brokenLinksCount || 0}
-              </span>
-            </div>
-            <div className="flex items-center">
-              <IconLink className="h-5 w-5 text-primary-600 mr-2" />
-              <span className="text-sm text-neutral-500">
-                Links returning 404 status
-              </span>
-            </div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-neutral-900">
+              Broken Links
+            </h3>
+            <span
+              className={`text-2xl font-bold ${
+                brokenLinksCount && brokenLinksCount > 0
+                  ? "text-red-600"
+                  : "text-neutral-900"
+              }`}
+            >
+              {brokenLinksCount || 0}
+            </span>
           </div>
-        )}
+          <div className="flex items-center">
+            <IconLink className="h-5 w-5 text-primary-600 mr-2" />
+            <span className="text-sm text-neutral-500">
+              Links returning 404 status
+            </span>
+          </div>
+        </div>
 
-        {issuesCount && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium text-neutral-900">Issues</h3>
-              <span
-                className={`text-2xl font-bold ${
-                  issuesCount > 0 ? "text-yellow-600" : "text-neutral-900"
-                }`}
-              >
-                {issuesCount || 0}
-              </span>
-            </div>
-            <div className="flex items-center">
-              <IconAlertTriangle className="h-5 w-5 text-primary-600 mr-2" />
-              <span className="text-sm text-neutral-500">
-                SEO issues detected
-              </span>
-            </div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-neutral-900">Issues</h3>
+            <span
+              className={`text-2xl font-bold ${
+                issuesCount && issuesCount > 0
+                  ? "text-yellow-600"
+                  : "text-neutral-900"
+              }`}
+            >
+              {issuesCount}
+            </span>
           </div>
-        )}
+          <div className="flex items-center">
+            <IconAlertTriangle className="h-5 w-5 text-primary-600 mr-2" />
+            <span className="text-sm text-neutral-500">
+              SEO issues detected
+            </span>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

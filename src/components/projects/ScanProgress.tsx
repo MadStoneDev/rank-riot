@@ -1,8 +1,9 @@
 ﻿"use client";
 
-import { useState, useEffect } from "react";
-import { IconRefresh, IconAlertCircle } from "@tabler/icons-react";
+import { useState, useEffect, useRef } from "react";
+import { IconRefresh, IconAlertCircle, IconCheck } from "@tabler/icons-react";
 import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 
 interface ScanProgressProps {
   scanId: string;
@@ -14,7 +15,11 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
+  const [showCompleted, setShowCompleted] = useState(false);
+  const router = useRouter();
   const supabase = createClient();
+  const completedTimeout = useRef<NodeJS.Timeout | null>(null);
+  const pollingInterval = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Initial fetch
@@ -34,6 +39,11 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
         (payload) => {
           setScan(payload.new);
           setLastUpdateTime(new Date());
+
+          // Check if scan just completed
+          if (payload.new.status === "completed" && !showCompleted) {
+            handleScanCompleted();
+          }
         },
       )
       .subscribe((status) => {
@@ -42,12 +52,13 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
         }
       });
 
-    // Set up polling as a fallback
-    const interval = setInterval(fetchScanData, 5000); // Poll every 5 seconds
+    // Set up polling as a fallback (more frequent for small websites)
+    pollingInterval.current = setInterval(fetchScanData, 2000); // Poll every 2 seconds
 
     return () => {
       // Clean up
-      clearInterval(interval);
+      if (pollingInterval.current) clearInterval(pollingInterval.current);
+      if (completedTimeout.current) clearTimeout(completedTimeout.current);
       supabase.removeChannel(channel);
     };
   }, [scanId]);
@@ -67,6 +78,11 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
       } else {
         setScan(data);
         setLastUpdateTime(new Date());
+
+        // Check if scan is completed
+        if (data.status === "completed" && !showCompleted) {
+          handleScanCompleted();
+        }
       }
     } catch (error) {
       console.error("Error:", error);
@@ -76,12 +92,28 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
     }
   };
 
+  const handleScanCompleted = () => {
+    // Show completed state
+    setShowCompleted(true);
+
+    // Clear polling interval
+    if (pollingInterval.current) {
+      clearInterval(pollingInterval.current);
+      pollingInterval.current = null;
+    }
+
+    // Set timeout to refresh page after showing completed state
+    completedTimeout.current = setTimeout(() => {
+      router.refresh(); // This refreshes the current page
+    }, 1500); // Show completed state for 1.5 seconds
+  };
+
   // Calculate progress percentage (estimate)
   const calculateProgress = () => {
     if (!scan) return 0;
 
-    // If completed, return 100%
-    if (scan.status === "completed") return 100;
+    // If completed or showing completed state, return 100%
+    if (scan.status === "completed" || showCompleted) return 100;
 
     // If we have a max pages setting in the summary stats
     if (scan.summary_stats?.max_pages) {
@@ -92,7 +124,8 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
     }
 
     // No way to accurately determine progress, make a guess based on typical scan size
-    const estimatedTotalPages = 50; // Just a guess for average website
+    // For small websites, use a smaller denominator
+    const estimatedTotalPages = Math.max(10, scan.pages_scanned * 1.5); // Dynamic estimate
     return Math.min(
       95,
       Math.round((scan.pages_scanned / estimatedTotalPages) * 100),
@@ -121,7 +154,53 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
     );
   }
 
-  if (!scan || scan.status !== "in_progress") {
+  if (!scan) {
+    return null;
+  }
+
+  // If showing completed state
+  if (showCompleted) {
+    return (
+      <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-400 text-green-800 rounded-md">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <IconCheck className="h-5 w-5 mr-2" />
+            <p className="text-sm font-medium">Scan completed successfully!</p>
+          </div>
+          <span className="text-xs font-medium">100% complete</span>
+        </div>
+
+        <div className="mt-2 w-full bg-green-200 rounded-full h-2.5">
+          <div
+            className="bg-green-500 h-2.5 rounded-full transition-all duration-500"
+            style={{ width: "100%" }}
+          ></div>
+        </div>
+
+        <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
+          <div>
+            <span className="font-semibold">Pages scanned:</span>{" "}
+            {scan.pages_scanned || 0}
+          </div>
+          <div>
+            <span className="font-semibold">Links checked:</span>{" "}
+            {scan.links_scanned || 0}
+          </div>
+          <div>
+            <span className="font-semibold">Issues found:</span>{" "}
+            {scan.issues_found || 0}
+          </div>
+        </div>
+
+        <div className="mt-2 text-xs text-green-700">
+          Refreshing page to show final results...
+        </div>
+      </div>
+    );
+  }
+
+  // If scan is not in progress anymore and not showing completed state, return null
+  if (scan.status !== "in_progress") {
     return null;
   }
 
