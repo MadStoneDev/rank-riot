@@ -12,10 +12,28 @@ import {
 
 import StartScanButton from "@/components/projects/StartScanButton";
 import ScanProgress from "@/components/projects/ScanProgress";
+import { Metadata, ResolvingMetadata } from "next";
 
-export const metadata = {
-  title: "Project | RankRiot",
-};
+// Generate dynamic metadata based on project name
+export async function generateMetadata(
+  { params }: { params: { projectId: string } },
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  // Fetch project data
+  const supabase = await createClient();
+  const { data: project } = await supabase
+    .from("projects")
+    .select("name")
+    .eq("id", params.projectId)
+    .single();
+
+  // Use project name in title if available, otherwise fallback
+  const projectName = project?.name || "Project";
+
+  return {
+    title: `${projectName} | RankRiot`,
+  };
+}
 
 export default async function ProjectDetailPage({
   params,
@@ -95,32 +113,6 @@ export default async function ProjectDetailPage({
     .order("started_at", { ascending: false })
     .limit(10);
 
-  const handleRunScan = async () => {
-    try {
-      const scanResponse = await fetch(
-        `${process.env.CRAWLER_API_URL}/api/scan`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            project_id: projectId,
-            notification_email: user.email,
-          }),
-        },
-      );
-
-      if (!scanResponse.ok) {
-        const errorText = await scanResponse.text();
-        console.error("Error triggering scan:", errorText);
-      } else {
-        const scanData = await scanResponse.json();
-        console.log("Scan triggered:", scanData);
-      }
-    } catch (error) {
-      console.error("Error initiating scan:", error);
-    }
-  };
-
   return (
     <div>
       <div className="mb-6">
@@ -188,7 +180,7 @@ export default async function ProjectDetailPage({
             <h3 className="text-lg font-medium text-neutral-900">
               Broken Links
             </h3>
-            {brokenLinksCount && (
+            {brokenLinksCount !== undefined && (
               <span
                 className={`text-2xl font-bold ${
                   brokenLinksCount > 0 ? "text-red-600" : "text-neutral-900"
@@ -209,7 +201,7 @@ export default async function ProjectDetailPage({
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium text-neutral-900">Issues</h3>
-            {issuesCount && (
+            {issuesCount !== undefined && (
               <span
                 className={`text-2xl font-bold ${
                   issuesCount > 0 ? "text-yellow-600" : "text-neutral-900"
