@@ -10,7 +10,9 @@ import {
   IconRefresh,
   IconFile,
 } from "@tabler/icons-react";
+
 import StartScanButton from "@/components/projects/StartScanButton";
+import ScanProgress from "@/components/projects/ScanProgress";
 
 export default async function ProjectDetailPage({
   params,
@@ -159,15 +161,7 @@ export default async function ProjectDetailPage({
       </div>
 
       {latestScan && latestScan.status === "in_progress" && (
-        <div className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded-md">
-          <div className="flex items-center">
-            <IconRefresh className="h-5 w-5 mr-2 animate-spin" />
-            <p className="text-sm font-medium">
-              Scan in progress... {latestScan.pages_scanned} pages scanned so
-              far.
-            </p>
-          </div>
-        </div>
+        <ScanProgress scanId={latestScan.id} projectId={projectId} />
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

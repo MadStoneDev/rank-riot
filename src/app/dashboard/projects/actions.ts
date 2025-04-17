@@ -222,57 +222,35 @@ export async function startScan(projectId: string) {
     };
   }
 
-  // Create a new scan record
-  const { data: scan, error: scanError } = await supabase
-    .from("scans")
-    .insert({
-      project_id: projectId,
-      status: "in_progress",
-      started_at: new Date().toISOString(),
-    })
-    .select()
-    .single();
+  // Trigger a scan using the backend API
+  try {
+    const scanResponse = await fetch(
+      `${process.env.CRAWLER_API_URL}/api/scan`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          project_id: projectId,
+          notification_email: user.email,
+        }),
+      },
+    );
 
-  if (scanError) {
-    return { error: scanError.message };
-  }
+    if (!scanResponse.ok) {
+      const errorText = await scanResponse.text();
+      console.error("Error triggering scan:", errorText);
+      return { error: `Failed to start scan: ${errorText}` };
+    }
 
-  // Update project's last_scan_at
-  await supabase
-    .from("projects")
-    .update({
-      last_scan_at: new Date().toISOString(),
-    })
-    .eq("id", projectId);
-
-  // Trigger a scan using the backend API (will implement later)
-  // This would be an API call to your crawler backend
-  // await fetch(`${process.env.CRAWLER_API_URL}/scan`, {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ scan_id: scan.id, project_id: projectId, url: project.url }),
-  // });
-
-  // For now, we'll simulate a scan with a timeout
-  // This would be removed in the real implementation
-  setTimeout(async () => {
-    // Update the scan status to completed
-    await supabase
-      .from("scans")
-      .update({
-        status: "completed",
-        completed_at: new Date().toISOString(),
-        pages_scanned: Math.floor(Math.random() * 50) + 10,
-        issues_found: Math.floor(Math.random() * 20),
-      })
-      .eq("id", scan.id);
+    const scanData = await scanResponse.json();
+    console.log("Scan triggered:", scanData);
 
     // Revalidate project page
     revalidatePath(`/dashboard/projects/${projectId}`);
-  }, 30000); // 30 seconds
 
-  // Revalidate project page
-  revalidatePath(`/dashboard/projects/${projectId}`);
-
-  return { success: true, scanId: scan.id };
+    return { success: true, scanId: scanData.id };
+  } catch (error) {
+    console.error("Error initiating scan:", error);
+    return { error: "Failed to connect to crawler service" };
+  }
 }

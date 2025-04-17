@@ -3,7 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
 import { IconSearch, IconRefresh, IconChevronRight } from "@tabler/icons-react";
-import { Database } from "../../../database.types";
+import { Database } from "../../../../database.types";
 
 type Project = Database["public"]["Tables"]["projects"]["Row"];
 
