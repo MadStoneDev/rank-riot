@@ -65,22 +65,26 @@ const PaginatedList = ({
         </div>
       )}
 
-      {hasMore && (
+      {items.length > itemsPerPage && (
         <div className="p-4 flex justify-center space-x-4 border-t border-neutral-200">
-          <button
-            onClick={handleShowMore}
-            className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
-          >
-            Show More
-          </button>
-          <button
-            onClick={handleShowAll}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
-          >
-            Show All
-          </button>
+          {hasMore && (
+            <>
+              <button
+                onClick={handleShowMore}
+                className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+              >
+                Show More
+              </button>
+              <button
+                onClick={handleShowAll}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
+              >
+                Show All
+              </button>
+            </>
+          )}
 
-          {displayCount > itemsPerPage && (
+          {(showAll || displayCount > itemsPerPage) && (
             <button
               onClick={handleCollapse}
               className={`px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400`}
