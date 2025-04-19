@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { IconRefresh } from "@tabler/icons-react";
-import { startScan } from "@/app/dashboard/projects/actions";
+import { startScan } from "@/app/(private)/projects/actions";
 import { toast } from "sonner";
 
 interface StartScanButtonProps {

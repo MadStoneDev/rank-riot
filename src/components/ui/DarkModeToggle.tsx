@@ -20,7 +20,7 @@ export default function DarkModeToggle() {
   return (
     <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className={`group relative cursor-pointer p-2 bg-neutral-100 dark:bg-primary-400 shadow-sm shadow-neutral-300 dark:shadow-neutral-900 overflow-hidden transition-all duration-300 ease-in-out`}
+      className={`group relative cursor-pointer p-2 bg-neutral-100 dark:bg-primary-400 rounded-md shadow-sm shadow-neutral-300 dark:shadow-neutral-900 overflow-hidden transition-all duration-300 ease-in-out`}
       aria-label="Toggle dark mode"
     >
       <div

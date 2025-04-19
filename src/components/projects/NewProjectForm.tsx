@@ -32,7 +32,7 @@ export default function NewProjectForm() {
       }
 
       // Redirect to the new project page
-      router.push(`/dashboard/projects/${data.id}`);
+      router.push(`/projects/${data.id}`);
       router.refresh();
     } catch (err) {
       setError(
@@ -145,7 +145,7 @@ export default function NewProjectForm() {
 
       <div className="mt-8 pt-5 border-t border-neutral-200 flex justify-end space-x-3">
         <Link
-          href={"/dashboard/projects"}
+          href={"/projects"}
           className="px-4 py-2 border border-neutral-300 rounded-md shadow-sm text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
         >
           Cancel

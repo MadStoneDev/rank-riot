@@ -61,7 +61,7 @@ export default function AuthForm() {
   };
 
   return (
-    <div className="w-full bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="w-full rounded-lg shadow-md overflow-hidden">
       <div className="p-6">
         <h2 className="text-2xl font-bold text-center text-neutral-900 mb-6">
           {authState === "email"

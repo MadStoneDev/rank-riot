@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Database } from "../../../database.types";
+import { Database } from "../../../../database.types";
+
 import {
   IconFolder,
   IconAlertTriangle,
@@ -54,18 +55,18 @@ export default async function Dashboard() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-neutral-900">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-primary-500">Dashboard</h1>
         <Link
-          href="/dashboard/projects/new"
+          href="/projects/new"
           className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm"
         >
           New Project
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex justify-between items-start">
+          <div className={`flex justify-between items-start`}>
             <div>
               <p className="text-sm font-medium text-neutral-500">
                 Total Projects
@@ -126,7 +127,7 @@ export default async function Dashboard() {
               projects.map((project: Project) => (
                 <Link
                   key={project.id}
-                  href={`/dashboard/projects/${project.id}`}
+                  href={`/projects/${project.id}`}
                   className="block px-6 py-4 hover:bg-neutral-50"
                 >
                   <div className="flex justify-between items-center">
@@ -151,7 +152,7 @@ export default async function Dashboard() {
                   No projects yet. Create your first project.
                 </p>
                 <Link
-                  href="/dashboard/projects/new"
+                  href="/projects/new"
                   className="mt-4 inline-block text-primary-600 hover:text-primary-700 font-medium"
                 >
                   Create a Project
@@ -163,7 +164,7 @@ export default async function Dashboard() {
           {projects && projects.length > 0 && (
             <div className="px-6 py-4 border-t border-neutral-200">
               <Link
-                href="/dashboard/projects"
+                href="/projects"
                 className="text-primary-600 hover:text-primary-700 text-sm font-medium"
               >
                 View all projects

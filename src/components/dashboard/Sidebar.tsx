@@ -29,7 +29,7 @@ export default function Sidebar() {
     },
     {
       name: "Projects",
-      href: "/dashboard/projects",
+      href: "/projects",
       icon: IconFolder,
     },
     {
@@ -40,19 +40,25 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="h-full w-64 bg-neutral-900 text-white flex flex-col">
-      <div className="p-4 border-b border-neutral-800">
+    <div
+      className={`fixed bottom-0 left-0 md:relative w-full md:w-[250px] md:h-full w-64 bg-neutral-900 text-white flex md:flex-col justify-stretch`}
+    >
+      <div
+        className={`px-4 md:py-4 grid place-content-center md:block border-b border-neutral-800`}
+      >
         <h1 className="text-xl font-bold">RankRiot</h1>
       </div>
 
-      <nav className="flex-1 pt-4">
-        <ul className="space-y-1">
+      <nav className={`flex-1 md:pt-4`}>
+        <ul
+          className={`flex md:flex-col justify-center md:justify-start items-center md:items-start gap-2 h-full`}
+        >
           {navItems.map((item) => {
-            const isActive =
-              pathname === item.href || pathname.startsWith(`${item.href}/`);
+            const endOfPath = item.href.substring(item.href.lastIndexOf("/"));
+            const isActive = pathname.endsWith(endOfPath);
 
             return (
-              <li key={item.name}>
+              <li key={item.name} className={`w-full`}>
                 <Link
                   href={item.href}
                   className={`flex items-center px-4 py-3 text-sm ${
@@ -61,8 +67,8 @@ export default function Sidebar() {
                       : "text-neutral-400 hover:bg-neutral-800 hover:text-white"
                   }`}
                 >
-                  <item.icon className="w-5 h-5 mr-3" />
-                  {item.name}
+                  <item.icon className={`mr-3 w-5 h-5`} />
+                  <span className="hidden md:block">{item.name}</span>
                 </Link>
               </li>
             );
@@ -70,13 +76,15 @@ export default function Sidebar() {
         </ul>
       </nav>
 
-      <div className="p-4 border-t border-neutral-800">
+      <div
+        className={`px-4 md:py-4 grid place-content-center md:block border-t border-neutral-800`}
+      >
         <button
           onClick={handleSignOut}
           className="flex items-center text-neutral-400 hover:text-white text-sm w-full"
         >
           <IconLogout className="w-5 h-5 mr-3" />
-          Sign Out
+          <span className="hidden md:block">Sign Out</span>
         </button>
       </div>
     </div>

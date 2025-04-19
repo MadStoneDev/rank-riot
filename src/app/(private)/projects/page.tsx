@@ -3,9 +3,6 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
 import { IconSearch, IconRefresh, IconChevronRight } from "@tabler/icons-react";
-import { Database } from "../../../../database.types";
-
-type Project = Database["public"]["Tables"]["projects"]["Row"];
 
 export default async function ProjectsPage() {
   // Check authentication
@@ -30,7 +27,7 @@ export default async function ProjectsPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Your Projects</h1>
         <Link
-          href="/dashboard/projects/new"
+          href="/projects/new"
           className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
         >
           Create New Project
@@ -75,7 +72,7 @@ export default async function ProjectsPage() {
               return (
                 <li key={project.id}>
                   <Link
-                    href={`/dashboard/projects/${project.id}`}
+                    href={`/projects/${project.id}`}
                     className="block hover:bg-neutral-50"
                   >
                     <div className="px-4 py-4 sm:px-6">
@@ -164,7 +161,7 @@ export default async function ProjectsPage() {
             performance.
           </p>
           <Link
-            href="/dashboard/projects/new"
+            href="/projects/new"
             className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           >
             Create Your First Project

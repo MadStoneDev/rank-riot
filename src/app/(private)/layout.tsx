@@ -1,4 +1,5 @@
-﻿import { redirect } from "next/navigation";
+﻿import { ReactNode } from "react";
+import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 
 import Header from "@/components/dashboard/Header";
@@ -9,7 +10,7 @@ import { Toaster } from "sonner";
 export default async function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   // Check if user is authenticated
   const supabase = await createClient();
@@ -22,13 +23,13 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="h-screen flex">
+    <div className={`pb-12 md:pb-0 h-screen flex`}>
       <Sidebar />
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className={`flex-1 flex flex-col overflow-hidden`}>
         <Header />
 
-        <main className="flex-1 overflow-y-auto bg-neutral-50 p-6">
+        <main className={`flex-1 overflow-y-auto bg-neutral-50 p-6`}>
           {children}
           <Toaster />
         </main>

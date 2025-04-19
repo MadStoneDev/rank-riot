@@ -77,10 +77,10 @@ export async function createProject(formData: FormData) {
   }
 
   // Revalidate projects page
-  revalidatePath("/dashboard/projects");
+  revalidatePath("/projects");
 
   // Redirect to the project page
-  redirect(`/dashboard/projects/${data.id}`);
+  redirect(`/projects/${data.id}`);
 }
 
 // Update project
@@ -145,9 +145,9 @@ export async function updateProject(formData: FormData) {
   }
 
   // Revalidate project pages
-  revalidatePath(`/dashboard/projects/${id}`);
-  revalidatePath(`/dashboard/projects/${id}/settings`);
-  revalidatePath("/dashboard/projects");
+  revalidatePath(`/projects/${id}`);
+  revalidatePath(`/projects/${id}/settings`);
+  revalidatePath("/projects");
 
   return { success: true };
 }
@@ -190,10 +190,10 @@ export async function deleteProject(projectId: string) {
   }
 
   // Revalidate projects page
-  revalidatePath("/dashboard/projects");
+  revalidatePath("/projects");
 
   // Redirect to projects list
-  redirect("/dashboard/projects");
+  redirect("/projects");
 }
 
 // Start a scan
@@ -269,7 +269,7 @@ export async function startScan(projectId: string) {
     console.log("Scan triggered:", scanData);
 
     // Revalidate project page
-    revalidatePath(`/dashboard/projects/${projectId}`);
+    revalidatePath(`/projects/${projectId}`);
 
     return { success: true, scanId: scanData.id };
   } catch (error) {

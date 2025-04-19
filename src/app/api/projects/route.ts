@@ -76,7 +76,6 @@ export async function POST(request: Request) {
         console.error("Error triggering scan:", errorText);
       } else {
         const scanData = await scanResponse.json();
-        console.log("Scan triggered:", scanData);
       }
     } catch (error) {
       console.error("Error initiating scan:", error);

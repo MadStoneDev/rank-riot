@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { format } from "date-fns";
@@ -122,7 +121,7 @@ export default async function ProjectDetailPage({
     <div>
       <div className="mb-6">
         <Link
-          href="/dashboard/projects"
+          href="/projects"
           className="inline-flex items-center text-sm text-neutral-500 hover:text-neutral-700"
         >
           <IconArrowLeft className="h-4 w-4 mr-1" />
@@ -132,7 +131,7 @@ export default async function ProjectDetailPage({
 
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900">
+          <h1 className="text-2xl font-bold text-primary-500">
             {project.name}
           </h1>
           <p className="mt-1 text-sm text-neutral-500">
@@ -151,7 +150,7 @@ export default async function ProjectDetailPage({
           <StartScanButton projectId={projectId} />
 
           <Link
-            href={`/dashboard/projects/${projectId}/settings`}
+            href={`/projects/${projectId}/settings`}
             className="inline-flex items-center px-3 py-2 border border-neutral-300 shadow-sm text-sm leading-4 font-medium rounded-md text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
           >
             <IconSettings className="h-4 w-4 mr-1" />
@@ -167,7 +166,13 @@ export default async function ProjectDetailPage({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-neutral-900">Pages</h3>
+            <Link
+              href={`/projects/${projectId}/pages`}
+              className={`text-primary-500 hover:text-primary-400 transition-all duration-300 ease-in-out`}
+            >
+              <h3 className="text-lg font-medium">Pages</h3>
+            </Link>
+
             <span className="text-2xl font-bold text-neutral-900">
               {pagesCount || 0}
             </span>
@@ -225,7 +230,7 @@ export default async function ProjectDetailPage({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="px-6 py-4 border-b border-neutral-200">
             <h3 className="text-lg font-medium text-neutral-900">
@@ -270,7 +275,9 @@ export default async function ProjectDetailPage({
                       <p className="mt-1 text-sm text-neutral-500">
                         {issue.description}
                       </p>
-                      <p className="mt-1 text-xs text-neutral-500">
+                      <p
+                        className={`mt-1 flex items-center gap-1 text-xs text-neutral-500`}
+                      >
                         Page:{" "}
                         <a
                           href={issue.pages.url}
@@ -312,7 +319,7 @@ export default async function ProjectDetailPage({
           {recentIssues && recentIssues.length > 0 && (
             <div className="px-6 py-4 border-t border-neutral-200">
               <Link
-                href={`/dashboard/projects/${projectId}/issues`}
+                href={`/projects/${projectId}/issues`}
                 className="text-primary-600 hover:text-primary-700 text-sm font-medium"
               >
                 View all issues

@@ -30,6 +30,21 @@ export default async function ProjectSettingsPage({
     .eq("user_id", user.id)
     .single();
 
+  const handleDeleteProject = async () => {
+    if (confirm("Are you sure you want to delete this project?")) {
+      // Delete the project
+      const { error } = await supabase
+        .from("projects")
+        .delete()
+        .eq("id", projectId);
+
+      if (error) throw error;
+
+      // Redirect to dashboard
+      redirect("/projects");
+    }
+  };
+
   if (!project) {
     notFound();
   }
@@ -38,7 +53,7 @@ export default async function ProjectSettingsPage({
     <div>
       <div className="mb-6">
         <Link
-          href={`/dashboard/projects/${projectId}`}
+          href={`/projects/${projectId}`}
           className="inline-flex items-center text-sm text-neutral-500 hover:text-neutral-700"
         >
           <IconArrowLeft className="h-4 w-4 mr-1" />
@@ -47,7 +62,7 @@ export default async function ProjectSettingsPage({
       </div>
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-neutral-900">
+        <h1 className="text-2xl font-bold text-primary-500">
           Project Settings
         </h1>
         <p className="mt-1 text-sm text-neutral-500">
@@ -62,37 +77,7 @@ export default async function ProjectSettingsPage({
           </h3>
         </div>
 
-        <div className="px-6 py-6">
-          <ProjectSettingsForm project={project} />
-        </div>
-      </div>
-
-      <div className="mt-8 bg-white rounded-lg shadow overflow-hidden">
-        <div className="px-6 py-5 border-b border-neutral-200 bg-neutral-50">
-          <h3 className="text-lg font-medium leading-6 text-neutral-900 text-red-600">
-            Danger Zone
-          </h3>
-        </div>
-
-        <div className="px-6 py-6">
-          <div className="border border-red-200 rounded-md p-4">
-            <h3 className="text-base font-medium text-neutral-900">
-              Delete Project
-            </h3>
-            <p className="mt-1 text-sm text-neutral-500">
-              Once you delete a project, there is no going back. Please be
-              certain.
-            </p>
-            <div className="mt-4">
-              <button
-                type="button"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              >
-                Delete Project
-              </button>
-            </div>
-          </div>
-        </div>
+        <ProjectSettingsForm project={project} />
       </div>
     </div>
   );

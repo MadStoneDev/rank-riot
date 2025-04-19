@@ -19,13 +19,11 @@ export default async function NewProjectPage() {
     redirect("/auth");
   }
 
-  console.log(user.email);
-
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="mb-6">
         <Link
-          href={`/dashboard/projects`}
+          href={`/projects`}
           className="inline-flex items-center text-sm text-primary-600 hover:text-primary-800"
         >
           <IconArrowLeft className="mr-2 h-4 w-4" />

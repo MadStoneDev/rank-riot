@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { IconTrash } from "@tabler/icons-react";
-import { deleteProject } from "@/app/dashboard/projects/actions";
+import { deleteProject } from "@/app/(private)/projects/actions";
 
 interface DeleteProjectButtonProps {
   projectId: string;

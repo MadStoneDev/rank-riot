@@ -22,9 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${outfit.variable} ${playfairDisplay.variable} antialiased`}
+        className={`${outfit.variable} ${playfairDisplay.variable} text-neutral-900 dark:text-neutral-50 antialiased`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           {children}
         </ThemeProvider>
       </body>

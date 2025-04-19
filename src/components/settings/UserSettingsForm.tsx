@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { Database } from "../../../database.types";
 
-import { updateProfile } from "@/app/dashboard/settings/actions";
+import { updateProfile } from "@/app/(private)/dashboard/settings/actions";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 

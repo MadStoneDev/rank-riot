@@ -47,10 +47,12 @@ export default function Header() {
       </div>
 
       <div className="flex items-center space-x-4">
-        <DarkModeToggle /> {/* Add the DarkModeToggle component */}
-        <button className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200">
-          <IconBell className="w-6 h-6" />
-        </button>
+        {/*<DarkModeToggle />*/}
+
+        {/*<button className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200">*/}
+        {/*  <IconBell className="w-6 h-6" />*/}
+        {/*</button>*/}
+
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 rounded-full bg-neutral-300 dark:bg-neutral-600 overflow-hidden">
             {user?.avatar_url ? (
@@ -65,7 +67,9 @@ export default function Header() {
               </div>
             )}
           </div>
-          <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
+          <span
+            className={`hidden sm:block text-sm font-medium text-neutral-700 dark:text-neutral-200`}
+          >
             {user?.full_name || user?.email || "User"}
           </span>
         </div>
