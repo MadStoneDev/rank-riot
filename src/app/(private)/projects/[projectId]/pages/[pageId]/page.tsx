@@ -145,29 +145,15 @@ export default async function ProjectDetailPage({
               </div>
               <div className="ml-3 flex-1">
                 <h4 className="text-sm font-medium text-neutral-900">Title</h4>
-                <p className="mt-1 text-sm text-neutral-500">{page.title}</p>
+                <p
+                  className={`mt-1 text-sm ${
+                    page.title ? "text-neutral-500" : "text-red-600"
+                  }`}
+                >
+                  {page.title || "No title found"}
+                </p>
               </div>
-              <div className="ml-3 flex-shrink-0">
-                {page.title.length < 35 || page.title.length > 75 ? (
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 bg-red-100 rounded-full text-xs font-medium capitalize`}
-                  >
-                    Critical
-                  </span>
-                ) : page.title.length < 50 || page.title.length > 60 ? (
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 bg-orange-100 rounded-full text-xs font-medium capitalize`}
-                  >
-                    Could be better
-                  </span>
-                ) : (
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 bg-primary-100 rounded-full text-xs font-medium capitalize`}
-                  >
-                    Great
-                  </span>
-                )}
-              </div>
+              {titleBlock(page.title)}
             </div>
 
             {/* Description section */}
@@ -181,32 +167,15 @@ export default async function ProjectDetailPage({
                 <h4 className="text-sm font-medium text-neutral-900">
                   Description
                 </h4>
-                <p className="mt-1 text-sm text-neutral-500">
-                  {page.meta_description}
+                <p
+                  className={`mt-1 text-sm ${
+                    page.meta_description ? "text-neutral-500" : "text-red-600"
+                  }`}
+                >
+                  {page.meta_description || "No Meta Description found"}
                 </p>
               </div>
-              <div className="ml-3 flex-shrink-0">
-                {page.meta_description.length < 135 ||
-                page.meta_description.length > 175 ? (
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 bg-red-100 rounded-full text-xs font-medium capitalize`}
-                  >
-                    Critical
-                  </span>
-                ) : page.title.length < 150 || page.title.length > 160 ? (
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 bg-orange-100 rounded-full text-xs font-medium capitalize`}
-                  >
-                    Could be better
-                  </span>
-                ) : (
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 bg-primary-100 rounded-full text-xs font-medium capitalize`}
-                  >
-                    Great
-                  </span>
-                )}
-              </div>
+              {metaDescriptionBlock(page.meta_description)}
             </div>
           </div>
         </div>
@@ -290,3 +259,84 @@ export default async function ProjectDetailPage({
     </div>
   );
 }
+
+const titleBlock = (title: string) => {
+  const titleFeedback: { [key: string]: [string, string] } = {
+    75: ["Too Long", "bg-red-100 text-red-600"],
+    60: ["Could be better", "bg-orange-100 text-orange-600"],
+    50: ["Great", "bg-green-100 text-green-600"],
+    35: ["Could be better", "bg-orange-100 text-orange-600"],
+    0: ["Too Short", "bg-red-100 text-red-600"],
+  };
+
+  if (!title) {
+    return (
+      <div className="ml-3 flex-shrink-0">
+        <span className="inline-flex items-center px-2.5 py-0.5 bg-red-100 rounded-full text-xs font-medium capitalize">
+          Critical
+        </span>
+      </div>
+    );
+  }
+
+  // Find the appropriate feedback based on title length
+  const titleLength = title.length;
+  const feedbackKey = Object.keys(titleFeedback)
+    .map(Number)
+    .sort((a, b) => b - a)
+    .find((key) => titleLength > key);
+
+  const [message, colorClasses] = titleFeedback[feedbackKey || "0"];
+
+  return (
+    <div className="ml-3 flex-shrink-0">
+      <span
+        className={`inline-flex items-center px-2.5 py-0.5 ${colorClasses} rounded-full text-xs font-medium capitalize`}
+      >
+        {message}
+      </span>
+    </div>
+  );
+};
+
+const metaDescriptionBlock = (metaDescription: string) => {
+  const metaDescriptionFeedback: {
+    [key: string]: [string, string];
+  } = {
+    175: ["Too Long", "bg-red-100 text-red-600"],
+    150: ["Could be better", "bg-orange-100 text-orange-600"],
+    135: ["Great", "bg-green-100 text-green-600"],
+    115: ["Could be better", "bg-orange-100 text-orange-600"],
+    75: ["Great", "bg-green-100 text-green-600"],
+    0: ["Too Short", "bg-red-100 text-red-600"],
+  };
+
+  if (!metaDescription) {
+    return (
+      <div className="ml-3 flex-shrink-0">
+        <span className="inline-flex items-center px-2.5 py-0.5 bg-red-100 rounded-full text-red-600 text-xs font-medium capitalize">
+          Critical
+        </span>
+      </div>
+    );
+  }
+
+  // Find the appropriate feedback based on meta description length
+  const metaDescriptionLength = metaDescription.length;
+  const feedbackKey = Object.keys(metaDescriptionFeedback)
+    .map(Number)
+    .sort((a, b) => b - a)
+    .find((key) => metaDescriptionLength > key);
+
+  const [message, colorClasses] = metaDescriptionFeedback[feedbackKey || "0"];
+
+  return (
+    <div className="ml-3 flex-shrink-0">
+      <span
+        className={`inline-flex items-center px-2.5 py-0.5 ${colorClasses} rounded-full text-xs font-medium capitalize`}
+      >
+        {message}
+      </span>
+    </div>
+  );
+};
