@@ -6,9 +6,8 @@ import {
   IconAlertTriangle,
   IconFileSearch,
 } from "@tabler/icons-react";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { createClient } from "@/utils/supabase/server";
-import { formatInTimeZone } from "date-fns-tz";
 
 type Project = Database["public"]["Tables"]["projects"]["Row"];
 
@@ -66,7 +65,10 @@ export default async function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
+        <Link
+          href={`/projects`}
+          className={`bg-white hover:bg-neutral-100 rounded-lg shadow p-6 transition-all duration-300 ease-in-out`}
+        >
           <div className={`flex justify-between items-start`}>
             <div>
               <p className="text-sm font-medium text-neutral-500">
@@ -80,7 +82,7 @@ export default async function Dashboard() {
               <IconFolder className="w-6 h-6 text-primary-600" />
             </div>
           </div>
-        </div>
+        </Link>
 
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-start">
@@ -142,9 +144,8 @@ export default async function Dashboard() {
                     </div>
                     <div className="text-xs text-neutral-500">
                       {project.created_at &&
-                        formatInTimeZone(
-                          new Date(project.created_at),
-                          Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        format(
+                          parseISO(new Date(project.created_at).toISOString()),
                           "MMM d, yyyy",
                         )}
                     </div>

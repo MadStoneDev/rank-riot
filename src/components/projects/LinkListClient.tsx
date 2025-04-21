@@ -61,9 +61,14 @@ export default function LinkListClient({
             </p>
           )}
         </h4>
-        <p className="mt-1 text-sm text-neutral-500">
-          <span className={`font-bold`}>Anchor Text:</span> {link.anchor_text}
-        </p>
+
+        {link.anchor_text && link.anchor_text.length > 0 ? (
+          <p className={`mt-1 text-sm text-neutral-500`}>
+            <span className={`font-bold`}>Anchor Text:</span> {link.anchor_text}
+          </p>
+        ) : (
+          <p className={`mt-1 text-sm text-red-600`}>No anchor text found</p>
+        )}
       </div>
     </div>
   );

@@ -1,10 +1,8 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { createClient } from "@/utils/supabase/server";
-
-import { formatInTimeZone } from "date-fns-tz";
 
 import {
   IconArrowLeft,
@@ -166,14 +164,14 @@ export default async function ProjectDetailPage({
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
+        <Link
+          href={`/projects/${projectId}/pages`}
+          className={`bg-white hover:bg-neutral-100 rounded-lg shadow p-6 transition-all duration-300 ease-in-out`}
+        >
           <div className="flex justify-between items-center mb-4">
-            <Link
-              href={`/projects/${projectId}/pages`}
-              className={`text-primary-500 hover:text-primary-400 transition-all duration-300 ease-in-out`}
-            >
+            <div>
               <h3 className="text-lg font-medium">Pages</h3>
-            </Link>
+            </div>
 
             <span className="text-2xl font-bold text-neutral-900">
               {pagesCount || 0}
@@ -185,7 +183,7 @@ export default async function ProjectDetailPage({
               Total pages scanned
             </span>
           </div>
-        </div>
+        </Link>
 
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-4">
@@ -233,102 +231,102 @@ export default async function ProjectDetailPage({
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-6 py-4 border-b border-neutral-200">
-            <h3 className="text-lg font-medium text-neutral-900">
-              Recent Issues
-            </h3>
-          </div>
+        {/*<div className="bg-white rounded-lg shadow overflow-hidden">*/}
+        {/*  <div className="px-6 py-4 border-b border-neutral-200">*/}
+        {/*    <h3 className="text-lg font-medium text-neutral-900">*/}
+        {/*      Recent Issues*/}
+        {/*    </h3>*/}
+        {/*  </div>*/}
 
-          {recentIssues && recentIssues.length > 0 ? (
-            <div className="divide-y divide-neutral-200">
-              {recentIssues.map((issue: any) => (
-                <div key={issue.id} className="p-4">
-                  <div className="flex items-start">
-                    <div
-                      className={`mt-1 flex-shrink-0 rounded-full p-1 ${
-                        issue.severity === "critical"
-                          ? "bg-red-100"
-                          : issue.severity === "high"
-                            ? "bg-orange-100"
-                            : issue.severity === "medium"
-                              ? "bg-yellow-100"
-                              : "bg-blue-100"
-                      }`}
-                    >
-                      <IconAlertTriangle
-                        className={`h-4 w-4 ${
-                          issue.severity === "critical"
-                            ? "text-red-600"
-                            : issue.severity === "high"
-                              ? "text-orange-600"
-                              : issue.severity === "medium"
-                                ? "text-yellow-600"
-                                : "text-blue-600"
-                        }`}
-                      />
-                    </div>
-                    <div className="ml-3 flex-1">
-                      <h4 className="text-sm font-medium text-neutral-900">
-                        {issue.issue_type
-                          .replace(/_/g, " ")
-                          .replace(/\b[a-z]/g, (c: string) => c.toUpperCase())}
-                      </h4>
-                      <p className="mt-1 text-sm text-neutral-500">
-                        {issue.description}
-                      </p>
-                      <p
-                        className={`mt-1 flex items-center gap-1 text-xs text-neutral-500`}
-                      >
-                        Page:{" "}
-                        <a
-                          href={issue.pages.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hover:underline truncate inline-block max-w-xs"
-                        >
-                          {issue.pages.title || issue.pages.url}
-                        </a>
-                      </p>
-                    </div>
-                    <div className="ml-3 flex-shrink-0">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
-                          issue.severity === "critical"
-                            ? "bg-red-100 text-red-800"
-                            : issue.severity === "high"
-                              ? "bg-orange-100 text-orange-800"
-                              : issue.severity === "medium"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-blue-100 text-blue-800"
-                        }`}
-                      >
-                        {issue.severity}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="p-6 text-center">
-              <p className="text-neutral-500">
-                No issues detected in the latest scan.
-              </p>
-            </div>
-          )}
+        {/*  {recentIssues && recentIssues.length > 0 ? (*/}
+        {/*    <div className="divide-y divide-neutral-200">*/}
+        {/*      {recentIssues.map((issue: any) => (*/}
+        {/*        <div key={issue.id} className="p-4">*/}
+        {/*          <div className="flex items-start">*/}
+        {/*            <div*/}
+        {/*              className={`mt-1 flex-shrink-0 rounded-full p-1 ${*/}
+        {/*                issue.severity === "critical"*/}
+        {/*                  ? "bg-red-100"*/}
+        {/*                  : issue.severity === "high"*/}
+        {/*                    ? "bg-orange-100"*/}
+        {/*                    : issue.severity === "medium"*/}
+        {/*                      ? "bg-yellow-100"*/}
+        {/*                      : "bg-blue-100"*/}
+        {/*              }`}*/}
+        {/*            >*/}
+        {/*              <IconAlertTriangle*/}
+        {/*                className={`h-4 w-4 ${*/}
+        {/*                  issue.severity === "critical"*/}
+        {/*                    ? "text-red-600"*/}
+        {/*                    : issue.severity === "high"*/}
+        {/*                      ? "text-orange-600"*/}
+        {/*                      : issue.severity === "medium"*/}
+        {/*                        ? "text-yellow-600"*/}
+        {/*                        : "text-blue-600"*/}
+        {/*                }`}*/}
+        {/*              />*/}
+        {/*            </div>*/}
+        {/*            <div className="ml-3 flex-1">*/}
+        {/*              <h4 className="text-sm font-medium text-neutral-900">*/}
+        {/*                {issue.issue_type*/}
+        {/*                  .replace(/_/g, " ")*/}
+        {/*                  .replace(/\b[a-z]/g, (c: string) => c.toUpperCase())}*/}
+        {/*              </h4>*/}
+        {/*              <p className="mt-1 text-sm text-neutral-500">*/}
+        {/*                {issue.description}*/}
+        {/*              </p>*/}
+        {/*              <p*/}
+        {/*                className={`mt-1 flex items-center gap-1 text-xs text-neutral-500`}*/}
+        {/*              >*/}
+        {/*                Page:{" "}*/}
+        {/*                <a*/}
+        {/*                  href={issue.pages.url}*/}
+        {/*                  target="_blank"*/}
+        {/*                  rel="noopener noreferrer"*/}
+        {/*                  className="hover:underline truncate inline-block max-w-xs"*/}
+        {/*                >*/}
+        {/*                  {issue.pages.title || issue.pages.url}*/}
+        {/*                </a>*/}
+        {/*              </p>*/}
+        {/*            </div>*/}
+        {/*            <div className="ml-3 flex-shrink-0">*/}
+        {/*              <span*/}
+        {/*                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${*/}
+        {/*                  issue.severity === "critical"*/}
+        {/*                    ? "bg-red-100 text-red-800"*/}
+        {/*                    : issue.severity === "high"*/}
+        {/*                      ? "bg-orange-100 text-orange-800"*/}
+        {/*                      : issue.severity === "medium"*/}
+        {/*                        ? "bg-yellow-100 text-yellow-800"*/}
+        {/*                        : "bg-blue-100 text-blue-800"*/}
+        {/*                }`}*/}
+        {/*              >*/}
+        {/*                {issue.severity}*/}
+        {/*              </span>*/}
+        {/*            </div>*/}
+        {/*          </div>*/}
+        {/*        </div>*/}
+        {/*      ))}*/}
+        {/*    </div>*/}
+        {/*  ) : (*/}
+        {/*    <div className="p-6 text-center">*/}
+        {/*      <p className="text-neutral-500">*/}
+        {/*        No issues detected in the latest scan.*/}
+        {/*      </p>*/}
+        {/*    </div>*/}
+        {/*  )}*/}
 
-          {recentIssues && recentIssues.length > 0 && (
-            <div className="px-6 py-4 border-t border-neutral-200">
-              <Link
-                href={`/projects/${projectId}/issues`}
-                className="text-primary-600 hover:text-primary-700 text-sm font-medium"
-              >
-                View all issues
-              </Link>
-            </div>
-          )}
-        </div>
+        {/*  {recentIssues && recentIssues.length > 0 && (*/}
+        {/*    <div className="px-6 py-4 border-t border-neutral-200">*/}
+        {/*      <Link*/}
+        {/*        href={`/projects/${projectId}/issues`}*/}
+        {/*        className="text-primary-600 hover:text-primary-700 text-sm font-medium"*/}
+        {/*      >*/}
+        {/*        View all issues*/}
+        {/*      </Link>*/}
+        {/*    </div>*/}
+        {/*  )}*/}
+        {/*</div>*/}
 
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="px-6 py-4 border-b border-neutral-200">
@@ -359,16 +357,14 @@ export default async function ProjectDetailPage({
                       </div>
                       <p className="mt-1 text-xs text-neutral-500">
                         Started:{" "}
-                        {format(new Date(scan.started_at), "MMM d, yyyy HH:mm")}
+                        {format(parseISO(scan.started_at), "MMM d, yyyy")} at{" "}
+                        {format(parseISO(scan.started_at), "hh:mm a")}
                       </p>
                       {scan.completed_at && (
                         <p className="mt-1 text-xs text-neutral-500">
                           Completed:{" "}
-                          {formatInTimeZone(
-                            new Date(scan.completed_at),
-                            Intl.DateTimeFormat().resolvedOptions().timeZone, // Gets the user's browser timezone
-                            "MMM d, yyyy HH:mm",
-                          )}
+                          {format(parseISO(scan.completed_at), "MMM d, yyyy")}{" "}
+                          at {format(parseISO(scan.completed_at), "hh:mm a")}
                         </p>
                       )}
                     </div>
