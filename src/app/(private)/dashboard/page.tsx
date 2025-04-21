@@ -8,6 +8,7 @@ import {
 } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { createClient } from "@/utils/supabase/server";
+import { formatInTimeZone } from "date-fns-tz";
 
 type Project = Database["public"]["Tables"]["projects"]["Row"];
 
@@ -141,7 +142,11 @@ export default async function Dashboard() {
                     </div>
                     <div className="text-xs text-neutral-500">
                       {project.created_at &&
-                        format(new Date(project.created_at), "MMM d, yyyy")}
+                        formatInTimeZone(
+                          new Date(project.created_at),
+                          Intl.DateTimeFormat().resolvedOptions().timeZone,
+                          "MMM d, yyyy",
+                        )}
                     </div>
                   </div>
                 </Link>

@@ -4,6 +4,8 @@ import { notFound, redirect } from "next/navigation";
 import { format } from "date-fns";
 import { createClient } from "@/utils/supabase/server";
 
+import { formatInTimeZone } from "date-fns-tz";
+
 import {
   IconArrowLeft,
   IconLink,
@@ -362,8 +364,9 @@ export default async function ProjectDetailPage({
                       {scan.completed_at && (
                         <p className="mt-1 text-xs text-neutral-500">
                           Completed:{" "}
-                          {format(
+                          {formatInTimeZone(
                             new Date(scan.completed_at),
+                            Intl.DateTimeFormat().resolvedOptions().timeZone, // Gets the user's browser timezone
                             "MMM d, yyyy HH:mm",
                           )}
                         </p>
