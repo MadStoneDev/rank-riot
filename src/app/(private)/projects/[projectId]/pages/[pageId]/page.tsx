@@ -22,6 +22,14 @@ import HeadingListClient from "@/components/projects/HeadingListClient";
 import LinkListClient from "@/components/projects/LinkListClient";
 import KeywordListClient from "@/components/projects/KeywordListClient";
 
+import { Database } from "../../../../../../../database.types";
+
+type Link = Database["public"]["Tables"]["page_links"]["Row"] & {
+  pages: {
+    url: string;
+  };
+};
+
 export async function generateMetadata({
   params,
 }: {
@@ -82,6 +90,15 @@ export default async function ProjectDetailPage({
     .eq("project_id", projectId)
     .eq("source_page_id", pageId);
 
+  let sortedOutPageLinks: Link[] = [];
+  if (outPageLinks) {
+    sortedOutPageLinks = [...outPageLinks].sort((a, b) => {
+      if (a.destination_page_id && !b.destination_page_id) return -1;
+      if (!a.destination_page_id && b.destination_page_id) return 1;
+      return 0;
+    });
+  }
+
   const { data: inPageLinks } = await supabase
     .from("page_links")
     .select(
@@ -90,9 +107,9 @@ export default async function ProjectDetailPage({
     pages:source_page_id (
       url
     )
-  `,
+    `,
     )
-    .eq("destination_url", page.url);
+    .ilike("destination_url", `%${page.url.replace(/^https?:\/\//, "")}%`);
 
   if (!project || !page) {
     notFound();
@@ -240,7 +257,8 @@ export default async function ProjectDetailPage({
 
         <LinkListClient
           self={page.url}
-          links={outPageLinks || []}
+          projectId={projectId}
+          links={sortedOutPageLinks || []}
           linkDirection="outbound link"
           title="Outbound Links"
           icon={<IconUpload />}
@@ -248,6 +266,7 @@ export default async function ProjectDetailPage({
 
         <LinkListClient
           self={page.url}
+          projectId={projectId}
           links={inPageLinks || []}
           linkDirection="inbound link"
           title="Inbound Links"

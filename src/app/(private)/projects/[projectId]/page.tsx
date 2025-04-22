@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-
-import { format, parseISO } from "date-fns";
 import { createClient } from "@/utils/supabase/server";
 
 import {
@@ -10,10 +8,16 @@ import {
   IconAlertTriangle,
   IconSettings,
   IconFile,
+  IconTrash,
 } from "@tabler/icons-react";
 
+import ScanHistory from "@/components/projects/ScanHistory";
 import ScanProgress from "@/components/projects/ScanProgress";
 import StartScanButton from "@/components/projects/StartScanButton";
+
+import { Database } from "../../../../../database.types";
+
+type Scan = Database["public"]["Tables"]["scans"]["Row"];
 
 // Generate dynamic metadata based on project name
 export async function generateMetadata({
@@ -328,65 +332,10 @@ export default async function ProjectDetailPage({
         {/*  )}*/}
         {/*</div>*/}
 
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-6 py-4 border-b border-neutral-200">
-            <h3 className="text-lg font-medium text-neutral-900">
-              Scan History
-            </h3>
-          </div>
-
-          {scanHistory && scanHistory.length > 0 ? (
-            <div className="divide-y divide-neutral-200">
-              {scanHistory.map((scan: any) => (
-                <div key={scan.id} className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center">
-                        <span
-                          className={`inline-block h-2 w-2 rounded-full mr-2 ${
-                            scan.status === "completed"
-                              ? "bg-green-500"
-                              : scan.status === "in_progress"
-                                ? "bg-yellow-500"
-                                : "bg-red-500"
-                          }`}
-                        />
-                        <span className="text-sm font-medium text-neutral-900 capitalize">
-                          {scan.status}
-                        </span>
-                      </div>
-                      <p className="mt-1 text-xs text-neutral-500">
-                        Started:{" "}
-                        {format(parseISO(scan.started_at), "MMM d, yyyy")} at{" "}
-                        {format(parseISO(scan.started_at), "hh:mm a")}
-                      </p>
-                      {scan.completed_at && (
-                        <p className="mt-1 text-xs text-neutral-500">
-                          Completed:{" "}
-                          {format(parseISO(scan.completed_at), "MMM d, yyyy")}{" "}
-                          at {format(parseISO(scan.completed_at), "hh:mm a")}
-                        </p>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-neutral-900">
-                        {scan.pages_scanned} pages
-                      </p>
-                      <p className="mt-1 text-xs text-neutral-500">
-                        {scan.issues_found} issues
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="p-6 text-center">
-              <p className="text-neutral-500">No scans have been run yet.</p>
-              <StartScanButton projectId={projectId} />
-            </div>
-          )}
-        </div>
+        <ScanHistory
+          initialScans={(scanHistory as Scan[]) || []}
+          projectId={projectId}
+        />
       </div>
     </div>
   );

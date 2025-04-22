@@ -15,12 +15,14 @@ type Link = Database["public"]["Tables"]["page_links"]["Row"] & {
 
 export default function LinkListClient({
   self,
+  projectId,
   links,
   linkDirection,
   icon,
   title,
 }: {
   self?: string;
+  projectId: string;
   links: Link[];
   linkDirection?: string;
   icon?: ReactNode;
@@ -36,26 +38,48 @@ export default function LinkListClient({
         <h4 className={`text-sm font-medium text-neutral-900`}>
           {linkDirection === "inbound link" && (
             <p className="flex justify-start items-center gap-2">
-              {link.pages.url}
+              <Link
+                href={`/projects/${projectId}/pages/${link.source_page_id}`}
+                className={`text-primary-500 hover:text-primary-400 transition-all duration-300 ease-in-out`}
+              >
+                {link.pages.url}
+              </Link>
               {self && self === link.pages.url ? (
                 <span className={`font-light`}> (Self)</span>
               ) : (
                 ""
               )}
-              <Link href={link.pages.url} className="ml-auto">
+              <Link
+                href={link.pages.url}
+                className={`ml-auto text-primary-500 hover:text-primary-400 transition-all duration-300 ease-in-out`}
+              >
                 <IconExternalLink size={20} />
               </Link>
             </p>
           )}
+          {/* 9cedd54c-4082-41a9-b40f-209af31bbb35 */}
+
           {linkDirection === "outbound link" && (
             <p className="flex justify-start items-center gap-2">
-              {link.destination_url}
+              {link.destination_page_id ? (
+                <Link
+                  href={`/projects/${projectId}/pages/${link.destination_page_id}`}
+                  className={`text-primary-500 hover:text-primary-400 transition-all duration-300 ease-in-out`}
+                >
+                  {link.destination_url}
+                </Link>
+              ) : (
+                link.destination_url
+              )}
               {self && self === link.destination_url ? (
                 <span className={`font-light`}> (Self)</span>
               ) : (
                 ""
               )}
-              <Link href={link.destination_url} className="ml-auto">
+              <Link
+                href={link.destination_url}
+                className={`ml-auto text-primary-500 hover:text-primary-400 transition-all duration-300 ease-in-out`}
+              >
                 <IconExternalLink size={20} />
               </Link>
             </p>
@@ -73,11 +97,24 @@ export default function LinkListClient({
     </div>
   );
 
+  console.log(links.length);
+
   return (
     <PaginatedList
       title={title ? title : "Links"}
       items={links}
       itemType={linkDirection || "link"}
+      description={
+        !links || links.length === 0
+          ? `No ${linkDirection}s found on this page`
+          : `${links.length}x ${
+              links.length === 1
+                ? linkDirection || "link"
+                : (linkDirection || "link") + "s"
+            } found linking ${
+              linkDirection === "inbound link" ? "to" : "from"
+            } this page`
+      }
       renderItem={renderLinkItem}
       itemsPerPage={10}
     />

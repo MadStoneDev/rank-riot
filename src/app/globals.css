@@ -24,6 +24,16 @@
   --color-secondary-800: #796200;
   --color-secondary-900: #644F00;
 
+--color-danger-100: #FADFD3;
+--color-danger-200: #F6BAA9;
+--color-danger-300: #E6887A;
+--color-danger-400: #CD5955;
+--color-danger-500: #AC262D;
+--color-danger-600: #931B2C;
+--color-danger-700: #7B132B;
+--color-danger-800: #630C28;
+--color-danger-900: #520726;
+
   --font-sans: "Outfit", sans-serif;
   --font-display: "Playfair Display", serif;
 }
@@ -142,4 +152,34 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@keyframes slideOutRight {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Make sure this class is being applied */
+.slide-out-right {
+  animation: slideOutRight 0.5s ease-out forwards !important;
+  position: relative !important; /* Ensure it can move */
+  overflow-x: hidden !important; /* Keep it contained */
+}
+
+/* Debug style to confirm class is being applied */
+.slide-out-right::before {
+  content: "Animating";
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(255, 0, 0, 0.2);
+  padding: 2px;
+  font-size: 10px;
+  z-index: 100;
 }

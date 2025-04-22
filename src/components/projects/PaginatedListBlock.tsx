@@ -51,11 +51,13 @@ const PaginatedList = ({
             criticalClass ? `px-2 py-1 ${criticalClass}` : "text-neutral-500"
           } transition-all duration-300 ease-in-out`}
         >
-          {description || items.length === 0
-            ? `No ${itemType}s found on this page`
-            : `${items.length}x ${
-                items.length === 1 ? itemType : itemType + "s"
-              } found on this page`}
+          {description
+            ? description
+            : items.length === 0
+              ? `No ${itemType}s found on this page`
+              : `${items.length}x ${
+                  items.length === 1 ? itemType : itemType + "s"
+                } found on this page`}
         </p>
       </div>
 
