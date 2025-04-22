@@ -21,6 +21,18 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
   const completedTimeout = useRef<NodeJS.Timeout | null>(null);
   const pollingInterval = useRef<NodeJS.Timeout | null>(null);
 
+  // Custom event for scan completion
+  const triggerScanCompletedEvent = () => {
+    // Create and dispatch a custom event that other components can listen for
+    const event = new CustomEvent("scanCompleted", {
+      detail: {
+        scanId,
+        projectId,
+      },
+    });
+    window.dispatchEvent(event);
+  };
+
   useEffect(() => {
     // Initial fetch
     fetchScanData();
@@ -52,8 +64,8 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
         }
       });
 
-    // Set up polling as a fallback (more frequent for small websites)
-    pollingInterval.current = setInterval(fetchScanData, 2000); // Poll every 2 seconds
+    // Set up polling as a fallback (more frequent polling)
+    pollingInterval.current = setInterval(fetchScanData, 1000); // Poll every 1 second
 
     return () => {
       // Clean up
@@ -76,6 +88,15 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
         console.error("Error fetching scan:", error);
         setError("Failed to fetch scan status");
       } else {
+        // Check if scan status changed from in_progress to completed
+        if (
+          scan &&
+          scan.status === "in_progress" &&
+          data.status === "completed"
+        ) {
+          triggerScanCompletedEvent();
+        }
+
         setScan(data);
         setLastUpdateTime(new Date());
 
@@ -95,6 +116,9 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
   const handleScanCompleted = () => {
     // Show completed state
     setShowCompleted(true);
+
+    // Trigger the custom event
+    triggerScanCompletedEvent();
 
     // Clear polling interval
     if (pollingInterval.current) {

@@ -1,7 +1,8 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format, parseISO } from "date-fns";
+import { createClient } from "@/utils/supabase/client";
 
 import DeleteScanButton from "./DeleteScanButton";
 import StartScanButton from "@/components/projects/StartScanButton";
@@ -99,6 +100,69 @@ export default function ScanHistory({
   projectId,
 }: ScanHistoryProps) {
   const [scans, setScans] = useState(initialScans);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const supabase = createClient();
+
+  // Function to refresh scan history
+  const refreshScanHistory = async () => {
+    setIsRefreshing(true);
+    try {
+      const { data, error } = await supabase
+        .from("scans")
+        .select("*")
+        .eq("project_id", projectId)
+        .order("started_at", { ascending: false })
+        .limit(10);
+
+      if (error) {
+        console.error("Error fetching scan history:", error);
+      } else if (data) {
+        setScans(data as Scan[]);
+      }
+    } catch (error) {
+      console.error("Error refreshing scan history:", error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    // Set up subscription for real-time updates
+    const channel = supabase
+      .channel(`project-scans-${projectId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "scans",
+          filter: `project_id=eq.${projectId}`,
+        },
+        (payload) => {
+          // When a scan record is updated, check if it's a completion
+          if (
+            payload.new.status === "completed" &&
+            payload.old.status === "in_progress"
+          ) {
+            refreshScanHistory();
+          }
+        },
+      )
+      .subscribe();
+
+    // Listen for custom scan completed event from ScanProgress component
+    const handleScanCompleted = () => {
+      refreshScanHistory();
+    };
+
+    window.addEventListener("scanCompleted", handleScanCompleted);
+
+    // Clean up on unmount
+    return () => {
+      supabase.removeChannel(channel);
+      window.removeEventListener("scanCompleted", handleScanCompleted);
+    };
+  }, [projectId]);
 
   const handleDeleteScan = (scanId: string) => {
     setScans(scans.filter((scan) => scan.id !== scanId));
@@ -106,8 +170,29 @@ export default function ScanHistory({
 
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
-      <div className="px-6 py-4 border-b border-neutral-200">
+      <div className="px-6 py-4 border-b border-neutral-200 flex justify-between items-center">
         <h3 className="text-lg font-medium text-neutral-900">Scan History</h3>
+        <button
+          onClick={refreshScanHistory}
+          disabled={isRefreshing}
+          className="text-sm text-primary-600 hover:text-primary-800 flex items-center"
+        >
+          <svg
+            className={`h-4 w-4 mr-1 ${isRefreshing ? "animate-spin" : ""}`}
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
+          </svg>
+          {isRefreshing ? "Refreshing..." : "Refresh"}
+        </button>
       </div>
 
       {scans && scans.length > 0 ? (

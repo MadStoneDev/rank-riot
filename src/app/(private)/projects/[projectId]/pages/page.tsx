@@ -13,6 +13,7 @@ import {
 } from "@tabler/icons-react";
 
 import { Database } from "../../../../../../database.types";
+import { decode } from "html-entities";
 
 type Page = Database["public"]["Tables"]["pages"]["Row"];
 
@@ -125,10 +126,7 @@ export default async function ProjectDetailPage({
           {pages && pages.length > 0 ? (
             <div className="divide-y divide-neutral-200">
               {pages.map((page: Page) => (
-                <div
-                  // href={`/projects/${projectId}/pages/${page.id}`}
-                  key={page.id}
-                >
+                <div key={page.id}>
                   <Link
                     href={`/projects/${projectId}/pages/${page.id}`}
                     className={`p-4 flex text-primary-500 hover:bg-neutral-100 transition-all duration-300 ease-in-out`}
@@ -140,7 +138,7 @@ export default async function ProjectDetailPage({
                     </div>
                     <div className="ml-3 flex-1">
                       <h4 className="text-sm font-medium text-neutral-900">
-                        {page.title}
+                        {decode(page.title)}
                       </h4>
                       <p className="mt-1 text-sm text-neutral-500">
                         {page.url}

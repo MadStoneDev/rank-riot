@@ -6,6 +6,7 @@ import { IconExternalLink, IconLink, IconPhoto } from "@tabler/icons-react";
 import PaginatedList from "@/components/projects/PaginatedListBlock";
 
 import { Database } from "../../../database.types";
+import { decode } from "html-entities";
 
 type Link = Database["public"]["Tables"]["page_links"]["Row"] & {
   pages: {
@@ -35,7 +36,8 @@ export default function LinkListClient({
         {icon ? icon : <IconLink />}
       </div>
       <div className="ml-3 flex-1">
-        <h4 className={`text-sm font-medium text-neutral-900`}>
+        <h4 className={`flex gap-1 text-sm font-medium text-neutral-900`}>
+          Source:
           {linkDirection === "inbound link" && (
             <p className="flex justify-start items-center gap-2">
               <Link
@@ -58,7 +60,6 @@ export default function LinkListClient({
             </p>
           )}
           {/* 9cedd54c-4082-41a9-b40f-209af31bbb35 */}
-
           {linkDirection === "outbound link" && (
             <p className="flex justify-start items-center gap-2">
               {link.destination_page_id ? (
@@ -88,7 +89,8 @@ export default function LinkListClient({
 
         {link.anchor_text && link.anchor_text.length > 0 ? (
           <p className={`mt-1 text-sm text-neutral-500`}>
-            <span className={`font-bold`}>Anchor Text:</span> {link.anchor_text}
+            <span className={`font-bold`}>Anchor Text:</span>{" "}
+            {decode(link.anchor_text)}
           </p>
         ) : (
           <p className={`mt-1 text-sm text-red-600`}>No anchor text found</p>

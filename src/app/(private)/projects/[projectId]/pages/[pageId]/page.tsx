@@ -99,6 +99,12 @@ export default async function ProjectDetailPage({
     });
   }
 
+  const normalizeUrl = (url: string): string => {
+    return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  };
+
+  const normalizedPageUrl = normalizeUrl(page.url);
+
   const { data: inPageLinks } = await supabase
     .from("page_links")
     .select(
@@ -107,9 +113,13 @@ export default async function ProjectDetailPage({
     pages:source_page_id (
       url
     )
-    `,
+  `,
     )
-    .ilike("destination_url", `%${page.url.replace(/^https?:\/\//, "")}%`);
+    .filter("destination_url", "ilike", `%${normalizedPageUrl}`);
+
+  const filteredInPageLinks = inPageLinks?.filter((link) => {
+    return normalizeUrl(link.destination_url) === normalizedPageUrl;
+  });
 
   if (!project || !page) {
     notFound();
@@ -267,7 +277,7 @@ export default async function ProjectDetailPage({
         <LinkListClient
           self={page.url}
           projectId={projectId}
-          links={inPageLinks || []}
+          links={filteredInPageLinks || []}
           linkDirection="inbound link"
           title="Inbound Links"
           icon={<IconDownload />}
