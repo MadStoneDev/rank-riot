@@ -77,52 +77,52 @@ export default async function SettingsPage() {
               </div>
             </div>
 
-            <div className="flex items-start">
-              <div className="flex items-center h-5">
-                <input
-                  id="new_issues"
-                  name="new_issues"
-                  type="checkbox"
-                  defaultChecked
-                  className="focus:ring-primary-500 h-4 w-4 text-primary-600 border-neutral-300 rounded"
-                />
-              </div>
-              <div className="ml-3 text-sm">
-                <label
-                  htmlFor="new_issues"
-                  className="font-medium text-neutral-700"
-                >
-                  New issues detected
-                </label>
-                <p className="text-neutral-500">
-                  Receive notifications when new issues are detected during a
-                  scan.
-                </p>
-              </div>
-            </div>
+            {/*<div className="flex items-start">*/}
+            {/*  <div className="flex items-center h-5">*/}
+            {/*    <input*/}
+            {/*      id="new_issues"*/}
+            {/*      name="new_issues"*/}
+            {/*      type="checkbox"*/}
+            {/*      defaultChecked*/}
+            {/*      className="focus:ring-primary-500 h-4 w-4 text-primary-600 border-neutral-300 rounded"*/}
+            {/*    />*/}
+            {/*  </div>*/}
+            {/*  <div className="ml-3 text-sm">*/}
+            {/*    <label*/}
+            {/*      htmlFor="new_issues"*/}
+            {/*      className="font-medium text-neutral-700"*/}
+            {/*    >*/}
+            {/*      New issues detected*/}
+            {/*    </label>*/}
+            {/*    <p className="text-neutral-500">*/}
+            {/*      Receive notifications when new issues are detected during a*/}
+            {/*      scan.*/}
+            {/*    </p>*/}
+            {/*  </div>*/}
+            {/*</div>*/}
 
-            <div className="flex items-start">
-              <div className="flex items-center h-5">
-                <input
-                  id="weekly_summary"
-                  name="weekly_summary"
-                  type="checkbox"
-                  defaultChecked
-                  className="focus:ring-primary-500 h-4 w-4 text-primary-600 border-neutral-300 rounded"
-                />
-              </div>
-              <div className="ml-3 text-sm">
-                <label
-                  htmlFor="weekly_summary"
-                  className="font-medium text-neutral-700"
-                >
-                  Weekly summary
-                </label>
-                <p className="text-neutral-500">
-                  Receive a weekly summary of your projects' performance.
-                </p>
-              </div>
-            </div>
+            {/*<div className="flex items-start">*/}
+            {/*  <div className="flex items-center h-5">*/}
+            {/*    <input*/}
+            {/*      id="weekly_summary"*/}
+            {/*      name="weekly_summary"*/}
+            {/*      type="checkbox"*/}
+            {/*      defaultChecked*/}
+            {/*      className="focus:ring-primary-500 h-4 w-4 text-primary-600 border-neutral-300 rounded"*/}
+            {/*    />*/}
+            {/*  </div>*/}
+            {/*  <div className="ml-3 text-sm">*/}
+            {/*    <label*/}
+            {/*      htmlFor="weekly_summary"*/}
+            {/*      className="font-medium text-neutral-700"*/}
+            {/*    >*/}
+            {/*      Weekly summary*/}
+            {/*    </label>*/}
+            {/*    <p className="text-neutral-500">*/}
+            {/*      Receive a weekly summary of your projects' performance.*/}
+            {/*    </p>*/}
+            {/*  </div>*/}
+            {/*</div>*/}
           </div>
 
           <div className="mt-6">

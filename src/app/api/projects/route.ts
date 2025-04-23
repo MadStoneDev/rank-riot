@@ -1,5 +1,6 @@
 ﻿import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import axios from "axios";
 
 export async function POST(request: Request) {
   try {
@@ -30,6 +31,9 @@ export async function POST(request: Request) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
+    const token = await supabase.auth
+      .getSession()
+      .then(({ data }) => data.session?.access_token);
 
     if (!user) {
       return NextResponse.json(
@@ -59,24 +63,19 @@ export async function POST(request: Request) {
 
     // Trigger a scan using the backend API
     try {
-      const scanResponse = await fetch(
+      const scanResponse = await axios.post(
         `${process.env.CRAWLER_API_URL}/api/scan`,
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            project_id: data.id,
-            email: user.email,
-          }),
+          project_id: data.id,
+          email: user.email,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         },
       );
-
-      if (!scanResponse.ok) {
-        const errorText = await scanResponse.text();
-        console.error("Error triggering scan:", errorText);
-      } else {
-        const scanData = await scanResponse.json();
-      }
     } catch (error) {
       console.error("Error initiating scan:", error);
     }

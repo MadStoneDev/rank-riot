@@ -5,15 +5,20 @@ import { useState, useRef, useEffect } from "react";
 export default function OtpInput() {
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Initialize refs array
   useEffect(() => {
     inputRefs.current = inputRefs.current.slice(0, 6);
   }, []);
 
-  // Focus on first input on component mount
+  // Focus on first input on component mount, but only on desktop
+  // This avoids potential mobile keyboard issues
   useEffect(() => {
-    if (inputRefs.current[0]) {
+    // Simple desktop detection
+    const isDesktop = window.innerWidth > 768 && !("ontouchstart" in window);
+
+    if (isDesktop && inputRefs.current[0]) {
       inputRefs.current[0].focus();
     }
   }, []);
@@ -24,23 +29,29 @@ export default function OtpInput() {
   ) => {
     const value = e.target.value;
 
-    // Only accept numbers
-    if (!/^\d*$/.test(value)) return;
+    // Handle the case where users input multiple digits (happens on some mobile keyboards)
+    // Take the last character entered if multiple are provided
+    const lastChar = value.slice(-1);
 
-    // Only accept one digit
-    const digit = value.substring(0, 1);
+    // Only accept numbers
+    if (!/^\d*$/.test(lastChar)) return;
 
     // Update OTP array
     const newOtp = [...otp];
-    newOtp[index] = digit;
+    newOtp[index] = lastChar;
     setOtp(newOtp);
 
-    // If user entered a digit and there's a next input, focus on it
-    if (digit && index < 5) {
-      const nextInput = inputRefs.current[index + 1];
-      if (nextInput) {
-        nextInput.focus();
-      }
+    // Focus management for next input field
+    // This is wrapped in setTimeout to help with mobile keyboard issues
+    if (lastChar && index < 5) {
+      setTimeout(() => {
+        const nextInput = inputRefs.current[index + 1];
+        if (nextInput) {
+          nextInput.focus();
+          // Select any existing content to ensure it gets replaced on typing
+          nextInput.select();
+        }
+      }, 10);
     }
   };
 
@@ -48,12 +59,35 @@ export default function OtpInput() {
     e: React.KeyboardEvent<HTMLInputElement>,
     index: number,
   ) => {
-    // If backspace is pressed and current field is empty, focus on previous field
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      const prevInput = inputRefs.current[index - 1];
-      if (prevInput) {
-        prevInput.focus();
+    // Handle backspace
+    if (e.key === "Backspace") {
+      if (otp[index]) {
+        // If current field has a value, clear it
+        const newOtp = [...otp];
+        newOtp[index] = "";
+        setOtp(newOtp);
+      } else if (index > 0) {
+        // If current field is empty, move to previous field
+        setTimeout(() => {
+          const prevInput = inputRefs.current[index - 1];
+          if (prevInput) {
+            prevInput.focus();
+            // Select any existing content
+            prevInput.select();
+          }
+        }, 10);
       }
+    }
+
+    // Handle arrow keys for navigation
+    if (e.key === "ArrowLeft" && index > 0) {
+      e.preventDefault();
+      inputRefs.current[index - 1]?.focus();
+    }
+
+    if (e.key === "ArrowRight" && index < 5) {
+      e.preventDefault();
+      inputRefs.current[index + 1]?.focus();
     }
   };
 
@@ -78,27 +112,42 @@ export default function OtpInput() {
 
     // Focus on appropriate field after paste
     if (digits.length < 6) {
-      const nextInput = inputRefs.current[digits.length];
-      if (nextInput) {
-        nextInput.focus();
-      }
+      setTimeout(() => {
+        const nextInput = inputRefs.current[digits.length];
+        if (nextInput) {
+          nextInput.focus();
+        }
+      }, 10);
     }
+  };
+
+  // Handle container click to focus on the first empty input
+  // This helps on mobile when clicking anywhere in the container
+  const handleContainerClick = () => {
+    // Find the first empty input or the last input if all filled
+    const firstEmptyIndex = otp.findIndex((digit) => digit === "") || 5;
+    inputRefs.current[firstEmptyIndex]?.focus();
   };
 
   // Combine all digits into a single OTP value for the form
   const combinedOtp = otp.join("");
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-2">
+    <div
+      ref={containerRef}
+      onClick={handleContainerClick}
+      className="mb-4 px-2"
+    >
+      <div className="flex items-center justify-between">
         {otp.map((digit, index) => (
           <input
             key={index}
             ref={(el) => {
               inputRefs.current[index] = el;
             }}
-            type="text"
+            type="tel" // Better than "text" for mobile number keyboards
             inputMode="numeric"
+            pattern="\d*" // Additional help for iOS
             autoComplete="one-time-code"
             maxLength={1}
             className="w-12 h-12 text-center text-xl font-bold border border-neutral-300 rounded-md mx-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -106,6 +155,9 @@ export default function OtpInput() {
             onChange={(e) => handleChange(e, index)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             onPaste={handlePaste}
+            // Additional mobile-friendly attributes
+            autoCorrect="off"
+            aria-label={`Digit ${index + 1} of verification code`}
           />
         ))}
       </div>

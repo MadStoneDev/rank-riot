@@ -71,7 +71,7 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
               type="email"
               defaultValue={profile.email || ""}
               disabled
-              className="shadow-sm bg-neutral-50 block w-full sm:text-sm border-neutral-300 rounded-md"
+              className={`p-2 shadow-sm bg-neutral-50 block w-full sm:text-sm border-neutral-300 rounded-md`}
             />
           </div>
           <p className="mt-1 text-xs text-neutral-500">
@@ -93,7 +93,7 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
               name="full_name"
               type="text"
               defaultValue={profile.full_name || ""}
-              className="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-neutral-300 rounded-md"
+              className={`p-2 shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-neutral-300 rounded-md`}
               disabled={isLoading}
             />
           </div>

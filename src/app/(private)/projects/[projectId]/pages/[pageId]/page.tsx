@@ -14,6 +14,7 @@ import {
   IconH6,
   IconUpload,
   IconDownload,
+  IconExternalLink,
 } from "@tabler/icons-react";
 
 // Import the client component instead
@@ -142,15 +143,15 @@ export default async function ProjectDetailPage({
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-primary-500">{page.title}</h1>
-          <p className="mt-1 text-sm text-neutral-500">
+          <p className={`mt-1 items-center text-sm text-neutral-500`}>
             Page URL:{" "}
             <a
               href={page.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:underline font-bold"
+              className={`inline-flex items-center gap-1 hover:underline font-bold`}
             >
-              {page.url}
+              {page.url} <IconExternalLink className="inline-block w-4 h-4" />
             </a>
           </p>
         </div>

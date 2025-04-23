@@ -35,11 +35,13 @@ export default function LinkListClient({
       <div className={`mt-1 flex-shrink-0 rounded-full p-1 text-primary-500`}>
         {icon ? icon : <IconLink />}
       </div>
-      <div className="ml-3 flex-1">
-        <h4 className={`flex gap-1 text-sm font-medium text-neutral-900`}>
-          Source:
+      <div className={`ml-3 flex-1`}>
+        <div
+          className={`flex gap-1 w-full text-sm font-medium text-neutral-900`}
+        >
+          <h4>Source:</h4>
           {linkDirection === "inbound link" && (
-            <p className="flex justify-start items-center gap-2">
+            <div className={`flex flex-wrap justify-start items-center gap-2`}>
               <Link
                 href={`/projects/${projectId}/pages/${link.source_page_id}`}
                 className={`text-primary-500 hover:text-primary-400 transition-all duration-300 ease-in-out`}
@@ -51,13 +53,7 @@ export default function LinkListClient({
               ) : (
                 ""
               )}
-              <Link
-                href={link.pages.url}
-                className={`ml-auto text-primary-500 hover:text-primary-400 transition-all duration-300 ease-in-out`}
-              >
-                <IconExternalLink size={20} />
-              </Link>
-            </p>
+            </div>
           )}
           {/* 9cedd54c-4082-41a9-b40f-209af31bbb35 */}
           {linkDirection === "outbound link" && (
@@ -77,15 +73,9 @@ export default function LinkListClient({
               ) : (
                 ""
               )}
-              <Link
-                href={link.destination_url}
-                className={`ml-auto text-primary-500 hover:text-primary-400 transition-all duration-300 ease-in-out`}
-              >
-                <IconExternalLink size={20} />
-              </Link>
             </p>
           )}
-        </h4>
+        </div>
 
         {link.anchor_text && link.anchor_text.length > 0 ? (
           <p className={`mt-1 text-sm text-neutral-500`}>
@@ -95,11 +85,18 @@ export default function LinkListClient({
         ) : (
           <p className={`mt-1 text-sm text-red-600`}>No anchor text found</p>
         )}
+
+        <Link
+          href={link.destination_url}
+          target={`_blank`}
+          className={`mt-2 pt-1 flex items-center w-fit border-t border-neutral-300 text-sm text-primary-500 hover:text-primary-400 transition-all duration-300 ease-in-out`}
+        >
+          Go to External Link
+          <IconExternalLink size={20} className={`ml-1`} />
+        </Link>
       </div>
     </div>
   );
-
-  console.log(links.length);
 
   return (
     <PaginatedList
