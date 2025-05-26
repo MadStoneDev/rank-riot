@@ -144,6 +144,7 @@
                   ></path>
                 </svg>
               </div>
+              -
               <h3 className="text-primary text-xl font-bold mb-2">
                 Technical Issues That Matter
               </h3>
