@@ -42,7 +42,7 @@ export default function DeleteProjectButton({
         <button
           onClick={handleCancelDelete}
           disabled={isLoading}
-          className="mr-2 px-3 py-1 border border-neutral-300 text-sm font-medium rounded-md text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="mr-2 px-3 py-1 border border-neutral-300 text-sm font-medium rounded-md text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Cancel
         </button>

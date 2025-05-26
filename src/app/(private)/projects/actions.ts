@@ -60,7 +60,7 @@ export async function createProject(formData: FormData) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           project_id: data.id,
-          notification_email: user.email,
+          email: user.email,
         }),
       },
     );
@@ -260,9 +260,21 @@ export async function startScan(projectId: string) {
 
     if (!scanResponse.ok) {
       console.error("Error triggering scan:", scanData);
+
+      // FIX: Extract the error message properly
+      let errorMessage = "Failed to start scan. Please try again later.";
+
+      // Your backend returns: { status: "error", message: "...", error: { code: "...", details: "..." } }
+      if (scanData.message) {
+        errorMessage = scanData.message;
+      } else if (typeof scanData.error === "string") {
+        errorMessage = scanData.error;
+      } else if (scanData.error && scanData.error.code) {
+        errorMessage = `Error: ${scanData.error.code}`;
+      }
+
       return {
-        error:
-          scanData.error || "Failed to start scan. Please try again later.",
+        error: errorMessage, // Always return a string, never an object
       };
     }
 
@@ -271,7 +283,7 @@ export async function startScan(projectId: string) {
     // Revalidate project page
     revalidatePath(`/projects/${projectId}`);
 
-    return { success: true, scanId: scanData.id };
+    return { success: true, scanId: scanData.data?.scan_id || scanData.id };
   } catch (error) {
     // Handle different error types
     if (error instanceof TypeError) {

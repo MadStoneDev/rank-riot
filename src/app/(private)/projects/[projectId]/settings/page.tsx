@@ -62,9 +62,7 @@ export default async function ProjectSettingsPage({
       </div>
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-primary-500">
-          Project Settings
-        </h1>
+        <h1 className="text-2xl font-bold text-primary">Project Settings</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Manage settings for {project.name}
         </p>

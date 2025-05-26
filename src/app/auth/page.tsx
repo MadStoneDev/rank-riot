@@ -16,11 +16,11 @@ export default function AuthPage() {
         <div className="mt-8 text-center text-sm text-neutral-500">
           <p>
             By signing up, you agree to our{" "}
-            <Link href="/terms" className="text-primary-600 hover:underline">
+            <Link href="/terms" className="text-secondary hover:underline">
               Terms of Service
             </Link>{" "}
             and{" "}
-            <Link href="/privacy" className="text-primary-600 hover:underline">
+            <Link href="/privacy" className="text-secondary hover:underline">
               Privacy Policy
             </Link>
           </p>

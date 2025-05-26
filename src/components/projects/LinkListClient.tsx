@@ -32,7 +32,7 @@ export default function LinkListClient({
   // Define the render function within the client component
   const renderLinkItem = (link: Link, index: number) => (
     <div key={index} className={`p-4 flex items-start`}>
-      <div className={`mt-1 flex-shrink-0 rounded-full p-1 text-primary-500`}>
+      <div className={`mt-1 flex-shrink-0 rounded-full p-1 text-primary`}>
         {icon ? icon : <IconLink />}
       </div>
       <div className={`ml-3 flex-1`}>
@@ -44,7 +44,7 @@ export default function LinkListClient({
             <div className={`flex flex-wrap justify-start items-center gap-2`}>
               <Link
                 href={`/projects/${projectId}/pages/${link.source_page_id}`}
-                className={`text-primary-500 hover:text-primary-400 transition-all duration-300 ease-in-out`}
+                className={`text-primary hover:text-primary/70 transition-all duration-300 ease-in-out`}
               >
                 {link.pages.url}
               </Link>
@@ -61,7 +61,7 @@ export default function LinkListClient({
               {link.destination_page_id ? (
                 <Link
                   href={`/projects/${projectId}/pages/${link.destination_page_id}`}
-                  className={`text-primary-500 hover:text-primary-400 transition-all duration-300 ease-in-out`}
+                  className={`text-primary hover:text-primary/70 transition-all duration-300 ease-in-out`}
                 >
                   {link.destination_url}
                 </Link>
@@ -89,7 +89,7 @@ export default function LinkListClient({
         <Link
           href={link.destination_url}
           target={`_blank`}
-          className={`mt-2 pt-1 flex items-center w-fit border-t border-neutral-300 text-sm text-primary-500 hover:text-primary-400 transition-all duration-300 ease-in-out`}
+          className={`mt-2 pt-1 flex items-center w-fit border-t border-neutral-300 text-sm text-primary hover:text-primary/70 transition-all duration-300 ease-in-out`}
         >
           Go to External Link
           <IconExternalLink size={20} className={`ml-1`} />

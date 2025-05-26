@@ -62,7 +62,7 @@ export default function Header() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-primary-600 text-white text-sm font-medium">
+              <div className="w-full h-full flex items-center justify-center bg-secondary text-white text-sm font-medium">
                 {user?.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
               </div>
             )}

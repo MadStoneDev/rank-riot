@@ -65,7 +65,7 @@ export default function NewProjectForm() {
               type="text"
               required
               placeholder="My Website"
-              className={`p-3 shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-neutral-300 rounded-md`}
+              className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-neutral-300 rounded-md`}
               disabled={isLoading}
             />
           </div>
@@ -88,7 +88,7 @@ export default function NewProjectForm() {
               type="text"
               placeholder="https://example.com"
               required
-              className={`p-3 shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-neutral-300 rounded-md`}
+              className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-neutral-300 rounded-md`}
               disabled={isLoading}
             />
           </div>
@@ -111,7 +111,7 @@ export default function NewProjectForm() {
               name="description"
               rows={3}
               placeholder="Brief description of your project..."
-              className={`p-3 shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-neutral-300 rounded-md`}
+              className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-neutral-300 rounded-md`}
               disabled={isLoading}
             />
           </div>
@@ -128,7 +128,7 @@ export default function NewProjectForm() {
             <select
               id="scan_frequency"
               name="scan_frequency"
-              className={`p-3 shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-neutral-300 rounded-md`}
+              className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-neutral-300 rounded-md`}
               disabled={isLoading}
               defaultValue="weekly"
             >
@@ -146,13 +146,13 @@ export default function NewProjectForm() {
       <div className="mt-8 pt-5 border-t border-neutral-200 flex justify-end space-x-3">
         <Link
           href={"/projects"}
-          className="px-4 py-2 border border-neutral-300 rounded-md shadow-sm text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+          className="px-4 py-2 border border-neutral-300 rounded-md shadow-sm text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
         >
           Cancel
         </Link>
         <button
           type="submit"
-          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-secondary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isLoading}
         >
           {isLoading ? "Creating..." : "Create Project"}

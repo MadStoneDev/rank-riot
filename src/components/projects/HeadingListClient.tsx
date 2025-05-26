@@ -24,7 +24,7 @@ export default function HeadingListClient({
   // Define the render function within the client component
   const renderHeadingItem = (heading: string, index: number) => (
     <div key={index} className={`p-4 flex items-start`}>
-      <div className={`mt-1 flex-shrink-0 rounded-full p-1 text-primary-500`}>
+      <div className={`mt-1 flex-shrink-0 rounded-full p-1 text-primary`}>
         {icon || <IconHeading />}
       </div>
       <div className="ml-3 flex-1">

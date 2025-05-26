@@ -89,9 +89,7 @@ export default async function ProjectDetailPage({
 
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-primary-500">
-            {project.name}
-          </h1>
+          <h1 className="text-2xl font-bold text-primary">{project.name}</h1>
           <p className="mt-1 text-sm text-neutral-500">
             <a
               href={project.url}
@@ -107,7 +105,7 @@ export default async function ProjectDetailPage({
         <div className="flex items-center space-x-3">
           <Link
             href={`/projects/${projectId}/settings`}
-            className="inline-flex items-center px-3 py-2 border border-neutral-300 shadow-sm text-sm leading-4 font-medium rounded-md text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            className="inline-flex items-center px-3 py-2 border border-neutral-300 shadow-sm text-sm leading-4 font-medium rounded-md text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
           >
             <IconSettings className="h-4 w-4 mr-1" />
             Settings
@@ -129,12 +127,12 @@ export default async function ProjectDetailPage({
                 <div key={page.id}>
                   <Link
                     href={`/projects/${projectId}/pages/${page.id}`}
-                    className={`p-4 flex text-primary-500 hover:bg-neutral-100 transition-all duration-300 ease-in-out`}
+                    className={`p-4 flex text-primary hover:bg-neutral-100 transition-all duration-300 ease-in-out`}
                   >
                     <div
-                      className={`mt-1 flex-shrink-0 rounded-full p-1 text-primary-500`}
+                      className={`mt-1 flex-shrink-0 rounded-full p-1 text-primary`}
                     >
-                      <IconFile className={`h-4 w-4 text-primary-500`} />
+                      <IconFile className={`h-4 w-4 text-primary`} />
                     </div>
                     <div className="ml-3 flex-1">
                       <h4 className="text-sm font-medium text-neutral-900">

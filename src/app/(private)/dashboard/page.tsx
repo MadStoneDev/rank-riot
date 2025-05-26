@@ -55,10 +55,10 @@ export default async function Dashboard() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-primary-500">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-primary">Dashboard</h1>
         <Link
           href="/projects/new"
-          className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm"
+          className="bg-secondary hover:bg-secondary text-white px-4 py-2 rounded-md text-sm"
         >
           New Project
         </Link>
@@ -79,7 +79,7 @@ export default async function Dashboard() {
               </h2>
             </div>
             <div className="p-2 bg-primary-50 rounded-lg">
-              <IconFolder className="w-6 h-6 text-primary-600" />
+              <IconFolder className="w-6 h-6 text-secondary" />
             </div>
           </div>
         </Link>
@@ -159,7 +159,7 @@ export default async function Dashboard() {
                 </p>
                 <Link
                   href="/projects/new"
-                  className="mt-4 inline-block text-primary-600 hover:text-primary-700 font-medium"
+                  className="mt-4 inline-block text-secondary hover:text-secondary font-medium"
                 >
                   Create a Project
                 </Link>
@@ -171,7 +171,7 @@ export default async function Dashboard() {
             <div className="px-6 py-4 border-t border-neutral-200">
               <Link
                 href="/projects"
-                className="text-primary-600 hover:text-primary-700 text-sm font-medium"
+                className="text-secondary hover:text-secondary text-sm font-medium"
               >
                 View all projects
               </Link>

@@ -24,7 +24,7 @@ export default async function NewProjectPage() {
       <div className="mb-6">
         <Link
           href={`/projects`}
-          className="inline-flex items-center text-sm text-primary-600 hover:text-primary-800"
+          className="inline-flex items-center text-sm text-secondary hover:text-primary-dark"
         >
           <IconArrowLeft className="mr-2 h-4 w-4" />
           Back to Projects

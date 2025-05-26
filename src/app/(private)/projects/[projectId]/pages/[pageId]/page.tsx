@@ -142,7 +142,7 @@ export default async function ProjectDetailPage({
 
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-primary-500">{page.title}</h1>
+          <h1 className="text-2xl font-bold text-primary">{page.title}</h1>
           <p className={`mt-1 items-center text-sm text-neutral-500`}>
             Page URL:{" "}
             <a
@@ -167,7 +167,7 @@ export default async function ProjectDetailPage({
             {/* Title section */}
             <div className={`p-4 flex items-start`}>
               <div
-                className={`mt-1 flex-shrink-0 rounded-full p-1 text-primary-500`}
+                className={`mt-1 flex-shrink-0 rounded-full p-1 text-primary`}
               >
                 <IconLabel />
               </div>
@@ -187,7 +187,7 @@ export default async function ProjectDetailPage({
             {/* Description section */}
             <div className={`p-4 flex items-start`}>
               <div
-                className={`mt-1 flex-shrink-0 rounded-full p-1 text-primary-500`}
+                className={`mt-1 flex-shrink-0 rounded-full p-1 text-primary`}
               >
                 <IconArticle />
               </div>

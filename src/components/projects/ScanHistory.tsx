@@ -58,6 +58,11 @@ const ScanHistoryItem = ({ scan, onDelete }: ScanHistoryItemProps) => {
               <span className="text-sm font-medium text-neutral-900 capitalize">
                 {scan.status}
               </span>
+              {scan.status === "failed" && (
+                <span className="ml-2 text-xs text-red-600 bg-red-50 px-2 py-1 rounded">
+                  Error
+                </span>
+              )}
             </div>
             <p className="mt-1 text-xs text-neutral-500">
               Started:{" "}
@@ -66,20 +71,32 @@ const ScanHistoryItem = ({ scan, onDelete }: ScanHistoryItemProps) => {
             </p>
             {scan.completed_at && (
               <p className="mt-1 text-xs text-neutral-500">
-                Completed:{" "}
+                {scan.status === "completed" ? "Completed" : "Failed"}:{" "}
                 {format(parseISO(scan.completed_at as string), "MMM d, yyyy")}{" "}
                 at {format(parseISO(scan.completed_at as string), "hh:mm a")}
               </p>
             )}
+            {scan.status === "failed" &&
+              scan.summary_stats &&
+              typeof scan.summary_stats === "object" &&
+              scan.summary_stats !== null &&
+              "error_message" in scan.summary_stats && (
+                <p className="mt-1 text-xs text-red-600 truncate max-w-xs">
+                  Error: {String(scan.summary_stats.error_message)}
+                </p>
+              )}
           </div>
 
           <div className={`text-right`}>
             <p className="text-sm text-neutral-900">
-              {scan.pages_scanned} pages
+              {scan.pages_scanned || 0} pages
             </p>
             <p className="mt-1 text-xs text-neutral-500">
-              {scan.issues_found} issues
+              {scan.issues_found || 0} issues
             </p>
+            {scan.status === "failed" && (
+              <p className="mt-1 text-xs text-red-500">Scan failed</p>
+            )}
           </div>
         </div>
 
@@ -139,28 +156,86 @@ export default function ScanHistory({
           filter: `project_id=eq.${projectId}`,
         },
         (payload) => {
-          // When a scan record is updated, check if it's a completion
+          console.log(
+            "Scan status update:",
+            payload.new.status,
+            "from:",
+            payload.old.status,
+          );
+
+          // Refresh when scan completes OR fails
           if (
-            payload.new.status === "completed" &&
-            payload.old.status === "in_progress"
+            payload.old.status === "in_progress" &&
+            (payload.new.status === "completed" ||
+              payload.new.status === "failed")
           ) {
+            console.log(`Scan ${payload.new.status}, refreshing history...`);
             refreshScanHistory();
+          }
+
+          // Also refresh for any other status changes to keep UI in sync
+          else if (payload.old.status !== payload.new.status) {
+            console.log(
+              `Scan status changed to ${payload.new.status}, updating list...`,
+            );
+            // Update individual scan in the list without full refresh
+            setScans((prevScans) =>
+              prevScans.map((scan) =>
+                scan.id === payload.new.id
+                  ? ({ ...scan, ...payload.new } as Scan)
+                  : scan,
+              ),
+            );
           }
         },
       )
-      .subscribe();
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "scans",
+          filter: `project_id=eq.${projectId}`,
+        },
+        (payload) => {
+          console.log("New scan started:", payload.new.id);
+          // Add new scan to the beginning of the list
+          setScans((prevScans) => [payload.new as Scan, ...prevScans]);
+        },
+      )
+      .subscribe((status) => {
+        console.log(`Scan subscription status: ${status}`);
+      });
 
     // Listen for custom scan completed event from ScanProgress component
-    const handleScanCompleted = () => {
+    const handleScanCompleted = (event: CustomEvent) => {
+      console.log("Custom scan completed event received:", event.detail);
       refreshScanHistory();
     };
 
-    window.addEventListener("scanCompleted", handleScanCompleted);
+    // Listen for custom scan failed event (if you want to add this to other components)
+    const handleScanFailed = (event: CustomEvent) => {
+      console.log("Custom scan failed event received:", event.detail);
+      refreshScanHistory();
+    };
+
+    window.addEventListener(
+      "scanCompleted",
+      handleScanCompleted as EventListener,
+    );
+    window.addEventListener("scanFailed", handleScanFailed as EventListener);
 
     // Clean up on unmount
     return () => {
       supabase.removeChannel(channel);
-      window.removeEventListener("scanCompleted", handleScanCompleted);
+      window.removeEventListener(
+        "scanCompleted",
+        handleScanCompleted as EventListener,
+      );
+      window.removeEventListener(
+        "scanFailed",
+        handleScanFailed as EventListener,
+      );
     };
   }, [projectId]);
 
@@ -175,7 +250,7 @@ export default function ScanHistory({
         <button
           onClick={refreshScanHistory}
           disabled={isRefreshing}
-          className="text-sm text-primary-600 hover:text-primary-800 flex items-center"
+          className="text-sm text-secondary hover:text-primary-dark flex items-center"
         >
           <svg
             className={`h-4 w-4 mr-1 ${isRefreshing ? "animate-spin" : ""}`}

@@ -116,7 +116,9 @@ export default async function ProjectDetailPage({
   // Get scan history
   const { data: scanHistory } = await supabase
     .from("scans")
-    .select("*")
+    .select(
+      "id, status, started_at, completed_at, pages_scanned, issues_found, links_scanned, project_id",
+    )
     .eq("project_id", projectId)
     .order("started_at", { ascending: false })
     .limit(10);
@@ -125,7 +127,7 @@ export default async function ProjectDetailPage({
     <div>
       <div className="mb-6">
         <Link
-          href="/projects"
+          href={`/projects`}
           className="inline-flex items-center text-sm text-neutral-500 hover:text-neutral-700"
         >
           <IconArrowLeft className="h-4 w-4 mr-1" />
@@ -135,9 +137,7 @@ export default async function ProjectDetailPage({
 
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-primary-500">
-            {project.name}
-          </h1>
+          <h1 className="text-2xl font-bold text-primary">{project.name}</h1>
           <p className="mt-1 text-sm text-neutral-500">
             <a
               href={project.url}
@@ -155,7 +155,7 @@ export default async function ProjectDetailPage({
 
           <Link
             href={`/projects/${projectId}/settings`}
-            className="inline-flex items-center px-3 py-2 border border-neutral-300 shadow-sm text-sm leading-4 font-medium rounded-md text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            className="inline-flex items-center px-3 py-2 border border-neutral-300 shadow-sm text-sm leading-4 font-medium rounded-md text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
           >
             <IconSettings className="h-4 w-4 mr-1" />
             Settings
@@ -182,7 +182,7 @@ export default async function ProjectDetailPage({
             </span>
           </div>
           <div className="flex items-center">
-            <IconFile className="h-5 w-5 text-primary-600 mr-2" />
+            <IconFile className="h-5 w-5 text-secondary mr-2" />
             <span className="text-sm text-neutral-500">
               Total pages scanned
             </span>
@@ -205,7 +205,7 @@ export default async function ProjectDetailPage({
             </span>
           </div>
           <div className="flex items-center">
-            <IconLink className="h-5 w-5 text-primary-600 mr-2" />
+            <IconLink className="h-5 w-5 text-secondary mr-2" />
             <span className="text-sm text-neutral-500">
               Links returning 404 status
             </span>
@@ -226,7 +226,7 @@ export default async function ProjectDetailPage({
             </span>
           </div>
           <div className="flex items-center">
-            <IconAlertTriangle className="h-5 w-5 text-primary-600 mr-2" />
+            <IconAlertTriangle className="h-5 w-5 text-secondary mr-2" />
             <span className="text-sm text-neutral-500">
               SEO issues detected
             </span>
@@ -324,7 +324,7 @@ export default async function ProjectDetailPage({
         {/*    <div className="px-6 py-4 border-t border-neutral-200">*/}
         {/*      <Link*/}
         {/*        href={`/projects/${projectId}/issues`}*/}
-        {/*        className="text-primary-600 hover:text-primary-700 text-sm font-medium"*/}
+        {/*        className="text-secondary hover:text-secondary text-sm font-medium"*/}
         {/*      >*/}
         {/*        View all issues*/}
         {/*      </Link>*/}

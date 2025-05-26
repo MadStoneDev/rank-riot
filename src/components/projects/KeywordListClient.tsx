@@ -27,7 +27,7 @@ export default function KeywordListClient({
     return (
       <div key={index} className={`py-2 flex items-center`}>
         <div
-          className={`mt-1 flex-shrink-0 gap-1 rounded-full p-1 text-primary-500`}
+          className={`mt-1 flex-shrink-0 gap-1 rounded-full p-1 text-primary`}
         >
           <IconKey size={20} />
         </div>
@@ -74,7 +74,7 @@ export default function KeywordListClient({
         <button
           type={`button`}
           onClick={() => setShowCounts(!showCounts)}
-          className={`cursor-pointer text-sm text-primary-500 hover:text-primary-400`}
+          className={`cursor-pointer text-sm text-primary hover:text-primary/70`}
         >
           {showCounts ? "Hide Counts" : "Show Counts"}
         </button>

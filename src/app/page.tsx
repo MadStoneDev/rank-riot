@@ -4,6 +4,12 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import DarkModeToggle from "@/components/ui/DarkModeToggle";
 
+export const metadata = {
+  title: "RankRiot - SEO for small businesses by a small business",
+  description:
+    "RankRiot is a free SEO analysis tool that helps small businesses improve their website's SEO performance.",
+};
+
 export default async function Home() {
   const supabase = await createClient();
   const {
@@ -15,74 +21,55 @@ export default async function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header
-        className={`bg-neutral-50 dark:bg-primary-900 border-b border-neutral-200`}
-      >
-        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <div
-            className={`group py-1 px-2 relative flex items-center space-x-2 overflow-hidden z-10`}
-          >
-            <div
-              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0 group-hover:w-[110%] aspect-square bg-primary-500 dark:bg-neutral-50 rounded-full transition-all duration-300 ease-in-out -z-[1]`}
-            ></div>
-
-            <Link
-              href={`/`}
-              className={`text-2xl font-bold text-primary-500 group-hover:text-neutral-50 dark:text-neutral-50 dark:group-hover:text-primary-500 transition-all duration-300 ease-in-out z-50`}
-            >
-              RankRiot
-            </Link>
-          </div>
-          <div className="flex items-center space-x-4">
-            <DarkModeToggle />
-            <Link
-              href={`/auth`}
-              className={`text-primary-500 hover:text-primary-600 dark:text-neutral-400 dark:hover:text-neutral-200 transition-all duration-300 ease-in-out`}
-            >
-              Account
-            </Link>
-          </div>
-        </div>
-      </header>
-
+    <>
       {/* Hero Section */}
-      <section className={`py-20 grid place-content-center min-h-[600px]`}>
+      <section
+        className={`py-20 grid place-content-center min-h-[600px] bg-white`}
+      >
         <div
           className={`flex flex-col items-center max-w-2xl px-4 text-center`}
         >
           <h1
-            className={`mb-6 max-w-xl font-display text-5xl font-bold text-primary-500`}
+            className={`mb-6 max-w-xl font-display text-5xl font-bold text-primary`}
           >
             SEO for small businesses by a small business
           </h1>
-          <p className="text-xl text-neutral-600 max-w-3xl mx-auto mb-10">
+
+          <p className="text-xl text-primary/60 max-w-3xl mx-auto mb-10">
             Monitor, analyze and optimize your website's SEO performance with
             our powerful platform. Find broken links, track keywords, and stay
             ahead of your competition.
           </p>
-          <Link
-            href={`/auth`}
-            className={`bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-md text-lg font-medium`}
+
+          <div
+            className={`group relative flex items-center space-x-2 bg-primary overflow-hidden z-10`}
           >
-            Get Started
-          </Link>
+            <div
+              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0 group-hover:w-[110%] aspect-square bg-primary-dark transition-all duration-300 ease-in-out -z-[1]`}
+            ></div>
+
+            <Link
+              href={`/auth`}
+              className={`py-4 px-8 text-white text-lg font-bold transition-all duration-300 ease-in-out z-50`}
+            >
+              Get Started
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className={`py-16 bg-neutral-100`}>
+      <section className={`py-16 bg-neutral-100 dark:bg-primary-dark`}>
         <div className={`mx-auto px-4`}>
           <h2
-            className={`text-primary-500 text-3xl font-bold text-center mb-12`}
+            className={`text-primary dark:text-white/70 text-3xl font-bold text-center mb-12`}
           >
             Key Features
           </h2>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="text-primary-600 mb-4">
+            <div className="bg-white p-6 shadow-md">
+              <div className="text-primary mb-4">
                 <svg
                   className="w-10 h-10"
                   fill="currentColor"
@@ -97,17 +84,17 @@ export default async function Home() {
                   ></path>
                 </svg>
               </div>
-              <h3 className="text-primary-500 text-xl font-semibold mb-2">
+              <h3 className="text-primary text-xl font-bold mb-2">
                 Broken Link Detection
               </h3>
-              <p className="text-neutral-500">
+              <p className="text-primary/50">
                 Automatically find and fix broken links (404s) on your website
                 to improve user experience and SEO.
               </p>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="text-primary-600 mb-4">
+            <div className="bg-white p-6 shadow-md">
+              <div className="text-primary mb-4">
                 <svg
                   className="w-10 h-10"
                   fill="currentColor"
@@ -118,17 +105,17 @@ export default async function Home() {
                   <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
                 </svg>
               </div>
-              <h3 className="text-primary-500 text-xl font-semibold mb-2">
+              <h3 className="text-primary text-xl font-bold mb-2">
                 Comprehensive Analysis
               </h3>
-              <p className="text-neutral-500">
+              <p className="text-primary/50">
                 Get detailed insights into your website's structure, content,
                 and technical SEO performance.
               </p>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="text-primary-600 mb-4">
+            <div className="bg-white p-6 shadow-md">
+              <div className="text-primary mb-4">
                 <svg
                   className="w-10 h-10"
                   fill="currentColor"
@@ -138,10 +125,10 @@ export default async function Home() {
                   <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
                 </svg>
               </div>
-              <h3 className="text-primary-500 text-xl font-semibold mb-2">
+              <h3 className="text-primary text-xl font-bold mb-2">
                 Regular Monitoring
               </h3>
-              <p className="text-neutral-500">
+              <p className="text-primary/50">
                 Schedule automatic scans to monitor your website's SEO health
                 and detect issues before they impact your rankings.
               </p>
@@ -151,7 +138,7 @@ export default async function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary-600 text-white">
+      <section className="py-20 bg-primary text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">
             Ready to improve your website's SEO?
@@ -160,65 +147,23 @@ export default async function Home() {
             Join thousands of businesses that use our platform to boost their
             search engine rankings.
           </p>
-          <Link
-            href="/auth"
-            className="bg-white text-primary-600 hover:bg-neutral-100 px-8 py-4 rounded-md text-lg font-medium"
+
+          <div
+            className={`group relative inline-flex items-center space-x-2 bg-primary-dark overflow-hidden z-10`}
           >
-            Start Your Free Account
-          </Link>
+            <div
+              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0 group-hover:w-[110%] aspect-square bg-white transition-all duration-300 ease-in-out -z-[1]`}
+            ></div>
+
+            <Link
+              href={`/auth`}
+              className={`py-4 px-8 text-white group-hover:text-primary text-lg font-bold transition-all duration-300 ease-in-out z-50`}
+            >
+              Start Your Free Account
+            </Link>
+          </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-neutral-800 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">RankRiot</h3>
-              <p className="text-neutral-400">
-                Comprehensive SEO analysis and monitoring platform for websites
-                of all sizes.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Features</h3>
-              <ul className="space-y-2 text-neutral-400">
-                <li>Broken Link Detection</li>
-                <li>SEO Analysis</li>
-                <li>Keyword Tracking</li>
-                <li>Competitor Analysis</li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Resources</h3>
-              <ul className="space-y-2 text-neutral-400">
-                <li>Documentation</li>
-                <li>Blog</li>
-                <li>Support</li>
-                <li>FAQ</li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-neutral-400">
-                <li>About Us</li>
-                <li>Careers</li>
-                <li>Contact</li>
-                <li>Privacy Policy</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-neutral-700 mt-12 pt-8 text-center text-neutral-400">
-            <p>
-              &copy; {new Date().getFullYear()} RankRiot. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 }

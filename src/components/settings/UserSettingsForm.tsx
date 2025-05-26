@@ -93,7 +93,7 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
               name="full_name"
               type="text"
               defaultValue={profile.full_name || ""}
-              className={`p-2 shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-neutral-300 rounded-md`}
+              className={`p-2 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-neutral-300 rounded-md`}
               disabled={isLoading}
             />
           </div>
@@ -123,7 +123,7 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
             </div>
             <button
               type="button"
-              className="ml-5 bg-white py-2 px-3 border border-neutral-300 rounded-md shadow-sm text-sm leading-4 font-medium text-neutral-700 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              className="ml-5 bg-white py-2 px-3 border border-neutral-300 rounded-md shadow-sm text-sm leading-4 font-medium text-neutral-700 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
             >
               Change
             </button>
@@ -134,7 +134,7 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
       <div className="mt-8 pt-5 border-t border-neutral-200">
         <button
           type="submit"
-          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-secondary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isLoading}
         >
           {isLoading ? "Saving..." : "Save Changes"}

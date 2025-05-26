@@ -91,7 +91,7 @@ export default function AuthForm() {
                   type="email"
                   autoComplete="email"
                   required
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}
@@ -100,7 +100,7 @@ export default function AuthForm() {
 
               <button
                 type="submit"
-                className={`cursor-pointer w-full bg-neutral-800 text-white py-2 px-4 rounded-md font-medium hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed`}
+                className={`cursor-pointer w-full bg-neutral-800 text-white py-2 px-4 rounded-md font-medium hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed`}
                 disabled={isLoading}
               >
                 {isLoading ? "Sending..." : "Continue with Email"}
@@ -122,7 +122,7 @@ export default function AuthForm() {
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
-                className="mt-4 w-full flex items-center justify-center py-2 px-4 border border-neutral-300 rounded-md shadow-sm bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="mt-4 w-full flex items-center justify-center py-2 px-4 border border-neutral-300 rounded-md shadow-sm bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isLoading}
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -161,14 +161,14 @@ export default function AuthForm() {
 
             <button
               type="submit"
-              className="w-full bg-neutral-800 text-white py-2 px-4 rounded-md font-medium hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+              className="w-full bg-neutral-800 text-white py-2 px-4 rounded-md font-medium hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             >
               Verify and Sign In
             </button>
 
             <button
               type="button"
-              className="w-full mt-3 text-primary-600 py-2 px-4 rounded-md font-medium hover:underline focus:outline-none"
+              className="w-full mt-3 text-secondary py-2 px-4 rounded-md font-medium hover:underline focus:outline-none"
               onClick={() => setAuthState("email")}
             >
               Back to email

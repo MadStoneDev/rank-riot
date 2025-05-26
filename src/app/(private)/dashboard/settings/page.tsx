@@ -61,7 +61,7 @@ export default async function SettingsPage() {
                   name="scan_completed"
                   type="checkbox"
                   defaultChecked
-                  className="focus:ring-primary-500 h-4 w-4 text-primary-600 border-neutral-300 rounded"
+                  className="focus:ring-primary h-4 w-4 text-secondary border-neutral-300 rounded"
                 />
               </div>
               <div className="ml-3 text-sm">
@@ -84,7 +84,7 @@ export default async function SettingsPage() {
             {/*      name="new_issues"*/}
             {/*      type="checkbox"*/}
             {/*      defaultChecked*/}
-            {/*      className="focus:ring-primary-500 h-4 w-4 text-primary-600 border-neutral-300 rounded"*/}
+            {/*      className="focus:ring-primary h-4 w-4 text-secondary border-neutral-300 rounded"*/}
             {/*    />*/}
             {/*  </div>*/}
             {/*  <div className="ml-3 text-sm">*/}
@@ -108,7 +108,7 @@ export default async function SettingsPage() {
             {/*      name="weekly_summary"*/}
             {/*      type="checkbox"*/}
             {/*      defaultChecked*/}
-            {/*      className="focus:ring-primary-500 h-4 w-4 text-primary-600 border-neutral-300 rounded"*/}
+            {/*      className="focus:ring-primary h-4 w-4 text-secondary border-neutral-300 rounded"*/}
             {/*    />*/}
             {/*  </div>*/}
             {/*  <div className="ml-3 text-sm">*/}
@@ -128,7 +128,7 @@ export default async function SettingsPage() {
           <div className="mt-6">
             <button
               type="submit"
-              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-secondary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
             >
               Save Notification Settings
             </button>

@@ -150,7 +150,7 @@ export default function OtpInput() {
             pattern="\d*" // Additional help for iOS
             autoComplete="one-time-code"
             maxLength={1}
-            className="w-12 h-12 text-center text-xl font-bold border border-neutral-300 rounded-md mx-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-12 h-12 text-center text-xl font-bold border border-neutral-300 rounded-md mx-1 focus:outline-none focus:ring-2 focus:ring-primary"
             value={digit}
             onChange={(e) => handleChange(e, index)}
             onKeyDown={(e) => handleKeyDown(e, index)}
