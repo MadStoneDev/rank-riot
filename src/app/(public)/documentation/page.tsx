@@ -1,20 +1,20 @@
 ﻿export const metadata = {
-  title: "About - RankRiot",
+  title: "Documentation - RankRiot",
   description:
     "RankRiot is a free SEO analysis tool that helps small businesses improve their website's SEO performance.",
 };
 
-export default function AboutPage() {
+export default function DocumentationPage() {
   return (
     <>
       <section className="py-20 grid place-content-center min-h-[600px] bg-white">
         <div className="flex flex-col items-center max-w-2xl px-4 text-center">
           <h1 className="mb-6 max-w-xl font-display text-5xl font-bold text-primary">
-            About <span className="text-secondary">RankRiot</span>
+            Documentation
           </h1>
           <p className="text-xl text-primary/60 max-w-3xl mx-auto mb-10">
-            Small business SEO tools, built by a small business that gets it. We
-            understand your challenges because we face them too.
+            RankRiot is a free SEO analysis tool that helps small businesses
+            improve their website's SEO performance.
           </p>
         </div>
       </section>
@@ -22,7 +22,7 @@ export default function AboutPage() {
       <section className="py-16 bg-neutral-100">
         <div className="container mx-auto px-4">
           <h2 className="text-primary text-3xl font-bold text-center mb-12">
-            Our Story
+            What We Believe
           </h2>
 
           <div className="max-w-4xl mx-auto">
