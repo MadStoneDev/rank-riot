@@ -47,7 +47,7 @@ export async function POST(request: Request) {
         url: formattedUrl,
         description,
         scan_frequency: scan_frequency || "weekly",
-        email: user.email,
+        notification_email: user.email,
       })
       .select()
       .single();
