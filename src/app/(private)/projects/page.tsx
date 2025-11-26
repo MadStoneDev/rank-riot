@@ -2,9 +2,20 @@ import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
-import { IconSearch, IconRefresh, IconChevronRight } from "@tabler/icons-react";
+import {
+  IconSearch,
+  IconRefresh,
+  IconChevronRight,
+  IconFileSearch,
+  IconChartBar,
+} from "@tabler/icons-react";
+import ProjectList from "@/components/projects/ProjectList";
 
-export default async function ProjectsPage() {
+export default async function ProjectsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
   // Check authentication
   const supabase = await createClient();
   const {
@@ -15,11 +26,23 @@ export default async function ProjectsPage() {
     redirect("/auth");
   }
 
-  // Get user's projects
-  const { data: projects } = await supabase
+  const params = await searchParams;
+  const activeTab = params.tab || "seo";
+
+  // Get user's SEO projects
+  const { data: seoProjects } = await supabase
     .from("projects")
     .select()
     .eq("user_id", user.id)
+    .eq("project_type", "seo")
+    .order("created_at", { ascending: false });
+
+  // Get user's Audit projects
+  const { data: auditProjects } = await supabase
+    .from("projects")
+    .select()
+    .eq("user_id", user.id)
+    .eq("project_type", "audit")
     .order("created_at", { ascending: false });
 
   return (
@@ -34,6 +57,60 @@ export default async function ProjectsPage() {
         </Link>
       </div>
 
+      {/* Tabs */}
+      <div className="mb-6 border-b border-neutral-200">
+        <nav className="-mb-px flex space-x-8">
+          <Link
+            href="/projects?tab=seo"
+            className={`
+              py-4 px-1 border-b-2 font-medium text-sm inline-flex items-center
+              ${
+                activeTab === "seo"
+                  ? "border-secondary text-secondary"
+                  : "border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300"
+              }
+            `}
+          >
+            <IconFileSearch className="w-5 h-5 mr-2" />
+            SEO Projects
+            <span
+              className={`ml-2 py-0.5 px-2 rounded-full text-xs ${
+                activeTab === "seo"
+                  ? "bg-blue-100 text-blue-600"
+                  : "bg-neutral-100 text-neutral-600"
+              }`}
+            >
+              {seoProjects?.length || 0}
+            </span>
+          </Link>
+
+          <Link
+            href="/projects?tab=audit"
+            className={`
+              py-4 px-1 border-b-2 font-medium text-sm inline-flex items-center
+              ${
+                activeTab === "audit"
+                  ? "border-secondary text-secondary"
+                  : "border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300"
+              }
+            `}
+          >
+            <IconChartBar className="w-5 h-5 mr-2" />
+            Audit Projects
+            <span
+              className={`ml-2 py-0.5 px-2 rounded-full text-xs ${
+                activeTab === "audit"
+                  ? "bg-blue-100 text-blue-600"
+                  : "bg-neutral-100 text-neutral-600"
+              }`}
+            >
+              {auditProjects?.length || 0}
+            </span>
+          </Link>
+        </nav>
+      </div>
+
+      {/* Search */}
       <div className="mb-6">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -41,137 +118,27 @@ export default async function ProjectsPage() {
           </div>
           <input
             type="text"
-            placeholder="Search projects..."
+            placeholder={`Search ${
+              activeTab === "seo" ? "SEO" : "audit"
+            } projects...`}
             className="block w-full pl-10 pr-3 py-2 border border-neutral-300 rounded-md leading-5 bg-white placeholder-neutral-500 focus:outline-none focus:placeholder-neutral-400 focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm"
           />
         </div>
       </div>
 
-      {projects && projects.length > 0 ? (
-        <div className="bg-white shadow overflow-hidden rounded-md">
-          <ul className="divide-y divide-neutral-200">
-            {projects.map(async (project: any) => {
-              // Calculate some statistics
-              const lastScan =
-                project.scans && project.scans.length > 0
-                  ? project.scans.sort(
-                      (a: any, b: any) =>
-                        new Date(b.started_at).getTime() -
-                        new Date(a.started_at).getTime(),
-                    )[0]
-                  : null;
-
-              const { data: pages } = await supabase
-                .from("pages")
-                .select()
-                .eq("project_id", project.id);
-
-              const pagesCount = pages ? pages.length : 0;
-
-              const inProgressScans = project.scans
-                ? project.scans.filter(
-                    (scan: any) => scan.status === "in_progress",
-                  ).length
-                : 0;
-
-              return (
-                <li key={project.id}>
-                  <Link
-                    href={`/projects/${project.id}`}
-                    className="block hover:bg-neutral-50"
-                  >
-                    <div className="px-4 py-4 sm:px-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0">
-                            <div className="h-10 w-10 rounded-md bg-primary/10 flex items-center justify-center">
-                              <span className="text-secondary font-medium">
-                                {project.name.substring(0, 2).toUpperCase()}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="ml-4">
-                            <h2 className="text-base font-medium text-neutral-900 truncate">
-                              {project.name}
-                            </h2>
-                            <div className="mt-1 flex items-center text-sm text-neutral-500">
-                              <span className="truncate">{project.url}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="ml-2 flex-shrink-0 flex items-center space-x-6">
-                          <div className="text-sm text-neutral-500 text-right">
-                            <p>
-                              Last scan:{" "}
-                              {project.last_scan_at
-                                ? format(
-                                    new Date(project.last_scan_at),
-                                    "MMM d, yyyy",
-                                  )
-                                : "Never"}
-                            </p>
-                            <p>{pagesCount} pages scanned</p>
-                          </div>
-                          {inProgressScans > 0 && (
-                            <div className="animate-spin text-secondary">
-                              <IconRefresh className="h-5 w-5" />
-                            </div>
-                          )}
-                          <div>
-                            <IconChevronRight className="h-5 w-5 text-neutral-400" />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mt-2 sm:flex sm:justify-between">
-                        <div className="sm:flex sm:space-x-4">
-                          <div className="flex items-center text-sm text-neutral-500">
-                            <span>
-                              Created:{" "}
-                              {format(
-                                new Date(project.created_at),
-                                "MMM d, yyyy",
-                              )}
-                            </span>
-                          </div>
-                          <div className="mt-2 flex items-center text-sm text-neutral-500 sm:mt-0">
-                            <span className="capitalize">
-                              Scan frequency: {project.scan_frequency}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="mt-2 flex items-center text-sm text-neutral-500 sm:mt-0">
-                          <span
-                            className={`px-2 py-1 text-xs font-medium rounded-full ${
-                              project.last_scan_at
-                                ? "bg-green-100 text-green-800"
-                                : "bg-yellow-100 text-yellow-800"
-                            }`}
-                          >
-                            {project.last_scan_at ? "Scanned" : "Pending scan"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+      {/* Project Lists */}
+      {activeTab === "seo" ? (
+        <ProjectList
+          projects={seoProjects || []}
+          projectType="seo"
+          emptyMessage="No SEO projects yet. Create your first SEO project to start comprehensive website analysis."
+        />
       ) : (
-        <div className="bg-white rounded-lg shadow-md p-8 text-center">
-          <h2 className="text-xl font-semibold mb-2">No projects yet</h2>
-          <p className="text-neutral-600 mb-6">
-            Create your first project to start analyzing your website's SEO
-            performance.
-          </p>
-          <Link
-            href="/projects/new"
-            className="px-4 py-2 bg-secondary text-white rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-          >
-            Create Your First Project
-          </Link>
-        </div>
+        <ProjectList
+          projects={auditProjects || []}
+          projectType="audit"
+          emptyMessage="No audit projects yet. Create your first audit project for quick website assessments."
+        />
       )}
     </div>
   );

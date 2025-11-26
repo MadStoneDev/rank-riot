@@ -1,0 +1,142 @@
+|   .env.example
+|   .env.local
+|   .gitignore
+|   components.json
+|   database.types.ts
+|   directory_structure.txt
+|   middleware.ts
+|   next-env.d.ts
+|   next.config.ts
+|   package-lock.json
+|   package.json
+|   postcss.config.mjs
+|   README.md
+|   tsconfig.json
+|   
++---public
+|       file.svg
+|       globe.svg
+|       next.svg
+|       vercel.svg
+|       window.svg
+|       
+\---src
+    +---app
+    |   |   favicon.ico
+    |   |   globals.css
+    |   |   layout.tsx
+    |   |   
+    |   +---(private)
+    |   |   |   layout.tsx
+    |   |   |   
+    |   |   +---dashboard
+    |   |   |   |   page.tsx
+    |   |   |   |   
+    |   |   |   \---settings
+    |   |   |           actions.ts
+    |   |   |           page.tsx
+    |   |   |           
+    |   |   \---projects
+    |   |       |   actions.ts
+    |   |       |   page.tsx
+    |   |       |   
+    |   |       +---new
+    |   |       |       page.tsx
+    |   |       |       
+    |   |       \---[projectId]
+    |   |           |   page.tsx
+    |   |           |   
+    |   |           +---pages
+    |   |           |   |   page.tsx
+    |   |           |   |   
+    |   |           |   \---[pageId]
+    |   |           |           page.tsx
+    |   |           |           
+    |   |           \---settings
+    |   |                   page.tsx
+    |   |                   
+    |   +---(public)
+    |   |   |   layout.tsx
+    |   |   |   page.tsx
+    |   |   |   
+    |   |   +---about
+    |   |   |       page.tsx
+    |   |   |       
+    |   |   +---contact
+    |   |   |       page.tsx
+    |   |   |       
+    |   |   \---documentation
+    |   |           page.tsx
+    |   |           
+    |   +---api
+    |   |   \---projects
+    |   |           route.ts
+    |   |           
+    |   \---auth
+    |       |   actions.ts
+    |       |   page.tsx
+    |       |   
+    |       \---confirm
+    |               route.ts
+    |               
+    +---components
+    |   +---auth
+    |   |       AuthForm.tsx
+    |   |       OtpInput.tsx
+    |   |       
+    |   +---dashboard
+    |   |       Header.tsx
+    |   |       Overview.tsx
+    |   |       Sidebar.tsx
+    |   |       
+    |   +---projects
+    |   |       AuditProjectDetailPage.tsx
+    |   |       AuditResults.tsx
+    |   |       DeleteProjectButton.tsx
+    |   |       DeleteScanButton.tsx
+    |   |       HeadingListClient.tsx
+    |   |       ImageItem.tsx
+    |   |       ImageListClient.tsx
+    |   |       KeywordListClient.tsx
+    |   |       LinkListClient.tsx
+    |   |       NewProjectForm.tsx
+    |   |       PaginatedListBlock.tsx
+    |   |       ProjectCard.tsx
+    |   |       ProjectDetails.tsx
+    |   |       ProjectList.tsx
+    |   |       ProjectSettingsForm.tsx
+    |   |       ScanHistory.tsx
+    |   |       ScanProgress.tsx
+    |   |       SEOProjectDetailPage.tsx
+    |   |       StartAuditButton.tsx
+    |   |       StartScanButton.tsx
+    |   |       
+    |   +---settings
+    |   |       UserSettingsForm.tsx
+    |   |       
+    |   \---ui
+    |           Button.tsx
+    |           Card.tsx
+    |           DarkModeToggle.tsx
+    |           Dropdown.tsx
+    |           Input.tsx
+    |           Modal.tsx
+    |           sonner.tsx
+    |           
+    +---lib
+    |       utils.ts
+    |       
+    +---providers
+    |       ThemeProvider.tsx
+    |       
+    +---types
+    |       index.ts
+    |       
+    \---utils
+        |   helpers.ts
+        |   
+        \---supabase
+                client.ts
+                middleware.ts
+                server.ts
+                

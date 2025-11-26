@@ -7,8 +7,85 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "12.2.3 (519615d)"
+  }
   public: {
     Tables: {
+      audit_results: {
+        Row: {
+          completeness_score: number | null
+          conversion_score: number | null
+          created_at: string | null
+          design_analysis: Json | null
+          found_pages: Json | null
+          id: string
+          missing_pages: Json | null
+          modern_standards: Json | null
+          modernization_score: number | null
+          overall_score: number | null
+          performance_metrics: Json | null
+          performance_score: number | null
+          project_id: string | null
+          recommendations: Json | null
+          scan_id: string | null
+          tech_stack: Json | null
+        }
+        Insert: {
+          completeness_score?: number | null
+          conversion_score?: number | null
+          created_at?: string | null
+          design_analysis?: Json | null
+          found_pages?: Json | null
+          id?: string
+          missing_pages?: Json | null
+          modern_standards?: Json | null
+          modernization_score?: number | null
+          overall_score?: number | null
+          performance_metrics?: Json | null
+          performance_score?: number | null
+          project_id?: string | null
+          recommendations?: Json | null
+          scan_id?: string | null
+          tech_stack?: Json | null
+        }
+        Update: {
+          completeness_score?: number | null
+          conversion_score?: number | null
+          created_at?: string | null
+          design_analysis?: Json | null
+          found_pages?: Json | null
+          id?: string
+          missing_pages?: Json | null
+          modern_standards?: Json | null
+          modernization_score?: number | null
+          overall_score?: number | null
+          performance_metrics?: Json | null
+          performance_score?: number | null
+          project_id?: string | null
+          recommendations?: Json | null
+          scan_id?: string | null
+          tech_stack?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_results_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_results_scan_id_fkey"
+            columns: ["scan_id"]
+            isOneToOne: false
+            referencedRelation: "scans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       backlinks: {
         Row: {
           anchor_text: string | null
@@ -53,6 +130,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "backlinks_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "backlinks_project_id_fkey"
             columns: ["project_id"]
@@ -142,6 +226,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "issues_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "issues_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -199,6 +290,13 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "keywords_target_page_id_fkey"
+            columns: ["target_page_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
+            referencedColumns: ["id"]
+          },
         ]
       }
       page_links: {
@@ -213,6 +311,7 @@ export type Database = {
           is_followed: boolean | null
           link_type: string
           project_id: string
+          rel_attributes: Json | null
           source_page_id: string
           updated_at: string | null
         }
@@ -227,6 +326,7 @@ export type Database = {
           is_followed?: boolean | null
           link_type: string
           project_id: string
+          rel_attributes?: Json | null
           source_page_id: string
           updated_at?: string | null
         }
@@ -241,15 +341,30 @@ export type Database = {
           is_followed?: boolean | null
           link_type?: string
           project_id?: string
+          rel_attributes?: Json | null
           source_page_id?: string
           updated_at?: string | null
         }
         Relationships: [
           {
+            foreignKeyName: "page_links_destination_page_id_fkey"
+            columns: ["destination_page_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "page_links_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "page_links_source_page_id_fkey"
+            columns: ["source_page_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
             referencedColumns: ["id"]
           },
         ]
@@ -267,24 +382,32 @@ export type Database = {
           h1s: Json | null
           h2s: Json | null
           h3s: Json | null
+          h4s: Json | null
+          h5s: Json | null
+          h6s: Json | null
           has_robots_nofollow: boolean | null
           has_robots_noindex: boolean | null
           http_status: number | null
           id: string
-          image_count: number | null
+          images: Json | null
           is_indexable: boolean | null
           js_count: number | null
+          keywords: Json | null
           load_time_ms: number | null
           meta_description: string | null
+          meta_description_length: number | null
           open_graph: Json | null
           project_id: string
           redirect_url: string | null
+          schema_types: Json | null
           size_bytes: number | null
           structured_data: Json | null
           title: string | null
+          title_length: number | null
           twitter_card: Json | null
           updated_at: string | null
           url: string
+          word_count: number | null
         }
         Insert: {
           canonical_url?: string | null
@@ -298,24 +421,32 @@ export type Database = {
           h1s?: Json | null
           h2s?: Json | null
           h3s?: Json | null
+          h4s?: Json | null
+          h5s?: Json | null
+          h6s?: Json | null
           has_robots_nofollow?: boolean | null
           has_robots_noindex?: boolean | null
           http_status?: number | null
           id?: string
-          image_count?: number | null
+          images?: Json | null
           is_indexable?: boolean | null
           js_count?: number | null
+          keywords?: Json | null
           load_time_ms?: number | null
           meta_description?: string | null
+          meta_description_length?: number | null
           open_graph?: Json | null
           project_id: string
           redirect_url?: string | null
+          schema_types?: Json | null
           size_bytes?: number | null
           structured_data?: Json | null
           title?: string | null
+          title_length?: number | null
           twitter_card?: Json | null
           updated_at?: string | null
           url: string
+          word_count?: number | null
         }
         Update: {
           canonical_url?: string | null
@@ -329,24 +460,32 @@ export type Database = {
           h1s?: Json | null
           h2s?: Json | null
           h3s?: Json | null
+          h4s?: Json | null
+          h5s?: Json | null
+          h6s?: Json | null
           has_robots_nofollow?: boolean | null
           has_robots_noindex?: boolean | null
           http_status?: number | null
           id?: string
-          image_count?: number | null
+          images?: Json | null
           is_indexable?: boolean | null
           js_count?: number | null
+          keywords?: Json | null
           load_time_ms?: number | null
           meta_description?: string | null
+          meta_description_length?: number | null
           open_graph?: Json | null
           project_id?: string
           redirect_url?: string | null
+          schema_types?: Json | null
           size_bytes?: number | null
           structured_data?: Json | null
           title?: string | null
+          title_length?: number | null
           twitter_card?: Json | null
           updated_at?: string | null
           url?: string
+          word_count?: number | null
         }
         Relationships: [
           {
@@ -405,7 +544,7 @@ export type Database = {
           last_scan_at: string | null
           name: string
           notification_email: string | null
-          robots_txt: Json | null
+          project_type: string | null
           scan_frequency: string | null
           settings: Json | null
           updated_at: string | null
@@ -419,7 +558,7 @@ export type Database = {
           last_scan_at?: string | null
           name: string
           notification_email?: string | null
-          robots_txt?: Json | null
+          project_type?: string | null
           scan_frequency?: string | null
           settings?: Json | null
           updated_at?: string | null
@@ -433,7 +572,7 @@ export type Database = {
           last_scan_at?: string | null
           name?: string
           notification_email?: string | null
-          robots_txt?: Json | null
+          project_type?: string | null
           scan_frequency?: string | null
           settings?: Json | null
           updated_at?: string | null
@@ -450,68 +589,28 @@ export type Database = {
           },
         ]
       }
-      scan_page_snapshots: {
+      scan_snapshots: {
         Row: {
-          content_length: number | null
           created_at: string | null
-          h1s: Json | null
-          h2s: Json | null
-          h3s: Json | null
-          http_status: number | null
           id: string
-          is_indexable: boolean | null
-          issues: Json | null
-          meta_description: string | null
-          page_id: string
           scan_id: string
-          snapshot_data: Json | null
-          title: string | null
-          url: string
+          snapshot_data: Json
         }
         Insert: {
-          content_length?: number | null
           created_at?: string | null
-          h1s?: Json | null
-          h2s?: Json | null
-          h3s?: Json | null
-          http_status?: number | null
           id?: string
-          is_indexable?: boolean | null
-          issues?: Json | null
-          meta_description?: string | null
-          page_id: string
           scan_id: string
-          snapshot_data?: Json | null
-          title?: string | null
-          url: string
+          snapshot_data: Json
         }
         Update: {
-          content_length?: number | null
           created_at?: string | null
-          h1s?: Json | null
-          h2s?: Json | null
-          h3s?: Json | null
-          http_status?: number | null
           id?: string
-          is_indexable?: boolean | null
-          issues?: Json | null
-          meta_description?: string | null
-          page_id?: string
           scan_id?: string
-          snapshot_data?: Json | null
-          title?: string | null
-          url?: string
+          snapshot_data?: Json
         }
         Relationships: [
           {
-            foreignKeyName: "scan_page_snapshots_page_id_fkey"
-            columns: ["page_id"]
-            isOneToOne: false
-            referencedRelation: "pages"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "scan_page_snapshots_scan_id_fkey"
+            foreignKeyName: "scan_snapshots_scan_id_fkey"
             columns: ["scan_id"]
             isOneToOne: false
             referencedRelation: "scans"
@@ -525,10 +624,11 @@ export type Database = {
           created_at: string | null
           id: string
           issues_found: number | null
+          last_progress_update: string | null
           links_scanned: number | null
           pages_scanned: number | null
           project_id: string
-          queue_position: number | null
+          scan_type: string | null
           started_at: string | null
           status: string | null
           summary_stats: Json | null
@@ -539,10 +639,11 @@ export type Database = {
           created_at?: string | null
           id?: string
           issues_found?: number | null
+          last_progress_update?: string | null
           links_scanned?: number | null
           pages_scanned?: number | null
           project_id: string
-          queue_position?: number | null
+          scan_type?: string | null
           started_at?: string | null
           status?: string | null
           summary_stats?: Json | null
@@ -553,10 +654,11 @@ export type Database = {
           created_at?: string | null
           id?: string
           issues_found?: number | null
+          last_progress_update?: string | null
           links_scanned?: number | null
           pages_scanned?: number | null
           project_id?: string
-          queue_position?: number | null
+          scan_type?: string | null
           started_at?: string | null
           status?: string | null
           summary_stats?: Json | null
@@ -588,21 +690,25 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -620,14 +726,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -643,14 +751,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
@@ -666,14 +776,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
@@ -681,14 +793,16 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never

@@ -1,15 +1,26 @@
-﻿import { NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData();
+    const supabase = await createClient();
 
-    // Extract data from the form
+    // Get authenticated user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Get form data
+    const formData = await request.formData();
     const name = formData.get("name") as string;
     const url = formData.get("url") as string;
-    const description = formData.get("description") as string;
+    const description = (formData.get("description") as string) || "";
     const scan_frequency = formData.get("scan_frequency") as string;
+    const project_type = (formData.get("project_type") as string) || "seo";
 
     // Validate inputs
     if (!name || !url) {
@@ -25,65 +36,151 @@ export async function POST(request: Request) {
       formattedUrl = `https://${url}`;
     }
 
-    // Get authenticated user
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json(
-        { error: "You must be logged in to create a project" },
-        { status: 401 },
-      );
-    }
-
-    // Create project in database
-    const { data, error } = await supabase
+    // Check if project already exists
+    const { data: existingProject } = await supabase
       .from("projects")
-      .insert({
-        user_id: user.id,
-        name,
-        url: formattedUrl,
-        description,
-        scan_frequency: scan_frequency || "weekly",
-        notification_email: user.email,
-      })
-      .select()
+      .select("id, name")
+      .eq("user_id", user.id)
+      .eq("url", formattedUrl)
+      .eq("project_type", project_type)
       .single();
 
-    if (error) {
-      console.error("Error creating project:", error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    let projectId: string;
+    let isExisting = false;
+
+    if (existingProject) {
+      // Project exists - update it and trigger new scan
+      projectId = existingProject.id;
+      isExisting = true;
+
+      // Update project details (name, description, scan_frequency if changed)
+      const { error: updateError } = await supabase
+        .from("projects")
+        .update({
+          name,
+          description,
+          scan_frequency:
+            project_type === "seo" ? scan_frequency || "weekly" : null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", projectId);
+
+      if (updateError) {
+        console.error("Error updating project:", updateError);
+        return NextResponse.json(
+          { error: updateError.message },
+          { status: 500 },
+        );
+      }
+    } else {
+      // Create new project
+      const { data, error } = await supabase
+        .from("projects")
+        .insert({
+          user_id: user.id,
+          name,
+          url: formattedUrl,
+          description,
+          scan_frequency:
+            project_type === "seo" ? scan_frequency || "weekly" : null,
+          project_type,
+          notification_email: user.email,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Error creating project:", error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+      }
+
+      projectId = data.id;
     }
 
-    // Trigger a scan using the backend API
-    try {
-      const scanResponse = await fetch(
-        `${process.env.CRAWLER_API_URL}/api/scan`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            project_id: data.id,
-            email: user.email,
-          }),
-        },
+    // ⚠️ VALIDATE ENV VAR
+    const crawlerApiUrl = process.env.CRAWLER_API_URL;
+
+    if (!crawlerApiUrl) {
+      console.error("❌ CRAWLER_API_URL is not set in environment variables!");
+      console.error(
+        "Available env vars:",
+        Object.keys(process.env).filter(
+          (k) => k.includes("CRAWLER") || k.includes("API"),
+        ),
       );
+      return NextResponse.json(
+        {
+          error: "Server configuration error: CRAWLER_API_URL not set",
+          id: projectId,
+          scanFailed: true,
+        },
+        { status: 201 },
+      );
+    }
+
+    // Trigger appropriate scan type
+    const endpoint = project_type === "audit" ? "/api/scan/audit" : "/api/scan";
+    const fullUrl = `${crawlerApiUrl}${endpoint}`;
+
+    console.log(`🚀 Triggering ${project_type} scan:`);
+    console.log(`   URL: ${fullUrl}`);
+    console.log(`   Project ID: ${projectId}`);
+
+    try {
+      console.log("🔍 CRAWLER_API_URL:", process.env.CRAWLER_API_URL);
+      console.log("🔍 Full URL:", `${process.env.CRAWLER_API_URL}${endpoint}`);
+      console.log("🔍 Endpoint:", endpoint);
+
+      const scanResponse = await fetch(fullUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          project_id: projectId,
+          email: user.email,
+        }),
+      });
 
       if (!scanResponse.ok) {
         const errorText = await scanResponse.text();
-        console.error("Error triggering scan:", errorText);
+        console.error(`❌ Error triggering ${project_type} scan:`, errorText);
+        console.error(`   Status: ${scanResponse.status}`);
+        console.error(`   URL was: ${fullUrl}`);
+
+        // Parse error if possible
+        try {
+          const errorJson = JSON.parse(errorText);
+          console.error(`   Error details:`, errorJson);
+        } catch {
+          // Not JSON, already logged as text
+        }
       } else {
         const scanData = await scanResponse.json();
+        console.log(
+          `✅ ${project_type} scan triggered${
+            isExisting ? " (existing project)" : ""
+          }:`,
+          scanData,
+        );
       }
     } catch (error) {
-      console.error("Error initiating scan:", error);
+      console.error(`❌ Error initiating ${project_type} scan:`, error);
+      console.error(`   Attempted URL: ${fullUrl}`);
+      // Don't fail project creation/update if scan fails
     }
 
-    return NextResponse.json(data);
+    // Return response with indicator if project already existed
+    return NextResponse.json(
+      {
+        id: projectId,
+        existing: isExisting,
+        message: isExisting
+          ? "Project updated and new scan started"
+          : "Project created and scan started",
+      },
+      { status: isExisting ? 200 : 201 },
+    );
   } catch (error) {
-    console.error("Error in project creation:", error);
+    console.error("Error in POST /api/projects:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },
@@ -91,7 +188,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
 
@@ -101,14 +198,11 @@ export async function GET() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json(
-        { error: "You must be logged in to view projects" },
-        { status: 401 },
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get user's projects
-    const { data, error } = await supabase
+    // Get all projects for this user
+    const { data: projects, error } = await supabase
       .from("projects")
       .select("*")
       .eq("user_id", user.id)
@@ -119,9 +213,9 @@ export async function GET() {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(data);
+    return NextResponse.json(projects, { status: 200 });
   } catch (error) {
-    console.error("Error in projects fetch:", error);
+    console.error("Error in GET /api/projects:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },
