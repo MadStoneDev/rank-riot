@@ -2,16 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f1ddb95a-5801-4340-82f4-54fc86529f8c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(private)/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(private)/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(private)/projects/actions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(private)/projects/actions.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(private)/projects/new/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(private)/projects/new/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(private)/projects/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(private)/projects/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/projects/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/projects/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/dashboard/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/dashboard/Sidebar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/projects/NewProjectForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/projects/NewProjectForm.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,7 +54,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1769432190423</updated>
-      <workItem from="1769432193195" duration="5355000" />
+      <workItem from="1769432193195" duration="6001000" />
     </task>
     <servers />
   </component>
