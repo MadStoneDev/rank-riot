@@ -1,6 +1,13 @@
 // app/auth/page.tsx
+import { Metadata } from "next";
 import Link from "next/link";
 import AuthForm from "@/components/auth/AuthForm";
+
+export const metadata: Metadata = {
+  title: "Sign In | RankRiot",
+  description:
+    "Sign in or create an account to access your RankRiot dashboard and manage your SEO projects.",
+};
 
 export default function AuthPage() {
   return (

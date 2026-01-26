@@ -1,4 +1,12 @@
-﻿export default function ContactPage() {
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Contact Us | RankRiot",
+  description:
+    "Get in touch with the RankRiot team. We're here to help with your SEO questions and support needs.",
+};
+
+export default function ContactPage() {
   return (
     <>
       <section className="py-20 grid place-content-center min-h-[600px] bg-white">

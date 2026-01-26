@@ -1,21 +1,9 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-
-import { format } from "date-fns";
 import { createClient } from "@/utils/supabase/server";
+import { IconArrowLeft, IconSettings } from "@tabler/icons-react";
 
-import {
-  IconArrowLeft,
-  IconLink,
-  IconAlertTriangle,
-  IconSettings,
-  IconFile,
-} from "@tabler/icons-react";
-
-import { Database } from "../../../../../../database.types";
-import { decode } from "html-entities";
-
-type Page = Database["public"]["Tables"]["pages"]["Row"];
+import PagesListClient from "@/components/projects/PagesListClient";
 
 // Generate dynamic metadata based on project name
 export async function generateMetadata({
@@ -37,11 +25,12 @@ export async function generateMetadata({
   const projectName = project?.name || "Project";
 
   return {
-    title: `${projectName} | RankRiot`,
+    title: `${projectName} - Pages | RankRiot`,
+    description: `View all crawled pages and their SEO status for ${projectName}.`,
   };
 }
 
-export default async function ProjectDetailPage({
+export default async function ProjectPagesPage({
   params,
 }: {
   params: Promise<{ projectId: string }>;
@@ -66,13 +55,49 @@ export default async function ProjectDetailPage({
     .eq("user_id", user.id)
     .single();
 
+  if (!project) {
+    notFound();
+  }
+
+  // Get all pages with relevant fields
   const { data: pages } = await supabase
     .from("pages")
-    .select("*")
-    .eq("project_id", projectId);
+    .select(
+      "id, url, title, http_status, is_indexable, has_robots_noindex, word_count, meta_description, h1s, canonical_url, images"
+    )
+    .eq("project_id", projectId)
+    .order("url", { ascending: true });
 
   if (!pages) {
     notFound();
+  }
+
+  // Get issue counts per page
+  const { data: issues } = await supabase
+    .from("issues")
+    .select("page_id")
+    .eq("project_id", projectId)
+    .eq("is_fixed", false);
+
+  const issueCounts: { [pageId: string]: number } = {};
+  if (issues) {
+    issues.forEach((issue) => {
+      issueCounts[issue.page_id] = (issueCounts[issue.page_id] || 0) + 1;
+    });
+  }
+
+  // Get link counts per page (outbound links)
+  const { data: links } = await supabase
+    .from("page_links")
+    .select("source_page_id")
+    .eq("project_id", projectId);
+
+  const linkCounts: { [pageId: string]: number } = {};
+  if (links) {
+    links.forEach((link) => {
+      linkCounts[link.source_page_id] =
+        (linkCounts[link.source_page_id] || 0) + 1;
+    });
   }
 
   return (
@@ -113,48 +138,12 @@ export default async function ProjectDetailPage({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-6 py-4 border-b border-neutral-200">
-            <h3 className="text-lg font-medium text-neutral-900">
-              {pages.length} Pages Crawled
-            </h3>
-          </div>
-
-          {pages && pages.length > 0 ? (
-            <div className="divide-y divide-neutral-200">
-              {pages.map((page: Page) => (
-                <div key={page.id}>
-                  <Link
-                    href={`/projects/${projectId}/pages/${page.id}`}
-                    className={`p-4 flex text-primary hover:bg-neutral-100 transition-all duration-300 ease-in-out`}
-                  >
-                    <div
-                      className={`mt-1 flex-shrink-0 rounded-full p-1 text-primary`}
-                    >
-                      <IconFile className={`h-4 w-4 text-primary`} />
-                    </div>
-                    <div className="ml-3 flex-1">
-                      <h4 className="text-sm font-medium text-neutral-900">
-                        {decode(page.title)}
-                      </h4>
-                      <p className="mt-1 text-sm text-neutral-500">
-                        {page.url}
-                      </p>
-                    </div>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="p-6 text-center">
-              <p className="text-neutral-500">
-                No issues detected in the latest scan.
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
+      <PagesListClient
+        pages={pages}
+        projectId={projectId}
+        issueCounts={issueCounts}
+        linkCounts={linkCounts}
+      />
     </div>
   );
 }

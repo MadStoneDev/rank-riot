@@ -14,8 +14,46 @@ import {
 import ScanHistory from "@/components/projects/ScanHistory";
 import ScanProgress from "@/components/projects/ScanProgress";
 import StartScanButton from "@/components/projects/StartScanButton";
+import ContentIntelligence from "@/components/projects/ContentIntelligence";
+import SiteArchitecture from "@/components/projects/SiteArchitecture";
+import TechnicalHealth from "@/components/projects/TechnicalHealth";
+import MediaAnalysis from "@/components/projects/MediaAnalysis";
+import ExportButton from "@/components/export/ExportButton";
 
 import { Database } from "../../../database.types";
+import { PAGES_EXPORT_COLUMNS, ISSUES_EXPORT_COLUMNS } from "@/types/export";
+import { DEFAULT_THRESHOLDS, PageWithKeywords } from "@/types/content-intelligence";
+import {
+  findDuplicates,
+  findSimilarContent,
+  calculateSummary,
+} from "@/utils/content-intelligence";
+import { DEFAULT_SITE_ARCHITECTURE_THRESHOLDS } from "@/types/site-architecture";
+import {
+  calculateDepthDistribution,
+  findOrphanPages,
+  findDeepPages,
+  calculateLinkStats,
+  getPagesByLinkCount,
+  calculateSiteArchitectureSummary,
+} from "@/utils/site-architecture";
+import { DEFAULT_TECHNICAL_THRESHOLDS } from "@/types/technical-health";
+import {
+  buildStatusDistribution,
+  findRedirectPages,
+  findSlowPages,
+  findLargePages,
+  findNonIndexablePages,
+  calculateTechnicalHealthSummary,
+} from "@/utils/technical-health";
+import {
+  parseImagesFromPages,
+  calculateAltTextCoverage,
+  findImagesMissingAlt,
+  getPagesByImageCount,
+  getPagesWithMissingAlt,
+  calculateMediaAnalysisSummary,
+} from "@/utils/media-analysis";
 
 type Scan = Database["public"]["Tables"]["scans"]["Row"];
 
@@ -123,6 +161,263 @@ export default async function ProjectDetailPage({
     .order("started_at", { ascending: false })
     .limit(10);
 
+  // Content Intelligence Data
+  // Thin content pages (< 300 words)
+  const { data: thinContentPages } = await supabase
+    .from("pages")
+    .select("id, url, title, word_count")
+    .eq("project_id", projectId)
+    .lt("word_count", DEFAULT_THRESHOLDS.thinContentWords)
+    .order("word_count", { ascending: true });
+
+  // Missing meta descriptions
+  const { data: missingMetaPages } = await supabase
+    .from("pages")
+    .select("id, url, title")
+    .eq("project_id", projectId)
+    .or("meta_description.is.null,meta_description.eq.");
+
+  // Missing titles
+  const { data: missingTitlePages } = await supabase
+    .from("pages")
+    .select("id, url, title")
+    .eq("project_id", projectId)
+    .or("title.is.null,title.eq.");
+
+  // Get all pages for duplicate detection
+  const { data: allPagesForDuplicates } = await supabase
+    .from("pages")
+    .select("id, url, title, meta_description")
+    .eq("project_id", projectId);
+
+  // Get pages with keywords for similar content detection
+  const { data: pagesWithKeywords } = await supabase
+    .from("pages")
+    .select("id, url, title, keywords")
+    .eq("project_id", projectId)
+    .not("keywords", "is", null);
+
+  // Process duplicate titles and descriptions
+  const duplicateTitles = allPagesForDuplicates
+    ? findDuplicates(
+        allPagesForDuplicates.map((p) => ({
+          id: p.id,
+          url: p.url,
+          title: p.title,
+        })),
+        (p) => p.title
+      )
+    : [];
+
+  const duplicateDescriptions = allPagesForDuplicates
+    ? findDuplicates(
+        allPagesForDuplicates.map((p) => ({
+          id: p.id,
+          url: p.url,
+          title: p.title,
+          meta_description: p.meta_description,
+        })),
+        (p) => (p as any).meta_description
+      )
+    : [];
+
+  // Find similar content
+  const similarContent = pagesWithKeywords
+    ? findSimilarContent(pagesWithKeywords as PageWithKeywords[])
+    : [];
+
+  // Build content intelligence data
+  const contentIntelligenceData = {
+    thinContent: thinContentPages || [],
+    missingMetaDescriptions: missingMetaPages || [],
+    missingTitles: missingTitlePages || [],
+    duplicateTitles,
+    duplicateDescriptions,
+    similarContent,
+    summary: { critical: 0, warnings: 0, passed: 0, total: 0 },
+  };
+
+  // Calculate summary
+  contentIntelligenceData.summary = calculateSummary(contentIntelligenceData);
+
+  // Site Architecture Data
+  // Get pages with depth
+  const { data: pagesWithDepth } = await supabase
+    .from("pages")
+    .select("id, url, title, depth")
+    .eq("project_id", projectId);
+
+  // Get internal links for orphan/linking analysis
+  const { data: internalLinks } = await supabase
+    .from("page_links")
+    .select("source_page_id, destination_page_id")
+    .eq("project_id", projectId)
+    .eq("link_type", "internal");
+
+  // Process site architecture data
+  const depthDistribution = pagesWithDepth
+    ? calculateDepthDistribution(pagesWithDepth)
+    : [];
+
+  const orphanPages = pagesWithDepth && internalLinks
+    ? findOrphanPages(pagesWithDepth, internalLinks)
+    : [];
+
+  const deepPages = pagesWithDepth
+    ? findDeepPages(pagesWithDepth, DEFAULT_SITE_ARCHITECTURE_THRESHOLDS.deepPageThreshold)
+    : [];
+
+  const linkStats = pagesWithDepth && internalLinks
+    ? calculateLinkStats(pagesWithDepth, internalLinks)
+    : [];
+
+  const pagesWithMostLinks = getPagesByLinkCount(linkStats, "most", 10);
+  const pagesWithFewestLinks = getPagesByLinkCount(linkStats, "fewest", 10);
+
+  // Build site architecture data
+  const siteArchitectureData = {
+    depthDistribution,
+    orphanPages,
+    deepPages,
+    pagesWithMostLinks,
+    pagesWithFewestLinks,
+    summary: { totalPages: 0, avgDepth: 0, maxDepth: 0, orphanCount: 0, deepPageCount: 0 },
+  };
+
+  // Calculate site architecture summary
+  siteArchitectureData.summary = calculateSiteArchitectureSummary(siteArchitectureData);
+
+  // Technical Health Data
+  // Get pages with technical data
+  const { data: pagesWithTechnical } = await supabase
+    .from("pages")
+    .select("id, url, title, http_status, redirect_url, is_indexable, has_robots_noindex, canonical_url, load_time_ms, first_byte_time_ms, size_bytes")
+    .eq("project_id", projectId);
+
+  // Get broken links with source page info
+  const { data: brokenLinksData } = await supabase
+    .from("page_links")
+    .select("id, destination_url, http_status, anchor_text, source_page_id")
+    .eq("project_id", projectId)
+    .eq("is_broken", true);
+
+  // Get source page info for broken links
+  const brokenLinksWithSource = brokenLinksData
+    ? await Promise.all(
+        brokenLinksData.map(async (link) => {
+          const sourcePage = pagesWithTechnical?.find(p => p.id === link.source_page_id);
+          return {
+            id: link.id,
+            source_page_id: link.source_page_id,
+            source_url: sourcePage?.url || "",
+            source_title: sourcePage?.title || null,
+            destination_url: link.destination_url,
+            http_status: link.http_status,
+            anchor_text: link.anchor_text,
+          };
+        })
+      )
+    : [];
+
+  // Process technical health data
+  const statusDistribution = pagesWithTechnical
+    ? buildStatusDistribution(pagesWithTechnical)
+    : [];
+
+  const redirectPages = pagesWithTechnical
+    ? findRedirectPages(pagesWithTechnical)
+    : [];
+
+  const slowPages = pagesWithTechnical
+    ? findSlowPages(pagesWithTechnical, DEFAULT_TECHNICAL_THRESHOLDS.slowPageMs)
+    : [];
+
+  const largePages = pagesWithTechnical
+    ? findLargePages(pagesWithTechnical, DEFAULT_TECHNICAL_THRESHOLDS.largePageBytes)
+    : [];
+
+  const nonIndexablePages = pagesWithTechnical
+    ? findNonIndexablePages(pagesWithTechnical)
+    : [];
+
+  // Build technical health data
+  const technicalHealthData = {
+    statusDistribution,
+    redirectPages,
+    brokenLinks: brokenLinksWithSource,
+    slowPages,
+    largePages,
+    nonIndexablePages,
+    summary: { critical: 0, warnings: 0, passed: 0 },
+  };
+
+  // Calculate technical health summary
+  technicalHealthData.summary = calculateTechnicalHealthSummary(technicalHealthData);
+
+  // Media Analysis Data
+  // Get pages with images
+  const { data: pagesWithImagesRaw } = await supabase
+    .from("pages")
+    .select("id, url, title, images")
+    .eq("project_id", projectId)
+    .not("images", "is", null);
+
+  // Process media analysis data
+  const pagesWithImagesParsed = pagesWithImagesRaw
+    ? parseImagesFromPages(pagesWithImagesRaw as any)
+    : [];
+
+  const altCoverage = calculateAltTextCoverage(pagesWithImagesParsed);
+  const imagesMissingAltList = findImagesMissingAlt(pagesWithImagesParsed);
+  const pagesWithMostImages = getPagesByImageCount(pagesWithImagesParsed, 10);
+  const pagesWithMissingAlt = getPagesWithMissingAlt(pagesWithImagesParsed);
+
+  // Build media analysis data
+  const mediaAnalysisData = {
+    totalImages: altCoverage.total,
+    imagesWithAlt: altCoverage.withAlt,
+    imagesMissingAlt: altCoverage.missing,
+    altCoveragePercent: altCoverage.percent,
+    pagesWithMostImages,
+    imagesMissingAltList,
+    pagesWithMissingAlt,
+    summary: { critical: 0, warnings: 0, passed: 0 },
+  };
+
+  // Calculate media analysis summary
+  mediaAnalysisData.summary = calculateMediaAnalysisSummary(mediaAnalysisData);
+
+  // Export Data Preparation
+  // Get all pages for export
+  const { data: allPagesForExport } = await supabase
+    .from("pages")
+    .select("url, title, meta_description, word_count, http_status, load_time_ms, depth, is_indexable")
+    .eq("project_id", projectId)
+    .order("url");
+
+  // Get all issues for export
+  const { data: allIssuesForExport } = await supabase
+    .from("issues")
+    .select(`
+      issue_type,
+      severity,
+      description,
+      created_at,
+      pages(url)
+    `)
+    .eq("project_id", projectId)
+    .eq("is_fixed", false)
+    .order("created_at", { ascending: false });
+
+  // Format issues for export
+  const formattedIssuesForExport = (allIssuesForExport || []).map((issue: any) => ({
+    page_url: issue.pages?.url || "",
+    issue_type: issue.issue_type,
+    severity: issue.severity,
+    description: issue.description,
+    created_at: issue.created_at,
+  }));
+
   return (
     <div>
       <div className="mb-6">
@@ -152,6 +447,20 @@ export default async function ProjectDetailPage({
 
         <div className="flex items-center space-x-3">
           <StartScanButton projectId={projectId} />
+
+          <ExportButton
+            data={allPagesForExport || []}
+            columns={PAGES_EXPORT_COLUMNS}
+            filename={`${project.name.replace(/\s+/g, "-").toLowerCase()}-pages`}
+            label="Export Pages"
+          />
+
+          <ExportButton
+            data={formattedIssuesForExport}
+            columns={ISSUES_EXPORT_COLUMNS}
+            filename={`${project.name.replace(/\s+/g, "-").toLowerCase()}-issues`}
+            label="Export Issues"
+          />
 
           <Link
             href={`/projects/${projectId}/settings`}
@@ -232,6 +541,26 @@ export default async function ProjectDetailPage({
             </span>
           </div>
         </div>
+      </div>
+
+      {/* Content Intelligence Section */}
+      <div className="mb-8">
+        <ContentIntelligence data={contentIntelligenceData} projectId={projectId} />
+      </div>
+
+      {/* Site Architecture Section */}
+      <div className="mb-8">
+        <SiteArchitecture data={siteArchitectureData} projectId={projectId} />
+      </div>
+
+      {/* Technical Health Section */}
+      <div className="mb-8">
+        <TechnicalHealth data={technicalHealthData} projectId={projectId} />
+      </div>
+
+      {/* Media Analysis Section */}
+      <div className="mb-8">
+        <MediaAnalysis data={mediaAnalysisData} projectId={projectId} />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">

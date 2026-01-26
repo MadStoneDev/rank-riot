@@ -5,7 +5,9 @@ import { createClient } from "@/utils/supabase/server";
 import NewProjectForm from "@/components/projects/NewProjectForm";
 
 export const metadata = {
-  title: "Create a New Project | RankRiot",
+  title: "Create New Project | RankRiot",
+  description:
+    "Create a new SEO or audit project to start monitoring your website's performance and optimization.",
 };
 
 export default async function NewProjectPage() {

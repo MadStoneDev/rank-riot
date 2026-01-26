@@ -1,7 +1,31 @@
+import { Metadata } from "next";
 import { createClient } from "@/utils/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import SEOProjectDetailPage from "@/components/projects/SEOProjectDetailPage";
 import AuditProjectDetailPage from "@/components/projects/AuditProjectDetailPage";
+
+// Generate dynamic metadata based on project name
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ projectId: string }>;
+}): Promise<Metadata> {
+  const { projectId } = await params;
+
+  const supabase = await createClient();
+  const { data: project } = await supabase
+    .from("projects")
+    .select("name")
+    .eq("id", projectId)
+    .single();
+
+  const projectName = project?.name || "Project";
+
+  return {
+    title: `${projectName} - Overview | RankRiot`,
+    description: `View SEO analysis, site health, and optimization recommendations for ${projectName}.`,
+  };
+}
 
 export default async function ProjectDetailPage({
   params,

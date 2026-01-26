@@ -1,15 +1,15 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { format } from "date-fns";
-import {
-  IconSearch,
-  IconRefresh,
-  IconChevronRight,
-  IconFileSearch,
-  IconChartBar,
-} from "@tabler/icons-react";
+import { IconFileSearch, IconChartBar } from "@tabler/icons-react";
 import ProjectList from "@/components/projects/ProjectList";
+
+export const metadata: Metadata = {
+  title: "Projects | RankRiot",
+  description:
+    "Manage your SEO and audit projects. View all your websites and their optimization progress.",
+};
 
 export default async function ProjectsPage({
   searchParams,
@@ -45,13 +45,44 @@ export default async function ProjectsPage({
     .eq("project_type", "audit")
     .order("created_at", { ascending: false });
 
+  // Get page counts per project
+  const allProjects = [...(seoProjects || []), ...(auditProjects || [])];
+  const projectIds = allProjects.map((p) => p.id);
+
+  // Get page counts
+  const { data: pages } = await supabase
+    .from("pages")
+    .select("project_id")
+    .in("project_id", projectIds);
+
+  const pageCount: { [projectId: string]: number } = {};
+  if (pages) {
+    pages.forEach((page) => {
+      pageCount[page.project_id] = (pageCount[page.project_id] || 0) + 1;
+    });
+  }
+
+  // Get issue counts
+  const { data: issues } = await supabase
+    .from("issues")
+    .select("project_id")
+    .in("project_id", projectIds)
+    .eq("is_fixed", false);
+
+  const issueCount: { [projectId: string]: number } = {};
+  if (issues) {
+    issues.forEach((issue) => {
+      issueCount[issue.project_id] = (issueCount[issue.project_id] || 0) + 1;
+    });
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Your Projects</h1>
+        <h1 className="text-2xl font-bold text-primary">Your Projects</h1>
         <Link
           href="/projects/new"
-          className="px-4 py-2 bg-secondary text-white rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          className="px-4 py-2 bg-secondary text-white rounded-md hover:bg-secondary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
         >
           Create New Project
         </Link>
@@ -110,34 +141,22 @@ export default async function ProjectsPage({
         </nav>
       </div>
 
-      {/* Search */}
-      <div className="mb-6">
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <IconSearch className="h-5 w-5 text-neutral-400" />
-          </div>
-          <input
-            type="text"
-            placeholder={`Search ${
-              activeTab === "seo" ? "SEO" : "audit"
-            } projects...`}
-            className="block w-full pl-10 pr-3 py-2 border border-neutral-300 rounded-md leading-5 bg-white placeholder-neutral-500 focus:outline-none focus:placeholder-neutral-400 focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm"
-          />
-        </div>
-      </div>
-
       {/* Project Lists */}
       {activeTab === "seo" ? (
         <ProjectList
           projects={seoProjects || []}
           projectType="seo"
           emptyMessage="No SEO projects yet. Create your first SEO project to start comprehensive website analysis."
+          pageCount={pageCount}
+          issueCount={issueCount}
         />
       ) : (
         <ProjectList
           projects={auditProjects || []}
           projectType="audit"
           emptyMessage="No audit projects yet. Create your first audit project for quick website assessments."
+          pageCount={pageCount}
+          issueCount={issueCount}
         />
       )}
     </div>

@@ -1,9 +1,33 @@
-﻿import Link from "next/link";
+import { Metadata } from "next";
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { IconArrowLeft } from "@tabler/icons-react";
 import { createClient } from "@/utils/supabase/server";
 import ProjectSettingsForm from "@/components/projects/ProjectSettingsForm";
+
+// Generate dynamic metadata based on project name
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ projectId: string }>;
+}): Promise<Metadata> {
+  const { projectId } = await params;
+
+  const supabase = await createClient();
+  const { data: project } = await supabase
+    .from("projects")
+    .select("name")
+    .eq("id", projectId)
+    .single();
+
+  const projectName = project?.name || "Project";
+
+  return {
+    title: `${projectName} - Settings | RankRiot`,
+    description: `Manage settings and configuration for ${projectName}.`,
+  };
+}
 
 export default async function ProjectSettingsPage({
   params,

@@ -1,32 +1,23 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import {
-  IconArrowLeft,
-  IconSettings,
-  IconArticle,
-  IconLabel,
-  IconH1,
-  IconH2,
-  IconH3,
-  IconH4,
-  IconH5,
-  IconH6,
-  IconUpload,
-  IconDownload,
-  IconExternalLink,
-} from "@tabler/icons-react";
-
-// Import the client component instead
-import ImageListClient from "@/components/projects/ImageListClient";
-import HeadingListClient from "@/components/projects/HeadingListClient";
-import LinkListClient from "@/components/projects/LinkListClient";
-import KeywordListClient from "@/components/projects/KeywordListClient";
+import { IconArrowLeft, IconExternalLink } from "@tabler/icons-react";
 
 import { Database } from "../../../../../../../database.types";
 
-type Link = Database["public"]["Tables"]["page_links"]["Row"] & {
-  pages: {
+// Page Detail Components
+import SEOHealthScore from "@/components/page-detail/SEOHealthScore";
+import IndexabilityStatus from "@/components/page-detail/IndexabilityStatus";
+import TechnicalMetrics from "@/components/page-detail/TechnicalMetrics";
+import MetadataCard from "@/components/page-detail/MetadataCard";
+import SocialStructuredData from "@/components/page-detail/SocialStructuredData";
+import HeadingHierarchy from "@/components/page-detail/HeadingHierarchy";
+import EnhancedLinkList from "@/components/page-detail/EnhancedLinkList";
+import EnhancedImageList from "@/components/page-detail/EnhancedImageList";
+import KeywordListClient from "@/components/projects/KeywordListClient";
+
+type PageLink = Database["public"]["Tables"]["page_links"]["Row"] & {
+  pages?: {
     url: string;
   };
 };
@@ -34,10 +25,9 @@ type Link = Database["public"]["Tables"]["page_links"]["Row"] & {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ projectId: string }>;
+  params: Promise<{ projectId: string; pageId: string }>;
 }) {
   const { projectId } = await params;
-  // Metadata generation code...
   const supabase = await createClient();
   const { data: project } = await supabase
     .from("projects")
@@ -48,11 +38,12 @@ export async function generateMetadata({
   const projectName = project?.name || "Project";
 
   return {
-    title: `${projectName} | RankRiot`,
+    title: `${projectName} - Page Details | RankRiot`,
+    description: `View detailed SEO analysis and metrics for a page in ${projectName}.`,
   };
 }
 
-export default async function ProjectDetailPage({
+export default async function PageDetailPage({
   params,
 }: {
   params: Promise<{ projectId: string; pageId: string }>;
@@ -85,13 +76,18 @@ export default async function ProjectDetailPage({
     .eq("project_id", projectId)
     .single();
 
+  if (!project || !page) {
+    notFound();
+  }
+
+  // Get outbound links
   const { data: outPageLinks } = await supabase
     .from("page_links")
     .select("*")
     .eq("project_id", projectId)
     .eq("source_page_id", pageId);
 
-  let sortedOutPageLinks: Link[] = [];
+  let sortedOutPageLinks: PageLink[] = [];
   if (outPageLinks) {
     sortedOutPageLinks = [...outPageLinks].sort((a, b) => {
       if (a.destination_page_id && !b.destination_page_id) return -1;
@@ -100,6 +96,7 @@ export default async function ProjectDetailPage({
     });
   }
 
+  // Get inbound links
   const normalizeUrl = (url: string): string => {
     return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
   };
@@ -110,26 +107,50 @@ export default async function ProjectDetailPage({
     .from("page_links")
     .select(
       `
-    *,
-    pages:source_page_id (
-      url
-    )
-  `,
+      *,
+      pages:source_page_id (
+        url
+      )
+    `
     )
     .filter("destination_url", "ilike", `%${normalizedPageUrl}`);
 
-  const filteredInPageLinks = inPageLinks?.filter((link) => {
-    return normalizeUrl(link.destination_url) === normalizedPageUrl;
-  });
+  const filteredInPageLinks =
+    inPageLinks?.filter((link) => {
+      return normalizeUrl(link.destination_url) === normalizedPageUrl;
+    }) || [];
 
-  if (!project || !page) {
-    notFound();
-  }
+  // Extract data from page
+  const {
+    keywords = [],
+    h1s = [],
+    h2s = [],
+    h3s = [],
+    h4s = [],
+    h5s = [],
+    h6s = [],
+    images = [],
+  } = page;
 
-  const { keywords, h1s, h2s, h3s, h4s, h5s, h6s, images } = page;
+  // HTTP Status badge color
+  const getHttpStatusBadge = () => {
+    const status = page.http_status;
+    if (!status) return null;
+
+    let colorClass = "bg-green-100 text-green-700";
+    if (status >= 300 && status < 400) colorClass = "bg-orange-100 text-orange-700";
+    if (status >= 400) colorClass = "bg-red-100 text-red-700";
+
+    return (
+      <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-sm font-medium ${colorClass}`}>
+        HTTP {status}
+      </span>
+    );
+  };
 
   return (
-    <div>
+    <div className="space-y-6">
+      {/* Header */}
       <div className="mb-6">
         <Link
           href={`/projects/${projectId}/pages`}
@@ -140,233 +161,110 @@ export default async function ProjectDetailPage({
         </Link>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-primary">{page.title}</h1>
-          <p className={`mt-1 items-center text-sm text-neutral-500`}>
-            Page URL:{" "}
-            <a
-              href={page.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`inline-flex items-center gap-1 hover:underline font-bold`}
-            >
-              {page.url} <IconExternalLink className="inline-block w-4 h-4" />
-            </a>
-          </p>
+      {/* Page Title Bar */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl font-bold text-primary truncate">
+              {page.title || "Untitled Page"}
+            </h1>
+            <p className="mt-2 flex items-center gap-2 text-sm text-neutral-500">
+              <a
+                href={page.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 hover:text-primary hover:underline"
+              >
+                {page.url}
+                <IconExternalLink className="h-4 w-4" />
+              </a>
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {getHttpStatusBadge()}
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-6 py-4 border-b border-neutral-200">
-            <h3 className="text-lg font-medium text-neutral-900">Metadata</h3>
-          </div>
+      {/* SEO Health Score */}
+      <SEOHealthScore
+        page={{
+          title: page.title,
+          meta_description: page.meta_description,
+          h1s: h1s as string[],
+          h2s: h2s as string[],
+          canonical_url: page.canonical_url,
+          url: page.url,
+          has_robots_noindex: page.has_robots_noindex,
+          is_indexable: page.is_indexable,
+          http_status: page.http_status,
+          images: images as { src: string; alt: string }[],
+          open_graph: page.open_graph as Record<string, any> | null,
+          twitter_card: page.twitter_card as Record<string, any> | null,
+          structured_data: page.structured_data,
+        }}
+      />
 
-          <div className="divide-y divide-neutral-200">
-            {/* Title section */}
-            <div className={`p-4 flex items-start`}>
-              <div
-                className={`mt-1 flex-shrink-0 rounded-full p-1 text-primary`}
-              >
-                <IconLabel />
-              </div>
-              <div className="ml-3 flex-1">
-                <h4 className="text-sm font-medium text-neutral-900">Title</h4>
-                <p
-                  className={`mt-1 text-sm ${
-                    page.title ? "text-neutral-500" : "text-red-600"
-                  }`}
-                >
-                  {page.title || "No title found"}
-                </p>
-              </div>
-              {titleBlock(page.title)}
-            </div>
-
-            {/* Description section */}
-            <div className={`p-4 flex items-start`}>
-              <div
-                className={`mt-1 flex-shrink-0 rounded-full p-1 text-primary`}
-              >
-                <IconArticle />
-              </div>
-              <div className="ml-3 flex-1">
-                <h4 className="text-sm font-medium text-neutral-900">
-                  Description
-                </h4>
-                <p
-                  className={`mt-1 text-sm ${
-                    page.meta_description ? "text-neutral-500" : "text-red-600"
-                  }`}
-                >
-                  {page.meta_description || "No Meta Description found"}
-                </p>
-              </div>
-              {metaDescriptionBlock(page.meta_description)}
-            </div>
-          </div>
-        </div>
-
-        <KeywordListClient keywords={keywords} />
-
-        <HeadingListClient
-          headings={h1s}
-          headingType="H1"
-          criticalClass={
-            h1s.length === 0 || h1s.length > 1 ? "bg-red-100 text-red-600" : ""
-          }
-          title="H1 Headings"
-          icon={<IconH1 />}
+      {/* Indexability & Technical Metrics Row */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <IndexabilityStatus
+          page={{
+            url: page.url,
+            is_indexable: page.is_indexable,
+            canonical_url: page.canonical_url,
+            has_robots_noindex: page.has_robots_noindex,
+            has_robots_nofollow: page.has_robots_nofollow,
+            redirect_url: page.redirect_url,
+          }}
         />
-
-        <HeadingListClient
-          headings={h2s}
-          headingType="H2"
-          criticalClass={h2s.length === 0 ? "bg-red-100 text-red-600" : ""}
-          title="H2 Headings"
-          icon={<IconH2 />}
+        <TechnicalMetrics
+          page={{
+            http_status: page.http_status,
+            load_time_ms: page.load_time_ms,
+            first_byte_time_ms: page.first_byte_time_ms,
+            size_bytes: page.size_bytes,
+            word_count: page.word_count,
+          }}
         />
-
-        <HeadingListClient
-          headings={h3s}
-          headingType="H3"
-          criticalClass={h3s.length === 0 ? "bg-red-100 text-red-600" : ""}
-          title="H3 Headings"
-          icon={<IconH3 />}
-        />
-
-        <HeadingListClient
-          headings={h4s}
-          headingType="H4"
-          criticalClass={
-            h4s.length === 0 ? "bg-orange-100 text-orange-600" : ""
-          }
-          title="H4 Headings"
-          icon={<IconH4 />}
-        />
-
-        <HeadingListClient
-          headings={h5s}
-          headingType="H5"
-          criticalClass={
-            h5s.length === 0 ? "bg-orange-100 text-orange-600" : ""
-          }
-          title="H5 Headings"
-          icon={<IconH2 />}
-        />
-
-        <HeadingListClient
-          headings={h6s}
-          headingType="H6"
-          criticalClass={
-            h6s.length === 0 ? "bg-orange-100 text-orange-600" : ""
-          }
-          title="H6 Headings"
-          icon={<IconH6 />}
-        />
-
-        <LinkListClient
-          self={page.url}
-          projectId={projectId}
-          links={sortedOutPageLinks || []}
-          linkDirection="outbound link"
-          title="Outbound Links"
-          icon={<IconUpload />}
-        />
-
-        <LinkListClient
-          self={page.url}
-          projectId={projectId}
-          links={filteredInPageLinks || []}
-          linkDirection="inbound link"
-          title="Inbound Links"
-          icon={<IconDownload />}
-        />
-
-        <ImageListClient images={images} />
       </div>
+
+      {/* Metadata Card */}
+      <MetadataCard
+        title={page.title}
+        metaDescription={page.meta_description}
+      />
+
+      {/* Social & Structured Data */}
+      <SocialStructuredData
+        openGraph={page.open_graph as Record<string, any> | null}
+        twitterCard={page.twitter_card as Record<string, any> | null}
+        structuredData={page.structured_data}
+        schemaTypes={page.schema_types as string[] | null}
+      />
+
+      {/* Content Structure - Heading Hierarchy */}
+      <HeadingHierarchy
+        h1s={h1s as string[] || []}
+        h2s={h2s as string[] || []}
+        h3s={h3s as string[] || []}
+        h4s={h4s as string[] || []}
+        h5s={h5s as string[] || []}
+        h6s={h6s as string[] || []}
+      />
+
+      {/* Keywords */}
+      <KeywordListClient keywords={keywords as { word: string; count: number }[] || []} />
+
+      {/* Links */}
+      <EnhancedLinkList
+        outboundLinks={sortedOutPageLinks}
+        inboundLinks={filteredInPageLinks}
+        projectId={projectId}
+        pageUrl={page.url}
+      />
+
+      {/* Images */}
+      <EnhancedImageList images={images as { src: string; alt: string }[] || []} />
     </div>
   );
 }
-
-const titleBlock = (title: string) => {
-  const titleFeedback: { [key: string]: [string, string] } = {
-    75: ["Too Long", "bg-red-100 text-red-600"],
-    60: ["Could be better", "bg-orange-100 text-orange-600"],
-    50: ["Great", "bg-green-100 text-green-600"],
-    35: ["Could be better", "bg-orange-100 text-orange-600"],
-    0: ["Too Short", "bg-red-100 text-red-600"],
-  };
-
-  if (!title) {
-    return (
-      <div className="ml-3 flex-shrink-0">
-        <span className="inline-flex items-center px-2.5 py-0.5 bg-red-100 rounded-full text-xs font-medium capitalize">
-          Critical
-        </span>
-      </div>
-    );
-  }
-
-  // Find the appropriate feedback based on title length
-  const titleLength = title.length;
-  const feedbackKey = Object.keys(titleFeedback)
-    .map(Number)
-    .sort((a, b) => b - a)
-    .find((key) => titleLength > key);
-
-  const [message, colorClasses] = titleFeedback[feedbackKey || "0"];
-
-  return (
-    <div className="ml-3 flex-shrink-0">
-      <span
-        className={`inline-flex items-center px-2.5 py-0.5 ${colorClasses} rounded-full text-xs font-medium capitalize`}
-      >
-        {message}
-      </span>
-    </div>
-  );
-};
-
-const metaDescriptionBlock = (metaDescription: string) => {
-  const metaDescriptionFeedback: {
-    [key: string]: [string, string];
-  } = {
-    175: ["Too Long", "bg-red-100 text-red-600"],
-    150: ["Could be better", "bg-orange-100 text-orange-600"],
-    135: ["Great", "bg-green-100 text-green-600"],
-    115: ["Could be better", "bg-orange-100 text-orange-600"],
-    75: ["Great", "bg-green-100 text-green-600"],
-    0: ["Too Short", "bg-red-100 text-red-600"],
-  };
-
-  if (!metaDescription) {
-    return (
-      <div className="ml-3 flex-shrink-0">
-        <span className="inline-flex items-center px-2.5 py-0.5 bg-red-100 rounded-full text-red-600 text-xs font-medium capitalize">
-          Critical
-        </span>
-      </div>
-    );
-  }
-
-  // Find the appropriate feedback based on meta description length
-  const metaDescriptionLength = metaDescription.length;
-  const feedbackKey = Object.keys(metaDescriptionFeedback)
-    .map(Number)
-    .sort((a, b) => b - a)
-    .find((key) => metaDescriptionLength > key);
-
-  const [message, colorClasses] = metaDescriptionFeedback[feedbackKey || "0"];
-
-  return (
-    <div className="ml-3 flex-shrink-0">
-      <span
-        className={`inline-flex items-center px-2.5 py-0.5 ${colorClasses} rounded-full text-xs font-medium capitalize`}
-      >
-        {message}
-      </span>
-    </div>
-  );
-};
