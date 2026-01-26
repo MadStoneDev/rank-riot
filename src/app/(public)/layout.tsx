@@ -69,6 +69,14 @@ export default function PublicLayout({
               <ul className="space-y-2 text-neutral-400">
                 <li>
                   <Link
+                    href={`/pricing`}
+                    className={`hover:text-white transition-all duration-300 ease-in-out`}
+                  >
+                    Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     href={`/documentation`}
                     className={`hover:text-white transition-all duration-300 ease-in-out`}
                   >
@@ -99,10 +107,18 @@ export default function PublicLayout({
                 </li>
                 <li>
                   <Link
-                    href={`/privacy-policy`}
+                    href={`/privacy`}
                     className={`hover:text-white transition-all duration-300 ease-in-out`}
                   >
                     Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href={`/terms`}
+                    className={`hover:text-white transition-all duration-300 ease-in-out`}
+                  >
+                    Terms of Service
                   </Link>
                 </li>
               </ul>
