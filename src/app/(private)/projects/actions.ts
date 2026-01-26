@@ -1,9 +1,11 @@
-﻿"use server";
+"use server";
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/utils/supabase/server";
+import { PlanId } from "@/types/subscription";
+import { canCreateProject, PLAN_LIMITS, PLAN_INFO } from "@/lib/subscription-limits";
 
 // Create a new project
 export async function createProject(formData: FormData) {
@@ -27,6 +29,30 @@ export async function createProject(formData: FormData) {
   // Validate inputs
   if (!name || !url) {
     return { error: "Name and URL are required" };
+  }
+
+  // Get user's subscription tier and check limits
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("subscription_tier")
+    .eq("id", user.id)
+    .single();
+
+  const userPlan = (profile?.subscription_tier as PlanId) || "free";
+
+  // Get current project count
+  const { count: projectCount } = await supabase
+    .from("projects")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", user.id);
+
+  // Check if user can create more projects
+  if (!canCreateProject(userPlan, projectCount || 0)) {
+    const limits = PLAN_LIMITS[userPlan];
+    const planInfo = PLAN_INFO[userPlan];
+    return {
+      error: `You've reached your project limit (${limits.maxProjects} projects on ${planInfo.name} plan). Please upgrade to create more projects.`,
+    };
   }
 
   // Ensure URL has proper format

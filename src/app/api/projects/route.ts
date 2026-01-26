@@ -1,5 +1,7 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { PlanId } from "@/types/subscription";
+import { canCreateProject, PLAN_LIMITS, PLAN_INFO } from "@/lib/subscription-limits";
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,6 +37,21 @@ export async function POST(request: NextRequest) {
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
       formattedUrl = `https://${url}`;
     }
+
+    // Get user's subscription tier
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("subscription_tier")
+      .eq("id", user.id)
+      .single();
+
+    const userPlan = (profile?.subscription_tier as PlanId) || "free";
+
+    // Get current project count
+    const { count: projectCount } = await supabase
+      .from("projects")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id);
 
     // Check if project already exists
     const { data: existingProject } = await supabase
@@ -73,6 +90,22 @@ export async function POST(request: NextRequest) {
         );
       }
     } else {
+      // Check subscription limit before creating new project
+      if (!canCreateProject(userPlan, projectCount || 0)) {
+        const limits = PLAN_LIMITS[userPlan];
+        const planInfo = PLAN_INFO[userPlan];
+        return NextResponse.json(
+          {
+            error: `You've reached your project limit (${limits.maxProjects} projects on ${planInfo.name} plan). Please upgrade to create more projects.`,
+            code: "PROJECT_LIMIT_REACHED",
+            currentCount: projectCount,
+            maxProjects: limits.maxProjects,
+            currentPlan: userPlan,
+          },
+          { status: 403 },
+        );
+      }
+
       // Create new project
       const { data, error } = await supabase
         .from("projects")

@@ -4,7 +4,10 @@
       "Bash(ls:*)",
       "Bash(npx tsc:*)",
       "Bash(find:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "WebSearch",
+      "WebFetch(domain:developer.paddle.com)",
+      "WebFetch(domain:github.com)"
     ]
   }
 }

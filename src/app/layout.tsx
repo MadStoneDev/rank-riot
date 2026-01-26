@@ -1,4 +1,5 @@
 import "./globals.css";
+import Script from "next/script";
 import { Outfit, Playfair_Display } from "next/font/google";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import Link from "next/link";
@@ -29,6 +30,11 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           {children}
         </ThemeProvider>
+        {/* Paddle.js for payment processing */}
+        <Script
+          src="https://cdn.paddle.com/paddle/v2/paddle.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );

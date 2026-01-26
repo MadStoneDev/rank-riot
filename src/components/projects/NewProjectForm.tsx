@@ -5,8 +5,19 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { toast } from "sonner";
+import { PlanId } from "@/types/subscription";
 
-export default function NewProjectForm() {
+interface NewProjectFormProps {
+  currentPlan?: PlanId;
+  projectCount?: number;
+  maxProjects?: number;
+}
+
+export default function NewProjectForm({
+  currentPlan = "free",
+  projectCount = 0,
+  maxProjects = 2,
+}: NewProjectFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [projectType, setProjectType] = useState<"seo" | "audit">("seo");
@@ -32,6 +43,19 @@ export default function NewProjectForm() {
       const data = await response.json();
 
       if (!response.ok) {
+        // Check if it's a subscription limit error
+        if (data.code === "PROJECT_LIMIT_REACHED") {
+          setError(data.error);
+          toast.error("Project limit reached", {
+            description: "Please upgrade your plan to create more projects.",
+            action: {
+              label: "Upgrade",
+              onClick: () => router.push("/dashboard/billing"),
+            },
+          });
+          setIsLoading(false);
+          return;
+        }
         throw new Error(data.error || "Failed to create project");
       }
 

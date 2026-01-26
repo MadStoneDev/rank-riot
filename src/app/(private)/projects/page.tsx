@@ -2,8 +2,10 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { IconFileSearch, IconChartBar } from "@tabler/icons-react";
+import { IconFileSearch, IconChartBar, IconInfoCircle } from "@tabler/icons-react";
 import ProjectList from "@/components/projects/ProjectList";
+import { PlanId } from "@/types/subscription";
+import { PLAN_LIMITS, PLAN_INFO, canCreateProject } from "@/lib/subscription-limits";
 
 export const metadata: Metadata = {
   title: "Projects | RankRiot",
@@ -29,6 +31,17 @@ export default async function ProjectsPage({
   const params = await searchParams;
   const activeTab = params.tab || "seo";
 
+  // Get user's subscription tier
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("subscription_tier")
+    .eq("id", user.id)
+    .single();
+
+  const userPlan = (profile?.subscription_tier as PlanId) || "free";
+  const limits = PLAN_LIMITS[userPlan];
+  const planInfo = PLAN_INFO[userPlan];
+
   // Get user's SEO projects
   const { data: seoProjects } = await supabase
     .from("projects")
@@ -45,8 +58,10 @@ export default async function ProjectsPage({
     .eq("project_type", "audit")
     .order("created_at", { ascending: false });
 
-  // Get page counts per project
+  // Calculate total project count and check limits
   const allProjects = [...(seoProjects || []), ...(auditProjects || [])];
+  const totalProjectCount = allProjects.length;
+  const canCreate = canCreateProject(userPlan, totalProjectCount);
   const projectIds = allProjects.map((p) => p.id);
 
   // Get page counts
@@ -78,15 +93,58 @@ export default async function ProjectsPage({
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-primary">Your Projects</h1>
-        <Link
-          href="/projects/new"
-          className="px-4 py-2 bg-secondary text-white rounded-md hover:bg-secondary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-        >
-          Create New Project
-        </Link>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-primary">Your Projects</h1>
+          <p className="text-sm text-neutral-500 mt-1">
+            {totalProjectCount} of {limits.maxProjects === -1 ? "unlimited" : limits.maxProjects} projects used
+            <span className="text-neutral-400 ml-1">({planInfo.name} plan)</span>
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          {canCreate ? (
+            <Link
+              href="/projects/new"
+              className="px-4 py-2 bg-secondary text-white rounded-md hover:bg-secondary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            >
+              Create New Project
+            </Link>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-neutral-500">Project limit reached</span>
+              <Link
+                href="/dashboard/billing"
+                className="px-4 py-2 bg-secondary text-white rounded-md hover:bg-secondary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              >
+                Upgrade Plan
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Show upgrade prompt banner when near limit */}
+      {!canCreate && (
+        <div className="mb-6 p-4 bg-gradient-to-r from-primary to-secondary text-white rounded-lg">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <IconInfoCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+              <div>
+                <h4 className="font-semibold">You've reached your project limit</h4>
+                <p className="text-sm text-white/80 mt-1">
+                  Upgrade to {userPlan === "free" ? "Starter" : userPlan === "starter" ? "Pro" : "Business"} for more projects and advanced features.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/dashboard/billing"
+              className="inline-flex items-center gap-2 bg-white text-primary px-4 py-2 rounded-lg font-medium hover:bg-white/90 transition-colors whitespace-nowrap"
+            >
+              View Plans
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="mb-6 border-b border-neutral-200">

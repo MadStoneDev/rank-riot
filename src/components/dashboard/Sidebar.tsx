@@ -8,6 +8,7 @@ import { createClient } from "@/utils/supabase/client";
 import {
   IconHome,
   IconFolder,
+  IconCreditCard,
   IconSettings,
   IconLogout,
 } from "@tabler/icons-react";
@@ -31,6 +32,11 @@ export default function Sidebar() {
       name: "Projects",
       href: "/projects",
       icon: IconFolder,
+    },
+    {
+      name: "Billing",
+      href: "/dashboard/billing",
+      icon: IconCreditCard,
     },
     {
       name: "Settings",
