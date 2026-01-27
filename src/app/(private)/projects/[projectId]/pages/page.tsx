@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import { IconArrowLeft, IconSettings } from "@tabler/icons-react";
+import { IconSettings } from "@tabler/icons-react";
 
 import PagesListClient from "@/components/projects/PagesListClient";
 
@@ -101,49 +101,43 @@ export default async function ProjectPagesPage({
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <Link
-          href={`/projects/${projectId}`}
-          className="inline-flex items-center text-sm text-neutral-500 hover:text-neutral-700"
-        >
-          <IconArrowLeft className="h-4 w-4 mr-1" />
-          Back to Project
-        </Link>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-primary">{project.name}</h1>
-          <p className="mt-1 text-sm text-neutral-500">
+          <h1 className="text-2xl font-bold text-neutral-900">{project.name}</h1>
+          <p className="text-neutral-500 mt-1">
             <a
               href={project.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:underline"
+              className="hover:underline hover:text-neutral-700"
             >
               {project.url}
             </a>
           </p>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-3">
           <Link
             href={`/projects/${projectId}/settings`}
-            className="inline-flex items-center px-3 py-2 border border-neutral-300 shadow-sm text-sm leading-4 font-medium rounded-md text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            className="inline-flex items-center gap-2 px-4 py-2.5 border border-neutral-200 text-sm font-medium rounded-lg text-neutral-700 bg-white hover:bg-neutral-50 transition-colors"
           >
-            <IconSettings className="h-4 w-4 mr-1" />
+            <IconSettings className="h-4 w-4" />
             Settings
           </Link>
         </div>
       </div>
 
-      <PagesListClient
-        pages={pages}
-        projectId={projectId}
-        issueCounts={issueCounts}
-        linkCounts={linkCounts}
-      />
+      {/* Pages List */}
+      <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+        <PagesListClient
+          pages={pages}
+          projectId={projectId}
+          issueCounts={issueCounts}
+          linkCounts={linkCounts}
+        />
+      </div>
     </div>
   );
 }

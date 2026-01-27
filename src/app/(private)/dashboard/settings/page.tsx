@@ -29,144 +29,101 @@ export default async function SettingsPage() {
     .single();
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-neutral-900 mb-6">
-        Account Settings
-      </h1>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-neutral-900">Settings</h1>
+        <p className="text-neutral-500 mt-1">
+          Manage your account and preferences
+        </p>
+      </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="px-6 py-5 border-b border-neutral-200 bg-neutral-50">
-          <h3 className="text-lg font-medium leading-6 text-neutral-900">
+      {/* Profile Information */}
+      <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-neutral-100">
+          <h2 className="text-lg font-semibold text-neutral-900">
             Profile Information
-          </h3>
-          <p className="mt-1 text-sm text-neutral-500">
-            Update your account information.
+          </h2>
+          <p className="text-sm text-neutral-500 mt-1">
+            Update your account details
           </p>
         </div>
 
-        <div className="px-6 py-6">
+        <div className="p-6">
           <UserSettingsForm profile={profile} />
         </div>
       </div>
 
-      <div className="mt-8 bg-white rounded-lg shadow overflow-hidden">
-        <div className="px-6 py-5 border-b border-neutral-200 bg-neutral-50">
-          <h3 className="text-lg font-medium leading-6 text-neutral-900">
+      {/* Email Notifications */}
+      <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-neutral-100">
+          <h2 className="text-lg font-semibold text-neutral-900">
             Email Notifications
-          </h3>
-          <p className="mt-1 text-sm text-neutral-500">
-            Manage your email notification preferences.
+          </h2>
+          <p className="text-sm text-neutral-500 mt-1">
+            Choose what updates you receive
           </p>
         </div>
 
-        <div className="px-6 py-6">
+        <div className="p-6">
           <div className="space-y-4">
-            <div className="flex items-start">
-              <div className="flex items-center h-5">
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <div className="flex items-center h-5 mt-0.5">
                 <input
                   id="scan_completed"
                   name="scan_completed"
                   type="checkbox"
                   defaultChecked
-                  className="focus:ring-primary h-4 w-4 text-secondary border-neutral-300 rounded"
+                  className="h-4 w-4 text-primary border-neutral-300 rounded focus:ring-primary focus:ring-offset-0"
                 />
               </div>
-              <div className="ml-3 text-sm">
-                <label
-                  htmlFor="scan_completed"
-                  className="font-medium text-neutral-700"
-                >
+              <div className="text-sm">
+                <span className="font-medium text-neutral-900 group-hover:text-neutral-700">
                   Scan completed
-                </label>
-                <p className="text-neutral-500">
+                </span>
+                <p className="text-neutral-500 mt-0.5">
                   Receive notifications when a website scan is completed.
                 </p>
               </div>
-            </div>
-
-            {/*<div className="flex items-start">*/}
-            {/*  <div className="flex items-center h-5">*/}
-            {/*    <input*/}
-            {/*      id="new_issues"*/}
-            {/*      name="new_issues"*/}
-            {/*      type="checkbox"*/}
-            {/*      defaultChecked*/}
-            {/*      className="focus:ring-primary h-4 w-4 text-secondary border-neutral-300 rounded"*/}
-            {/*    />*/}
-            {/*  </div>*/}
-            {/*  <div className="ml-3 text-sm">*/}
-            {/*    <label*/}
-            {/*      htmlFor="new_issues"*/}
-            {/*      className="font-medium text-neutral-700"*/}
-            {/*    >*/}
-            {/*      New issues detected*/}
-            {/*    </label>*/}
-            {/*    <p className="text-neutral-500">*/}
-            {/*      Receive notifications when new issues are detected during a*/}
-            {/*      scan.*/}
-            {/*    </p>*/}
-            {/*  </div>*/}
-            {/*</div>*/}
-
-            {/*<div className="flex items-start">*/}
-            {/*  <div className="flex items-center h-5">*/}
-            {/*    <input*/}
-            {/*      id="weekly_summary"*/}
-            {/*      name="weekly_summary"*/}
-            {/*      type="checkbox"*/}
-            {/*      defaultChecked*/}
-            {/*      className="focus:ring-primary h-4 w-4 text-secondary border-neutral-300 rounded"*/}
-            {/*    />*/}
-            {/*  </div>*/}
-            {/*  <div className="ml-3 text-sm">*/}
-            {/*    <label*/}
-            {/*      htmlFor="weekly_summary"*/}
-            {/*      className="font-medium text-neutral-700"*/}
-            {/*    >*/}
-            {/*      Weekly summary*/}
-            {/*    </label>*/}
-            {/*    <p className="text-neutral-500">*/}
-            {/*      Receive a weekly summary of your projects' performance.*/}
-            {/*    </p>*/}
-            {/*  </div>*/}
-            {/*</div>*/}
+            </label>
           </div>
 
           <div className="mt-6">
             <button
               type="submit"
-              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-secondary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              className="inline-flex items-center px-4 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white text-sm font-medium rounded-lg transition-colors"
             >
-              Save Notification Settings
+              Save Preferences
             </button>
           </div>
         </div>
       </div>
 
-      <div className="mt-8 bg-white rounded-lg shadow overflow-hidden">
-        <div className="px-6 py-5 border-b border-neutral-200 bg-neutral-50">
-          <h3 className="text-lg font-medium leading-6 text-neutral-900 text-red-600">
+      {/* Danger Zone */}
+      <div className="bg-white rounded-2xl border border-red-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-red-100 bg-red-50">
+          <h2 className="text-lg font-semibold text-red-700">
             Danger Zone
-          </h3>
+          </h2>
         </div>
 
-        <div className="px-6 py-6">
-          <div className="border border-red-200 rounded-md p-4">
-            <h3 className="text-base font-medium text-neutral-900">
-              Delete Account
-            </h3>
-            <p className="mt-1 text-sm text-neutral-500">
-              Permanently delete your account and all associated data. This
-              action cannot be undone.
-            </p>
-            <div className="mt-4">
-              <button
-                type="button"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              >
+        <div className="p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-base font-medium text-neutral-900">
                 Delete Account
-              </button>
+              </h3>
+              <p className="text-sm text-neutral-500 mt-1">
+                Permanently delete your account and all associated data. This
+                action cannot be undone.
+              </p>
             </div>
+            <button
+              type="button"
+              className="inline-flex items-center px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
+            >
+              Delete Account
+            </button>
           </div>
         </div>
       </div>

@@ -3,12 +3,10 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 
 import {
-  IconArrowLeft,
   IconLink,
   IconAlertTriangle,
   IconSettings,
   IconFile,
-  IconTrash,
 } from "@tabler/icons-react";
 
 import ScanHistory from "@/components/projects/ScanHistory";
@@ -419,33 +417,24 @@ export default async function ProjectDetailPage({
   }));
 
   return (
-    <div>
-      <div className="mb-6">
-        <Link
-          href={`/projects`}
-          className="inline-flex items-center text-sm text-neutral-500 hover:text-neutral-700"
-        >
-          <IconArrowLeft className="h-4 w-4 mr-1" />
-          Back to Projects
-        </Link>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-primary">{project.name}</h1>
-          <p className="mt-1 text-sm text-neutral-500">
+          <h1 className="text-2xl font-bold text-neutral-900">{project.name}</h1>
+          <p className="text-neutral-500 mt-1">
             <a
               href={project.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:underline"
+              className="hover:underline hover:text-neutral-700"
             >
               {project.url}
             </a>
           </p>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-3">
           <StartScanButton projectId={projectId} />
 
           <ExportButton
@@ -464,9 +453,9 @@ export default async function ProjectDetailPage({
 
           <Link
             href={`/projects/${projectId}/settings`}
-            className="inline-flex items-center px-3 py-2 border border-neutral-300 shadow-sm text-sm leading-4 font-medium rounded-md text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            className="inline-flex items-center gap-2 px-4 py-2.5 border border-neutral-200 text-sm font-medium rounded-lg text-neutral-700 bg-white hover:bg-neutral-50 transition-colors"
           >
-            <IconSettings className="h-4 w-4 mr-1" />
+            <IconSettings className="h-4 w-4" />
             Settings
           </Link>
         </div>
@@ -476,94 +465,85 @@ export default async function ProjectDetailPage({
         <ScanProgress scanId={latestScan.id} projectId={projectId} />
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Link
           href={`/projects/${projectId}/pages`}
-          className={`bg-white hover:bg-neutral-100 rounded-lg shadow p-6 transition-all duration-300 ease-in-out`}
+          className="group bg-white rounded-2xl border border-neutral-200 p-6 hover:border-neutral-300 hover:shadow-lg transition-all"
         >
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-start">
             <div>
-              <h3 className="text-lg font-medium">Pages</h3>
+              <p className="text-sm font-medium text-neutral-500">Pages</p>
+              <h2 className="text-3xl font-bold text-neutral-900 mt-2">
+                {pagesCount || 0}
+              </h2>
+              <p className="text-sm text-neutral-400 mt-1">
+                Total pages scanned
+              </p>
             </div>
-
-            <span className="text-2xl font-bold text-neutral-900">
-              {pagesCount || 0}
-            </span>
-          </div>
-          <div className="flex items-center">
-            <IconFile className="h-5 w-5 text-secondary mr-2" />
-            <span className="text-sm text-neutral-500">
-              Total pages scanned
-            </span>
+            <div className="p-3 bg-primary/10 rounded-xl">
+              <IconFile className="w-6 h-6 text-primary" />
+            </div>
           </div>
         </Link>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-neutral-900">
-              Broken Links
-            </h3>
-            <span
-              className={`text-2xl font-bold ${
+        <div className="bg-white rounded-2xl border border-neutral-200 p-6">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-sm font-medium text-neutral-500">Broken Links</p>
+              <h2 className={`text-3xl font-bold mt-2 ${
                 brokenLinksCount && brokenLinksCount > 0
                   ? "text-red-600"
                   : "text-neutral-900"
-              }`}
-            >
-              {brokenLinksCount || 0}
-            </span>
-          </div>
-          <div className="flex items-center">
-            <IconLink className="h-5 w-5 text-secondary mr-2" />
-            <span className="text-sm text-neutral-500">
-              Links returning 404 status
-            </span>
+              }`}>
+                {brokenLinksCount || 0}
+              </h2>
+              <p className="text-sm text-neutral-400 mt-1">
+                Links returning 404 status
+              </p>
+            </div>
+            <div className="p-3 bg-red-50 rounded-xl">
+              <IconLink className="w-6 h-6 text-red-500" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-neutral-900">Issues</h3>
-            <span
-              className={`text-2xl font-bold ${
+        <div className="bg-white rounded-2xl border border-neutral-200 p-6">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-sm font-medium text-neutral-500">Issues</p>
+              <h2 className={`text-3xl font-bold mt-2 ${
                 issuesCount && issuesCount > 0
                   ? "text-yellow-600"
                   : "text-neutral-900"
-              }`}
-            >
-              {issuesCount}
-            </span>
-          </div>
-          <div className="flex items-center">
-            <IconAlertTriangle className="h-5 w-5 text-secondary mr-2" />
-            <span className="text-sm text-neutral-500">
-              SEO issues detected
-            </span>
+              }`}>
+                {issuesCount || 0}
+              </h2>
+              <p className="text-sm text-neutral-400 mt-1">
+                SEO issues detected
+              </p>
+            </div>
+            <div className="p-3 bg-yellow-50 rounded-xl">
+              <IconAlertTriangle className="w-6 h-6 text-yellow-500" />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Content Intelligence Section */}
-      <div className="mb-8">
-        <ContentIntelligence data={contentIntelligenceData} projectId={projectId} />
-      </div>
+      <ContentIntelligence data={contentIntelligenceData} projectId={projectId} />
 
       {/* Site Architecture Section */}
-      <div className="mb-8">
-        <SiteArchitecture data={siteArchitectureData} projectId={projectId} />
-      </div>
+      <SiteArchitecture data={siteArchitectureData} projectId={projectId} />
 
       {/* Technical Health Section */}
-      <div className="mb-8">
-        <TechnicalHealth data={technicalHealthData} projectId={projectId} />
-      </div>
+      <TechnicalHealth data={technicalHealthData} projectId={projectId} />
 
       {/* Media Analysis Section */}
-      <div className="mb-8">
-        <MediaAnalysis data={mediaAnalysisData} projectId={projectId} />
-      </div>
+      <MediaAnalysis data={mediaAnalysisData} projectId={projectId} />
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+      {/* Scan History */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {/*<div className="bg-white rounded-lg shadow overflow-hidden">*/}
         {/*  <div className="px-6 py-4 border-b border-neutral-200">*/}
         {/*    <h3 className="text-lg font-medium text-neutral-900">*/}
@@ -669,3 +649,4 @@ export default async function ProjectDetailPage({
     </div>
   );
 }
+

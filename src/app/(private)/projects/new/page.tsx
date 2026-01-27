@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { IconArrowLeft } from "@tabler/icons-react";
 import { createClient } from "@/utils/supabase/server";
 import NewProjectForm from "@/components/projects/NewProjectForm";
 import { PlanId } from "@/types/subscription";
@@ -44,29 +43,20 @@ export default async function NewProjectPage() {
   const canCreate = canCreateProject(userPlan, currentProjectCount);
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="mb-6">
-        <Link
-          href={`/projects`}
-          className="inline-flex items-center text-sm text-secondary hover:text-primary-dark"
-        >
-          <IconArrowLeft className="mr-2 h-4 w-4" />
-          Back to Projects
-        </Link>
-      </div>
-
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-neutral-900 mb-2">
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-neutral-900">
           Create New Project
         </h1>
-        <p className="text-neutral-500">
+        <p className="text-neutral-500 mt-1">
           Set up a new project to start monitoring your website's SEO
-          performance.
+          performance
         </p>
       </div>
 
       {/* Project limit info */}
-      <div className="mb-6 p-4 bg-neutral-50 border border-neutral-200 rounded-lg">
+      <div className="bg-white rounded-2xl border border-neutral-200 p-4">
         <p className="text-sm text-neutral-600">
           <span className="font-medium">Project usage:</span>{" "}
           {currentProjectCount} of {limits.maxProjects === -1 ? "unlimited" : limits.maxProjects} projects
@@ -75,17 +65,17 @@ export default async function NewProjectPage() {
       </div>
 
       {canCreate ? (
-        <div className="bg-white shadow-sm rounded-lg p-6 mb-8">
-          <div className="mb-6">
-            <h2 className="text-lg font-medium text-neutral-900 mb-1">
+        <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-neutral-100">
+            <h2 className="text-lg font-semibold text-neutral-900">
               Project Details
             </h2>
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-neutral-500 mt-1">
               Fill in the information below to create your new project.
             </p>
           </div>
 
-          <div>
+          <div className="p-6">
             <NewProjectForm
               currentPlan={userPlan}
               projectCount={currentProjectCount}
@@ -94,8 +84,8 @@ export default async function NewProjectPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-white shadow-sm rounded-lg p-6 mb-8">
-          <div className="text-center py-8">
+        <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+          <div className="text-center py-12 px-6">
             <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
               <svg
                 className="w-8 h-8 text-orange-500"
@@ -121,13 +111,13 @@ export default async function NewProjectPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href="/dashboard/billing"
-                className="inline-flex items-center justify-center px-6 py-3 bg-secondary text-white rounded-lg font-medium hover:bg-secondary/90 transition-colors"
+                className="inline-flex items-center justify-center px-6 py-3 bg-neutral-900 text-white rounded-lg font-medium hover:bg-neutral-800 transition-colors"
               >
                 Upgrade Your Plan
               </Link>
               <Link
                 href="/projects"
-                className="inline-flex items-center justify-center px-6 py-3 border border-neutral-300 text-neutral-700 rounded-lg font-medium hover:bg-neutral-50 transition-colors"
+                className="inline-flex items-center justify-center px-6 py-3 border border-neutral-200 text-neutral-700 rounded-lg font-medium hover:bg-neutral-50 transition-colors"
               >
                 View Existing Projects
               </Link>

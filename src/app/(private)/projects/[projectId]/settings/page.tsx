@@ -1,8 +1,6 @@
 import { Metadata } from "next";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-import { IconArrowLeft } from "@tabler/icons-react";
 import { createClient } from "@/utils/supabase/server";
 import ProjectSettingsForm from "@/components/projects/ProjectSettingsForm";
 
@@ -74,29 +72,21 @@ export default async function ProjectSettingsPage({
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <Link
-          href={`/projects/${projectId}`}
-          className="inline-flex items-center text-sm text-neutral-500 hover:text-neutral-700"
-        >
-          <IconArrowLeft className="h-4 w-4 mr-1" />
-          Back to Project
-        </Link>
-      </div>
-
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-primary">Project Settings</h1>
-        <p className="mt-1 text-sm text-neutral-500">
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-neutral-900">Project Settings</h1>
+        <p className="text-neutral-500 mt-1">
           Manage settings for {project.name}
         </p>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="px-6 py-5 border-b border-neutral-200 bg-neutral-50">
-          <h3 className="text-lg font-medium leading-6 text-neutral-900">
+      {/* General Settings Card */}
+      <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-neutral-100">
+          <h2 className="text-lg font-semibold text-neutral-900">
             General Settings
-          </h3>
+          </h2>
         </div>
 
         <ProjectSettingsForm project={project} />

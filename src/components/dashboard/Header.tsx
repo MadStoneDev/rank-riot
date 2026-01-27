@@ -1,18 +1,50 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { IconBell } from "@tabler/icons-react";
-
-import DarkModeToggle from "@/components/ui/DarkModeToggle";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { IconChevronRight, IconChartBar } from "@tabler/icons-react";
 
 import { createClient } from "@/utils/supabase/client";
 import { Database } from "../../../database.types";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
+// Generate breadcrumbs from pathname
+function generateBreadcrumbs(pathname: string) {
+  const paths = pathname.split("/").filter(Boolean);
+  const breadcrumbs: { label: string; href: string }[] = [];
+
+  let currentPath = "";
+  paths.forEach((segment, index) => {
+    currentPath += `/${segment}`;
+
+    // Skip UUID-like segments but keep them in the path
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(segment);
+
+    let label = segment.charAt(0).toUpperCase() + segment.slice(1);
+
+    // Custom labels
+    if (segment === "dashboard") label = "Dashboard";
+    else if (segment === "projects") label = "Projects";
+    else if (segment === "billing") label = "Billing";
+    else if (segment === "settings") label = "Settings";
+    else if (segment === "new") label = "New Project";
+    else if (segment === "pages") label = "Pages";
+    else if (isUuid) label = "Details";
+
+    breadcrumbs.push({ label, href: currentPath });
+  });
+
+  return breadcrumbs;
+}
+
 export default function Header() {
   const [user, setUser] = useState<Profile | null>(null);
+  const pathname = usePathname();
   const supabase = createClient();
+
+  const breadcrumbs = generateBreadcrumbs(pathname);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -37,24 +69,49 @@ export default function Header() {
   }, []);
 
   return (
-    <header
-      className={`bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 h-16 flex items-center px-6`}
-    >
-      <div className="flex-1">
-        <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100">
-          Dashboard
-        </h1>
+    <header className="bg-white border-b border-neutral-200 h-16 flex items-center px-6">
+      {/* Mobile Logo */}
+      <div className="md:hidden flex items-center gap-2 mr-4">
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <IconChartBar className="w-6 h-6 text-secondary" />
+          <span className="text-lg font-bold text-neutral-900">RankRiot</span>
+        </Link>
       </div>
 
-      <div className="flex items-center space-x-4">
-        {/*<DarkModeToggle />*/}
+      {/* Breadcrumbs */}
+      <nav className="hidden md:flex items-center gap-1 text-sm flex-1">
+        {breadcrumbs.map((crumb, index) => (
+          <div key={crumb.href} className="flex items-center">
+            {index > 0 && (
+              <IconChevronRight className="w-4 h-4 text-neutral-400 mx-1" />
+            )}
+            {index === breadcrumbs.length - 1 ? (
+              <span className="text-neutral-900 font-medium">{crumb.label}</span>
+            ) : (
+              <Link
+                href={crumb.href}
+                className="text-neutral-500 hover:text-neutral-900 transition-colors"
+              >
+                {crumb.label}
+              </Link>
+            )}
+          </div>
+        ))}
+      </nav>
 
-        {/*<button className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200">*/}
-        {/*  <IconBell className="w-6 h-6" />*/}
-        {/*</button>*/}
-
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-full bg-neutral-300 dark:bg-neutral-600 overflow-hidden">
+      {/* User Profile */}
+      <div className="flex items-center gap-3 ml-auto">
+        <Link
+          href="/dashboard/settings"
+          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+        >
+          <div className="text-right hidden sm:block">
+            <p className="text-sm font-medium text-neutral-900">
+              {user?.full_name || "User"}
+            </p>
+            <p className="text-xs text-neutral-500">{user?.email}</p>
+          </div>
+          <div className="w-9 h-9 rounded-full bg-neutral-200 overflow-hidden ring-2 ring-neutral-100">
             {user?.avatar_url ? (
               <img
                 src={user.avatar_url}
@@ -62,17 +119,12 @@ export default function Header() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-secondary text-white text-sm font-medium">
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-secondary text-white text-sm font-semibold">
                 {user?.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
               </div>
             )}
           </div>
-          <span
-            className={`hidden sm:block text-sm font-medium text-neutral-700 dark:text-neutral-200`}
-          >
-            {user?.full_name || user?.email || "User"}
-          </span>
-        </div>
+        </Link>
       </div>
     </header>
   );

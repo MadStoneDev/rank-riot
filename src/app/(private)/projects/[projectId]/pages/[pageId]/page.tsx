@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import { IconArrowLeft, IconExternalLink } from "@tabler/icons-react";
+import { IconExternalLink } from "@tabler/icons-react";
 
 import { Database } from "../../../../../../../database.types";
 
@@ -150,39 +149,26 @@ export default async function PageDetailPage({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="mb-6">
-        <Link
-          href={`/projects/${projectId}/pages`}
-          className="inline-flex items-center text-sm text-neutral-500 hover:text-neutral-700"
-        >
-          <IconArrowLeft className="h-4 w-4 mr-1" />
-          Back to Pages
-        </Link>
-      </div>
-
-      {/* Page Title Bar */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <h1 className="text-2xl font-bold text-primary truncate">
-              {page.title || "Untitled Page"}
-            </h1>
-            <p className="mt-2 flex items-center gap-2 text-sm text-neutral-500">
-              <a
-                href={page.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 hover:text-primary hover:underline"
-              >
-                {page.url}
-                <IconExternalLink className="h-4 w-4" />
-              </a>
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            {getHttpStatusBadge()}
-          </div>
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold text-neutral-900 truncate">
+            {page.title || "Untitled Page"}
+          </h1>
+          <p className="mt-1 flex items-center gap-2 text-neutral-500">
+            <a
+              href={page.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 hover:text-neutral-700 hover:underline"
+            >
+              {page.url}
+              <IconExternalLink className="h-4 w-4" />
+            </a>
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {getHttpStatusBadge()}
         </div>
       </div>
 
