@@ -27,8 +27,10 @@ interface Page {
   // For SEO score calculation
   meta_description: string | null;
   h1s: any[] | null;
+  h2s: any[] | null;
   canonical_url: string | null;
   images: { src: string; alt: string }[] | null;
+  open_graph: Record<string, any> | null;
 }
 
 interface PageIssueCount {
@@ -74,8 +76,21 @@ function calculatePageScore(page: Page): number {
   if (h1Count === 0) score -= 15;
   else if (h1Count > 1) score -= 5;
 
+  // H2 check (5 points)
+  const h2Count = Array.isArray(page.h2s) ? page.h2s.length : 0;
+  if (h2Count === 0) score -= 5;
+
   // Indexability (10 points)
-  if (page.has_robots_noindex || page.is_indexable === false) score -= 10;
+  if (page.has_robots_noindex) score -= 10;
+  else if (page.is_indexable === false) score -= 10;
+
+  // Canonical URL check (5 points)
+  if (page.canonical_url) {
+    const normalizeUrl = (url: string) => url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+    if (normalizeUrl(page.canonical_url) !== normalizeUrl(page.url)) {
+      score -= 5;
+    }
+  }
 
   // HTTP status (10 points)
   if (page.http_status && page.http_status >= 400) score -= 10;
@@ -85,6 +100,11 @@ function calculatePageScore(page: Page): number {
   const images = Array.isArray(page.images) ? page.images : [];
   const missingAlt = images.filter((img) => !img.alt || img.alt.trim() === "").length;
   if (images.length > 0 && missingAlt > 0) score -= Math.min(5, missingAlt);
+
+  // Open Graph check (3 points)
+  if (!page.open_graph || Object.keys(page.open_graph).length === 0) {
+    score -= 3;
+  }
 
   return Math.max(0, score);
 }
