@@ -16,6 +16,7 @@ import ContentIntelligence from "@/components/projects/ContentIntelligence";
 import SiteArchitecture from "@/components/projects/SiteArchitecture";
 import TechnicalHealth from "@/components/projects/TechnicalHealth";
 import MediaAnalysis from "@/components/projects/MediaAnalysis";
+import HistoricalTrends from "@/components/projects/HistoricalTrends";
 import ExportButton from "@/components/export/ExportButton";
 
 import { Database } from "../../../database.types";
@@ -541,6 +542,9 @@ export default async function ProjectDetailPage({
 
       {/* Media Analysis Section */}
       <MediaAnalysis data={mediaAnalysisData} projectId={projectId} />
+
+      {/* Historical Trends Section */}
+      <HistoricalTrends projectId={projectId} />
 
       {/* Scan History */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">

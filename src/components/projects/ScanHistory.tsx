@@ -1,8 +1,10 @@
 ﻿"use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { createClient } from "@/utils/supabase/client";
+import { IconArrowsExchange } from "@tabler/icons-react";
 
 import DeleteScanButton from "./DeleteScanButton";
 import StartScanButton from "@/components/projects/StartScanButton";
@@ -243,35 +245,48 @@ export default function ScanHistory({
     setScans(scans.filter((scan) => scan.id !== scanId));
   };
 
+  const completedScans = scans.filter((s) => s.status === "completed");
+
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
-      <div className="px-6 py-4 border-b border-neutral-200 flex justify-between items-center">
-        <h3 className="text-lg font-medium text-neutral-900">Scan History</h3>
-        <button
-          onClick={refreshScanHistory}
-          disabled={isRefreshing}
-          className="text-sm text-secondary hover:text-primary-dark flex items-center"
-        >
-          <svg
-            className={`h-4 w-4 mr-1 ${isRefreshing ? "animate-spin" : ""}`}
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+    <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+      <div className="px-6 py-4 border-b border-neutral-100 flex justify-between items-center">
+        <h3 className="text-lg font-semibold text-neutral-900">Scan History</h3>
+        <div className="flex items-center gap-3">
+          {completedScans.length >= 2 && (
+            <Link
+              href={`/projects/${projectId}/compare`}
+              className="text-sm text-neutral-600 hover:text-neutral-900 flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-neutral-100 transition-colors"
+            >
+              <IconArrowsExchange className="h-4 w-4" />
+              Compare
+            </Link>
+          )}
+          <button
+            onClick={refreshScanHistory}
+            disabled={isRefreshing}
+            className="text-sm text-neutral-600 hover:text-neutral-900 flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-neutral-100 transition-colors"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
-          </svg>
-          {isRefreshing ? "Refreshing..." : "Refresh"}
-        </button>
+            <svg
+              className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+            {isRefreshing ? "Refreshing..." : "Refresh"}
+          </button>
+        </div>
       </div>
 
       {scans && scans.length > 0 ? (
-        <section className="divide-y divide-neutral-200">
+        <section className="divide-y divide-neutral-100">
           {scans.map((scan) => (
             <ScanHistoryItem
               key={scan.id}
@@ -281,8 +296,11 @@ export default function ScanHistory({
           ))}
         </section>
       ) : (
-        <div className="p-6 text-center">
-          <p className="text-neutral-500">No scans have been run yet.</p>
+        <div className="p-6 text-center py-12">
+          <p className="text-neutral-500 font-medium">No scans have been run yet.</p>
+          <p className="text-sm text-neutral-400 mt-1 mb-4">
+            Start your first scan to analyze the website.
+          </p>
           <StartScanButton projectId={projectId} />
         </div>
       )}
