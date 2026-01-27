@@ -1,226 +1,225 @@
-﻿export const metadata = {
-  title: "Documentation - RankRiot",
+import { Metadata } from "next";
+import Link from "next/link";
+import {
+  IconRocket,
+  IconSearch,
+  IconFileAnalytics,
+  IconBug,
+  IconChartBar,
+  IconSettings,
+  IconArrowRight,
+} from "@tabler/icons-react";
+
+export const metadata: Metadata = {
+  title: "Documentation | RankRiot",
   description:
-    "RankRiot is a free SEO analysis tool that helps small businesses improve their website's SEO performance.",
+    "Learn how to get the most out of RankRiot. Guides, tutorials, and reference documentation for SEO analysis.",
 };
+
+const guides = [
+  {
+    icon: IconRocket,
+    title: "Getting Started",
+    description: "Set up your first project and run your initial site crawl.",
+    href: "#getting-started",
+    articles: [
+      "Creating your account",
+      "Adding your first project",
+      "Understanding scan types",
+      "Reading your first report",
+    ],
+  },
+  {
+    icon: IconSearch,
+    title: "Site Crawling",
+    description: "Deep dive into how our crawler works and what it detects.",
+    href: "#crawling",
+    articles: [
+      "How the crawler works",
+      "Crawl settings and limits",
+      "Scheduled scans",
+      "Handling JavaScript sites",
+    ],
+  },
+  {
+    icon: IconBug,
+    title: "Issue Detection",
+    description: "Understanding the SEO issues RankRiot identifies.",
+    href: "#issues",
+    articles: [
+      "Broken links and 404s",
+      "Redirect chains",
+      "Missing meta tags",
+      "Duplicate content",
+    ],
+  },
+  {
+    icon: IconFileAnalytics,
+    title: "Reports & Analysis",
+    description: "Learn to interpret reports and prioritize fixes.",
+    href: "#reports",
+    articles: [
+      "Understanding scores",
+      "Issue prioritization",
+      "Historical tracking",
+      "Exporting data",
+    ],
+  },
+  {
+    icon: IconChartBar,
+    title: "Performance",
+    description: "Track and improve your site's technical performance.",
+    href: "#performance",
+    articles: [
+      "Core Web Vitals",
+      "Page load analysis",
+      "Image optimization",
+      "Resource analysis",
+    ],
+  },
+  {
+    icon: IconSettings,
+    title: "Account & Billing",
+    description: "Manage your account, team, and subscription.",
+    href: "#account",
+    articles: [
+      "Subscription plans",
+      "Team management",
+      "Billing settings",
+      "Usage limits",
+    ],
+  },
+];
 
 export default function DocumentationPage() {
   return (
     <>
-      <section className="py-20 grid place-content-center min-h-[600px] bg-white">
-        <div className="flex flex-col items-center max-w-2xl px-4 text-center">
-          <h1 className="mb-6 max-w-xl font-display text-5xl font-bold text-primary">
-            Documentation
-          </h1>
-          <p className="text-xl text-primary/60 max-w-3xl mx-auto mb-10">
-            RankRiot is a free SEO analysis tool that helps small businesses
-            improve their website's SEO performance.
-          </p>
-        </div>
-      </section>
+      {/* Hero */}
+      <section className="relative overflow-hidden border-b border-neutral-200">
+        <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 to-white" />
 
-      <section className="py-16 bg-neutral-100">
-        <div className="container mx-auto px-4">
-          <h2 className="text-primary text-3xl font-bold text-center mb-12">
-            What We Believe
-          </h2>
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16">
+          <div className="max-w-2xl">
+            <h1 className="text-4xl sm:text-5xl font-bold text-neutral-900 tracking-tight">
+              Documentation
+            </h1>
+            <p className="mt-6 text-lg text-neutral-600 leading-relaxed">
+              Everything you need to get started with RankRiot and make the most
+              of your SEO analysis.
+            </p>
 
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white p-8 shadow-md mb-8">
-              <p className="text-primary/70 text-lg leading-relaxed mb-6">
-                RankRiot was born from frustration. As a small business
-                ourselves, we knew the pain of trying to improve our SEO with
-                tools designed for enterprise budgets and enterprise teams. We
-                needed something simple, affordable, and actually useful for
-                businesses like ours.
-              </p>
-              <p className="text-primary/70 text-lg leading-relaxed">
-                So we built it. RankRiot is our SEO crawler designed
-                specifically for small businesses who need real insights without
-                the complexity, the bloat, or the eye-watering price tags of
-                traditional SEO tools.
-              </p>
+            {/* Search */}
+            <div className="mt-8 relative">
+              <IconSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+              <input
+                type="text"
+                placeholder="Search documentation..."
+                className="w-full pl-12 pr-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+              />
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-primary text-3xl font-bold text-center mb-12">
-            What We Believe
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="bg-white p-6 shadow-md">
-              <div className="text-primary mb-4">
-                <svg
-                  className="w-10 h-10"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-primary text-xl font-bold mb-2">
-                SEO Shouldn't Be Rocket Science
-              </h3>
-              <p className="text-primary/50">
-                Every small business deserves clear, actionable SEO insights
-                without needing a PhD in digital marketing.
-              </p>
-            </div>
-
-            <div className="bg-white p-6 shadow-md">
-              <div className="text-primary mb-4">
-                <svg
-                  className="w-10 h-10"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-primary text-xl font-bold mb-2">
-                Small Business Budgets Matter
-              </h3>
-              <p className="text-primary/50">
-                We price our tools for real small businesses, not Fortune 500
-                companies pretending to care about SMBs.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 bg-neutral-100">
-        <div className="container mx-auto px-4">
-          <h2 className="text-primary text-3xl font-bold text-center mb-12">
-            Our Approach
-          </h2>
-
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white p-8 shadow-md">
-              <p className="text-primary/70 text-lg leading-relaxed mb-4">
-                We focus on the SEO fundamentals that actually move the needle
-                for small businesses. Our crawler identifies the issues that
-                matter most for your rankings and provides clear, prioritized
-                action items you can actually implement.
-              </p>
-              <p className="text-primary/70 text-lg leading-relaxed">
-                No fluff. No overwhelming dashboards. Just the SEO insights that
-                help small businesses compete online.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-primary text-3xl font-bold text-center mb-12">
-            What We Focus On
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 shadow-md">
-              <div className="text-primary mb-4">
-                <svg
-                  className="w-10 h-10"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                  <path
-                    fillRule="evenodd"
-                    d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
-              </div>
-              -
-              <h3 className="text-primary text-xl font-bold mb-2">
-                Technical Issues That Matter
-              </h3>
-              <p className="text-primary/50">
-                We find the broken links, missing meta tags, and technical
-                problems that actually hurt your rankings.
-              </p>
-            </div>
-
-            <div className="bg-white p-6 shadow-md">
-              <div className="text-primary mb-4">
-                <svg
-                  className="w-10 h-10"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
-                  <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
-                </svg>
-              </div>
-              <h3 className="text-primary text-xl font-bold mb-2">
-                Actionable Insights
-              </h3>
-              <p className="text-primary/50">
-                Every recommendation comes with clear steps you can take, no
-                matter your technical skill level.
-              </p>
-            </div>
-
-            <div className="bg-white p-6 shadow-md">
-              <div className="text-primary mb-4">
-                <svg
-                  className="w-10 h-10"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                </svg>
-              </div>
-              <h3 className="text-primary text-xl font-bold mb-2">
-                Small Business Priorities
-              </h3>
-              <p className="text-primary/50">
-                We prioritize the improvements that give you the biggest SEO
-                bang for your buck and time.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 bg-primary text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">
-            Ready to Riot Against Bad SEO?
-          </h2>
-          <p className="text-xl max-w-2xl mx-auto mb-10">
-            Join other small businesses who've taken control of their SEO with
-            tools that actually make sense.
-          </p>
-
-          <div className="group relative inline-flex items-center space-x-2 bg-primary-dark overflow-hidden z-10">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0 group-hover:w-[110%] aspect-square bg-white transition-all duration-300 ease-in-out -z-[1]"></div>
-
-            <a
-              href="/auth"
-              className="py-4 px-8 text-white group-hover:text-primary text-lg font-bold transition-all duration-300 ease-in-out z-50"
+      {/* Quick Links */}
+      <section className="py-8 bg-neutral-50 border-b border-neutral-200">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex flex-wrap gap-4">
+            <span className="text-sm text-neutral-500">Quick links:</span>
+            <Link
+              href="#getting-started"
+              className="text-sm text-primary hover:underline"
             >
-              Start Your Free Account
-            </a>
+              Getting Started
+            </Link>
+            <Link href="#crawling" className="text-sm text-primary hover:underline">
+              Site Crawling
+            </Link>
+            <Link href="#issues" className="text-sm text-primary hover:underline">
+              Issue Detection
+            </Link>
+            <Link href="#reports" className="text-sm text-primary hover:underline">
+              Reports
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Documentation Grid */}
+      <section className="py-24">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {guides.map((guide, i) => (
+              <div
+                key={i}
+                id={guide.href.replace("#", "")}
+                className="group p-6 rounded-2xl border border-neutral-200 hover:border-neutral-300 hover:shadow-lg transition-all"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl flex items-center justify-center mb-4">
+                  <guide.icon className="w-6 h-6 text-primary" />
+                </div>
+
+                <h2 className="text-xl font-semibold text-neutral-900 mb-2">
+                  {guide.title}
+                </h2>
+                <p className="text-neutral-600 text-sm mb-4">
+                  {guide.description}
+                </p>
+
+                <ul className="space-y-2 mb-6">
+                  {guide.articles.map((article, j) => (
+                    <li key={j}>
+                      <a
+                        href={`${guide.href}/${article.toLowerCase().replace(/\s+/g, "-")}`}
+                        className="text-sm text-neutral-600 hover:text-primary transition-colors flex items-center gap-2"
+                      >
+                        <span className="w-1 h-1 bg-neutral-300 rounded-full" />
+                        {article}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+
+                <a
+                  href={guide.href}
+                  className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:gap-2 transition-all"
+                >
+                  View all
+                  <IconArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Help Section */}
+      <section className="py-24 bg-neutral-50 border-t border-neutral-200">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-2xl font-bold text-neutral-900 mb-4">
+              Can&apos;t find what you&apos;re looking for?
+            </h2>
+            <p className="text-neutral-600 mb-8">
+              Our support team is here to help. Reach out and we&apos;ll get back to
+              you within 24 hours.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/contact"
+                className="w-full sm:w-auto px-6 py-3 bg-neutral-900 text-white font-medium rounded-lg hover:bg-neutral-800 transition-colors"
+              >
+                Contact Support
+              </Link>
+              <a
+                href="https://github.com/rankriot"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto px-6 py-3 border border-neutral-300 text-neutral-700 font-medium rounded-lg hover:bg-white transition-colors"
+              >
+                Open GitHub Issue
+              </a>
+            </div>
           </div>
         </div>
       </section>

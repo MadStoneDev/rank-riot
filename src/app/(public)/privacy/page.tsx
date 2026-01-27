@@ -11,19 +11,25 @@ export default function PrivacyPolicyPage() {
   const lastUpdated = "January 27, 2025";
 
   return (
-    <div className="bg-white">
-      <div className="py-16 sm:py-24">
-        <div className="mx-auto max-w-3xl px-6 lg:px-8">
-          <div className="mb-12">
-            <h1 className="text-4xl font-bold tracking-tight text-primary">
+    <>
+      {/* Hero */}
+      <section className="relative overflow-hidden border-b border-neutral-200">
+        <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 to-white" />
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-12">
+          <div className="max-w-3xl">
+            <h1 className="text-4xl sm:text-5xl font-bold text-neutral-900 tracking-tight">
               Privacy Policy
             </h1>
             <p className="mt-4 text-neutral-500">
               Last updated: {lastUpdated}
             </p>
           </div>
+        </div>
+      </section>
 
-          <div className="prose prose-neutral max-w-none">
+      <section className="py-16">
+        <div className="max-w-3xl mx-auto px-6 lg:px-8">
+          <div className="prose prose-neutral max-w-none prose-headings:text-neutral-900 prose-h2:text-2xl prose-h2:font-semibold prose-h3:text-xl prose-h3:font-medium prose-a:text-primary hover:prose-a:underline">
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-primary mb-4">
                 Introduction
@@ -314,7 +320,7 @@ export default function PrivacyPolicyPage() {
             </section>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </>
   );
 }

@@ -1,227 +1,210 @@
-﻿export const metadata = {
-  title: "About - RankRiot",
+import { Metadata } from "next";
+import Link from "next/link";
+import {
+  IconTarget,
+  IconHeart,
+  IconBolt,
+  IconUsers,
+  IconArrowRight,
+} from "@tabler/icons-react";
+
+export const metadata: Metadata = {
+  title: "About | RankRiot",
   description:
-    "RankRiot is a free SEO analysis tool that helps small businesses improve their website's SEO performance.",
+    "RankRiot is built by developers for developers. We create professional SEO tools that are simple, affordable, and actually useful.",
 };
 
 export default function AboutPage() {
   return (
     <>
-      <section className="py-20 grid place-content-center min-h-[600px] bg-white">
-        <div className="flex flex-col items-center max-w-2xl px-4 text-center">
-          <h1 className="mb-6 max-w-xl font-display text-5xl font-bold text-primary">
-            About <span className="text-secondary">RankRiot</span>
-          </h1>
-          <p className="text-xl text-primary/60 max-w-3xl mx-auto mb-10">
-            Small business SEO tools, built by a small business that gets it. We
-            understand your challenges because we face them too.
-          </p>
-        </div>
-      </section>
+      {/* Hero */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 to-white" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-primary/5 to-secondary/5 rounded-full blur-3xl" />
 
-      <section className="py-16 bg-neutral-100">
-        <div className="container mx-auto px-4">
-          <h2 className="text-primary text-3xl font-bold text-center mb-12">
-            Our Story
-          </h2>
-
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white p-8 shadow-md mb-8">
-              <p className="text-primary/70 text-lg leading-relaxed mb-6">
-                RankRiot was born from frustration. As a small business
-                ourselves, we knew the pain of trying to improve our SEO with
-                tools designed for enterprise budgets and enterprise teams. We
-                needed something simple, affordable, and actually useful for
-                businesses like ours.
-              </p>
-              <p className="text-primary/70 text-lg leading-relaxed">
-                So we built it. RankRiot is our SEO crawler designed
-                specifically for small businesses who need real insights without
-                the complexity, the bloat, or the eye-watering price tags of
-                traditional SEO tools.
-              </p>
-            </div>
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-4xl sm:text-5xl font-bold text-neutral-900 tracking-tight">
+              Built by developers,
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+                for developers
+              </span>
+            </h1>
+            <p className="mt-6 text-lg text-neutral-600 leading-relaxed">
+              We got tired of overpriced, overcomplicated SEO tools. So we built
+              something better—professional-grade analysis without the
+              enterprise price tag or learning curve.
+            </p>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-primary text-3xl font-bold text-center mb-12">
-            What We Believe
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="bg-white p-6 shadow-md">
-              <div className="text-primary mb-4">
-                <svg
-                  className="w-10 h-10"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
+      {/* Story */}
+      <section className="py-24">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-3xl font-bold text-neutral-900 mb-6">
+                Our story
+              </h2>
+              <div className="space-y-4 text-neutral-600 leading-relaxed">
+                <p>
+                  RankRiot started from a simple frustration: every SEO tool on
+                  the market was either too expensive, too complicated, or both.
+                  As developers who needed to audit client sites, we were stuck
+                  choosing between enterprise tools with four-figure monthly
+                  bills or free tools that barely scratched the surface.
+                </p>
+                <p>
+                  We wanted something in between—a tool with serious crawling
+                  power and actionable insights, but without the bloat and
+                  without breaking the bank. When we couldn&apos;t find it, we built
+                  it ourselves.
+                </p>
+                <p>
+                  Today, RankRiot helps developers, SEO professionals, and
+                  agencies analyze websites with the same depth as enterprise
+                  tools, at a fraction of the cost. Because good SEO analysis
+                  shouldn&apos;t require a Fortune 500 budget.
+                </p>
               </div>
-              <h3 className="text-primary text-xl font-bold mb-2">
-                SEO Shouldn't Be Rocket Science
-              </h3>
-              <p className="text-primary/50">
-                Every small business deserves clear, actionable SEO insights
-                without needing a PhD in digital marketing.
-              </p>
             </div>
 
-            <div className="bg-white p-6 shadow-md">
-              <div className="text-primary mb-4">
-                <svg
-                  className="w-10 h-10"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-                  />
-                </svg>
+            {/* Image placeholder */}
+            <div className="relative">
+              <div className="aspect-[4/3] bg-gradient-to-br from-neutral-100 to-neutral-200 rounded-2xl flex items-center justify-center">
+                <div className="text-center text-neutral-500">
+                  <p className="text-sm">Team or Product Image</p>
+                  <p className="text-xs mt-1">800 × 600 recommended</p>
+                </div>
               </div>
-              <h3 className="text-primary text-xl font-bold mb-2">
-                Small Business Budgets Matter
-              </h3>
-              <p className="text-primary/50">
-                We price our tools for real small businesses, not Fortune 500
-                companies pretending to care about SMBs.
-              </p>
+              <div className="absolute -bottom-4 -right-4 w-full h-full bg-gradient-to-br from-primary/5 to-secondary/5 rounded-2xl -z-10" />
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-neutral-100">
-        <div className="container mx-auto px-4">
-          <h2 className="text-primary text-3xl font-bold text-center mb-12">
-            Our Approach
-          </h2>
+      {/* Values */}
+      <section className="py-24 bg-neutral-50 border-y border-neutral-200">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="max-w-2xl mx-auto text-center mb-16">
+            <h2 className="text-3xl font-bold text-neutral-900">
+              What we believe
+            </h2>
+            <p className="mt-4 text-lg text-neutral-600">
+              The principles that guide everything we build
+            </p>
+          </div>
 
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white p-8 shadow-md">
-              <p className="text-primary/70 text-lg leading-relaxed mb-4">
-                We focus on the SEO fundamentals that actually move the needle
-                for small businesses. Our crawler identifies the issues that
-                matter most for your rankings and provides clear, prioritized
-                action items you can actually implement.
-              </p>
-              <p className="text-primary/70 text-lg leading-relaxed">
-                No fluff. No overwhelming dashboards. Just the SEO insights that
-                help small businesses compete online.
-              </p>
-            </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                icon: IconBolt,
+                title: "Simplicity first",
+                description:
+                  "Powerful doesn't have to mean complicated. We strip away the noise so you can focus on what matters.",
+              },
+              {
+                icon: IconTarget,
+                title: "Actionable insights",
+                description:
+                  "Data without direction is just noise. Every report includes clear, prioritized recommendations.",
+              },
+              {
+                icon: IconHeart,
+                title: "Fair pricing",
+                description:
+                  "Professional tools at honest prices. No enterprise-only features, no artificial limitations.",
+              },
+              {
+                icon: IconUsers,
+                title: "Developer-friendly",
+                description:
+                  "Built with technical users in mind. Clean data, sensible defaults, and no hand-holding.",
+              },
+            ].map((value, i) => (
+              <div key={i} className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-white border border-neutral-200 rounded-xl mb-4">
+                  <value.icon className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold text-neutral-900 mb-2">
+                  {value.title}
+                </h3>
+                <p className="text-neutral-600 text-sm leading-relaxed">
+                  {value.description}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-primary text-3xl font-bold text-center mb-12">
-            What We Focus On
-          </h2>
+      {/* What we focus on */}
+      <section className="py-24">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="max-w-2xl mx-auto text-center mb-16">
+            <h2 className="text-3xl font-bold text-neutral-900">
+              What we focus on
+            </h2>
+            <p className="mt-4 text-lg text-neutral-600">
+              The core areas where RankRiot delivers real value
+            </p>
+          </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 shadow-md">
-              <div className="text-primary mb-4">
-                <svg
-                  className="w-10 h-10"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                  <path
-                    fillRule="evenodd"
-                    d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
+            {[
+              {
+                title: "Technical SEO",
+                description:
+                  "Broken links, redirect chains, missing meta tags, duplicate content, and the technical issues that actually impact rankings.",
+              },
+              {
+                title: "Site architecture",
+                description:
+                  "Crawl depth analysis, internal linking opportunities, orphan page detection, and structure optimization.",
+              },
+              {
+                title: "Performance",
+                description:
+                  "Page load metrics, Core Web Vitals tracking, image optimization recommendations, and resource analysis.",
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="p-6 rounded-2xl border border-neutral-200 hover:border-neutral-300 hover:shadow-lg transition-all"
+              >
+                <div className="text-4xl font-bold text-neutral-200 mb-4">
+                  0{i + 1}
+                </div>
+                <h3 className="text-xl font-semibold text-neutral-900 mb-3">
+                  {item.title}
+                </h3>
+                <p className="text-neutral-600 leading-relaxed">
+                  {item.description}
+                </p>
               </div>
-              -
-              <h3 className="text-primary text-xl font-bold mb-2">
-                Technical Issues That Matter
-              </h3>
-              <p className="text-primary/50">
-                We find the broken links, missing meta tags, and technical
-                problems that actually hurt your rankings.
-              </p>
-            </div>
-
-            <div className="bg-white p-6 shadow-md">
-              <div className="text-primary mb-4">
-                <svg
-                  className="w-10 h-10"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
-                  <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
-                </svg>
-              </div>
-              <h3 className="text-primary text-xl font-bold mb-2">
-                Actionable Insights
-              </h3>
-              <p className="text-primary/50">
-                Every recommendation comes with clear steps you can take, no
-                matter your technical skill level.
-              </p>
-            </div>
-
-            <div className="bg-white p-6 shadow-md">
-              <div className="text-primary mb-4">
-                <svg
-                  className="w-10 h-10"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                </svg>
-              </div>
-              <h3 className="text-primary text-xl font-bold mb-2">
-                Small Business Priorities
-              </h3>
-              <p className="text-primary/50">
-                We prioritize the improvements that give you the biggest SEO
-                bang for your buck and time.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="py-20 bg-primary text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">
-            Ready to Riot Against Bad SEO?
+      {/* CTA */}
+      <section className="py-24 bg-neutral-950">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+            Ready to see RankRiot in action?
           </h2>
-          <p className="text-xl max-w-2xl mx-auto mb-10">
-            Join other small businesses who've taken control of their SEO with
-            tools that actually make sense.
+          <p className="text-lg text-neutral-400 mb-8 max-w-xl mx-auto">
+            Start with a free account and run your first analysis. No credit
+            card required.
           </p>
-
-          <div className="group relative inline-flex items-center space-x-2 bg-primary-dark overflow-hidden z-10">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0 group-hover:w-[110%] aspect-square bg-white transition-all duration-300 ease-in-out -z-[1]"></div>
-
-            <a
-              href="/auth"
-              className="py-4 px-8 text-white group-hover:text-primary text-lg font-bold transition-all duration-300 ease-in-out z-50"
-            >
-              Start Your Free Account
-            </a>
-          </div>
+          <Link
+            href="/auth"
+            className="inline-flex items-center gap-2 px-8 py-3.5 text-base font-medium text-neutral-900 bg-white hover:bg-neutral-100 rounded-lg transition-colors"
+          >
+            Get Started Free
+            <IconArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </section>
     </>

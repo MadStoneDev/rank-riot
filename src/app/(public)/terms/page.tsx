@@ -11,26 +11,32 @@ export default function TermsOfServicePage() {
   const lastUpdated = "January 27, 2025";
 
   return (
-    <div className="bg-white">
-      <div className="py-16 sm:py-24">
-        <div className="mx-auto max-w-3xl px-6 lg:px-8">
-          <div className="mb-12">
-            <h1 className="text-4xl font-bold tracking-tight text-primary">
+    <>
+      {/* Hero */}
+      <section className="relative overflow-hidden border-b border-neutral-200">
+        <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 to-white" />
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-12">
+          <div className="max-w-3xl">
+            <h1 className="text-4xl sm:text-5xl font-bold text-neutral-900 tracking-tight">
               Terms of Service
             </h1>
             <p className="mt-4 text-neutral-500">
               Last updated: {lastUpdated}
             </p>
           </div>
+        </div>
+      </section>
 
-          <div className="prose prose-neutral max-w-none">
+      <section className="py-16">
+        <div className="max-w-3xl mx-auto px-6 lg:px-8">
+          <div className="prose prose-neutral max-w-none prose-headings:text-neutral-900 prose-h2:text-2xl prose-h2:font-semibold prose-h3:text-xl prose-h3:font-medium prose-a:text-primary hover:prose-a:underline">
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-primary mb-4">
                 1. Agreement to Terms
               </h2>
               <p className="text-neutral-700 mb-4">
-                By accessing or using RankRiot ("the Service"), you agree to be
-                bound by these Terms of Service ("Terms"). If you disagree with
+                By accessing or using RankRiot (&quot;the Service&quot;), you agree to be
+                bound by these Terms of Service (&quot;Terms&quot;). If you disagree with
                 any part of these terms, you may not access the Service.
               </p>
               <p className="text-neutral-700">
@@ -282,7 +288,7 @@ export default function TermsOfServicePage() {
                 9. Disclaimer of Warranties
               </h2>
               <p className="text-neutral-700 mb-4">
-                THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT
+                THE SERVICE IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT
                 WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT
                 NOT LIMITED TO:
               </p>
@@ -363,7 +369,7 @@ export default function TermsOfServicePage() {
               <p className="text-neutral-700">
                 We reserve the right to modify these Terms at any time. We will
                 provide notice of material changes by posting the updated Terms
-                on this page and updating the "Last updated" date. Your
+                on this page and updating the &quot;Last updated&quot; date. Your
                 continued use of the Service after changes become effective
                 constitutes acceptance of the revised Terms.
               </p>
@@ -411,7 +417,7 @@ export default function TermsOfServicePage() {
             </section>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </>
   );
 }
