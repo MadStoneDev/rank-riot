@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { IconMail, IconBrandTwitter, IconBrandGithub } from "@tabler/icons-react";
+import ContactForm from "@/components/contact/ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact | RankRiot",
@@ -38,100 +39,7 @@ export default function ContactPage() {
               <h2 className="text-2xl font-bold text-neutral-900 mb-6">
                 Send us a message
               </h2>
-              <form className="space-y-6">
-                <div className="grid sm:grid-cols-2 gap-6">
-                  <div>
-                    <label
-                      htmlFor="firstName"
-                      className="block text-sm font-medium text-neutral-700 mb-2"
-                    >
-                      First name
-                    </label>
-                    <input
-                      type="text"
-                      id="firstName"
-                      name="firstName"
-                      className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-                      placeholder="John"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="lastName"
-                      className="block text-sm font-medium text-neutral-700 mb-2"
-                    >
-                      Last name
-                    </label>
-                    <input
-                      type="text"
-                      id="lastName"
-                      name="lastName"
-                      className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-                      placeholder="Doe"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-neutral-700 mb-2"
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-                    placeholder="john@example.com"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="subject"
-                    className="block text-sm font-medium text-neutral-700 mb-2"
-                  >
-                    Subject
-                  </label>
-                  <select
-                    id="subject"
-                    name="subject"
-                    className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors bg-white"
-                  >
-                    <option value="">Select a topic</option>
-                    <option value="support">Technical Support</option>
-                    <option value="billing">Billing Question</option>
-                    <option value="sales">Sales Inquiry</option>
-                    <option value="feedback">Feature Request / Feedback</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-medium text-neutral-700 mb-2"
-                  >
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={5}
-                    className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors resize-none"
-                    placeholder="How can we help?"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full sm:w-auto px-8 py-3 bg-neutral-900 text-white font-medium rounded-lg hover:bg-neutral-800 transition-colors"
-                >
-                  Send Message
-                </button>
-              </form>
+              <ContactForm />
             </div>
 
             {/* Contact Info */}
@@ -151,53 +59,53 @@ export default function ContactPage() {
                       For general inquiries and support
                     </p>
                     <a
-                      href="mailto:support@rankriot.app"
+                      href="mailto:hello@rankriot.app"
                       className="text-primary hover:underline mt-2 inline-block"
                     >
-                      support@rankriot.app
+                      hello@rankriot.app
                     </a>
                   </div>
                 </div>
 
-                {/*<div className="flex gap-4">*/}
-                {/*  <div className="w-12 h-12 bg-neutral-100 rounded-xl flex items-center justify-center flex-shrink-0">*/}
-                {/*    <IconBrandTwitter className="w-6 h-6 text-neutral-600" />*/}
-                {/*  </div>*/}
-                {/*  <div>*/}
-                {/*    <h3 className="font-semibold text-neutral-900">Twitter</h3>*/}
-                {/*    <p className="text-neutral-600 mt-1">*/}
-                {/*      Follow us for updates and tips*/}
-                {/*    </p>*/}
-                {/*    <a*/}
-                {/*      href="https://twitter.com/rankriot"*/}
-                {/*      target="_blank"*/}
-                {/*      rel="noopener noreferrer"*/}
-                {/*      className="text-primary hover:underline mt-2 inline-block"*/}
-                {/*    >*/}
-                {/*      @rankriot*/}
-                {/*    </a>*/}
-                {/*  </div>*/}
-                {/*</div>*/}
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 bg-neutral-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <IconBrandTwitter className="w-6 h-6 text-neutral-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-neutral-900">Twitter</h3>
+                    <p className="text-neutral-600 mt-1">
+                      Follow us for updates and tips
+                    </p>
+                    <a
+                      href="https://twitter.com/rankriot"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline mt-2 inline-block"
+                    >
+                      @rankriot
+                    </a>
+                  </div>
+                </div>
 
-                {/*<div className="flex gap-4">*/}
-                {/*  <div className="w-12 h-12 bg-neutral-100 rounded-xl flex items-center justify-center flex-shrink-0">*/}
-                {/*    <IconBrandGithub className="w-6 h-6 text-neutral-600" />*/}
-                {/*  </div>*/}
-                {/*  <div>*/}
-                {/*    <h3 className="font-semibold text-neutral-900">GitHub</h3>*/}
-                {/*    <p className="text-neutral-600 mt-1">*/}
-                {/*      Report bugs or request features*/}
-                {/*    </p>*/}
-                {/*    <a*/}
-                {/*      href="https://github.com/rankriot"*/}
-                {/*      target="_blank"*/}
-                {/*      rel="noopener noreferrer"*/}
-                {/*      className="text-primary hover:underline mt-2 inline-block"*/}
-                {/*    >*/}
-                {/*      github.com/rankriot*/}
-                {/*    </a>*/}
-                {/*  </div>*/}
-                {/*</div>*/}
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 bg-neutral-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <IconBrandGithub className="w-6 h-6 text-neutral-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-neutral-900">GitHub</h3>
+                    <p className="text-neutral-600 mt-1">
+                      Report bugs or request features
+                    </p>
+                    <a
+                      href="https://github.com/rankriot"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline mt-2 inline-block"
+                    >
+                      github.com/rankriot
+                    </a>
+                  </div>
+                </div>
               </div>
 
               {/* FAQ Link */}

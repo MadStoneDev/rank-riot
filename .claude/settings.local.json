@@ -7,7 +7,8 @@
       "Bash(npm run build:*)",
       "WebSearch",
       "WebFetch(domain:developer.paddle.com)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(npm install:*)"
     ]
   }
 }
