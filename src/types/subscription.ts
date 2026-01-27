@@ -50,6 +50,9 @@ export interface UsageData {
   pagesThisMonth: number;
 }
 
+// Billing interval type
+export type BillingInterval = "monthly" | "yearly";
+
 // Subscription context value
 export interface SubscriptionContextValue {
   plan: PlanId;
@@ -64,7 +67,7 @@ export interface SubscriptionContextValue {
   canStartScan: boolean;
   remainingProjects: number | "unlimited";
   // Actions
-  openCheckout: (priceId: string) => void;
+  openCheckout: (plan: Exclude<PlanId, "free">, billingInterval?: BillingInterval) => void;
   refreshSubscription: () => Promise<void>;
 }
 

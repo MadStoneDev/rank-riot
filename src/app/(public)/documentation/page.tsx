@@ -211,14 +211,14 @@ export default function DocumentationPage() {
               >
                 Contact Support
               </Link>
-              <a
-                href="https://github.com/rankriot"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto px-6 py-3 border border-neutral-300 text-neutral-700 font-medium rounded-lg hover:bg-white transition-colors"
-              >
-                Open GitHub Issue
-              </a>
+              {/*<a*/}
+              {/*  href="https://github.com/rankriot"*/}
+              {/*  target="_blank"*/}
+              {/*  rel="noopener noreferrer"*/}
+              {/*  className="w-full sm:w-auto px-6 py-3 border border-neutral-300 text-neutral-700 font-medium rounded-lg hover:bg-white transition-colors"*/}
+              {/*>*/}
+              {/*  Open GitHub Issue*/}
+              {/*</a>*/}
             </div>
           </div>
         </div>

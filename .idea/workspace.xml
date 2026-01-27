@@ -3,6 +3,15 @@
   <component name="ChangeListManager">
     <list default="true" id="f1ddb95a-5801-4340-82f4-54fc86529f8c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(public)/contact/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(public)/contact/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(public)/documentation/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(public)/documentation/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(public)/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(public)/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(public)/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(public)/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/webhooks/paddle/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/webhooks/paddle/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/billing/CheckoutButton.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/billing/CheckoutButton.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/paddle.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/paddle.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/providers/SubscriptionProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/providers/SubscriptionProvider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/subscription.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/subscription.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -11,6 +20,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/package-lock.json" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo"><![CDATA[{
   "customColor": "",
@@ -29,6 +41,7 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "git-widget-placeholder": "main",
     "nodejs_package_manager_path": "npm",
+    "ts.external.directory.path": "D:\\Development Sandbox\\rank-riot\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -54,7 +67,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1769432190423</updated>
-      <workItem from="1769432193195" duration="7482000" />
+      <workItem from="1769432193195" duration="9132000" />
     </task>
     <servers />
   </component>

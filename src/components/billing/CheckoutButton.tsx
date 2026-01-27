@@ -3,13 +3,15 @@
 import { useState } from "react";
 import { IconLoader2 } from "@tabler/icons-react";
 import { PlanId } from "@/types/subscription";
-import { openCheckout, PADDLE_PRICE_IDS } from "@/lib/paddle";
+import { openCheckout, PADDLE_PRICE_IDS, BillingInterval } from "@/lib/paddle";
 import { PLAN_INFO } from "@/lib/subscription-limits";
 
 interface CheckoutButtonProps {
   targetPlan: Exclude<PlanId, "free">;
+  billingInterval?: BillingInterval;
   userId: string;
   userEmail: string;
+  paddleCustomerId?: string;
   currentPlan: PlanId;
   variant?: "primary" | "secondary" | "outline";
   size?: "sm" | "md" | "lg";
@@ -18,8 +20,10 @@ interface CheckoutButtonProps {
 
 export default function CheckoutButton({
   targetPlan,
+  billingInterval = "monthly",
   userId,
   userEmail,
+  paddleCustomerId,
   currentPlan,
   variant = "primary",
   size = "md",
@@ -36,11 +40,11 @@ export default function CheckoutButton({
   const info = PLAN_INFO[targetPlan];
 
   const handleClick = async () => {
-    if (isCurrentPlan || !PADDLE_PRICE_IDS[targetPlan]) return;
+    if (isCurrentPlan || !PADDLE_PRICE_IDS[targetPlan]?.[billingInterval]) return;
 
     setIsLoading(true);
     try {
-      openCheckout(targetPlan, userId, userEmail);
+      openCheckout(targetPlan, billingInterval, userId, userEmail, paddleCustomerId);
     } catch (error) {
       console.error("Failed to open checkout:", error);
     } finally {

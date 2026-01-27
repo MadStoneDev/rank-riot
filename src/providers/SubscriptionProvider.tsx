@@ -15,6 +15,7 @@ import {
   PlanLimits,
   UsageData,
   SubscriptionContextValue,
+  BillingInterval,
 } from "@/types/subscription";
 import {
   getPlanLimits,
@@ -178,22 +179,8 @@ export function SubscriptionProvider({
 
   // Open checkout handler
   const handleOpenCheckout = useCallback(
-    (priceId: string) => {
-      // Determine plan from price ID by checking environment variables
-      const starterPriceId = process.env.NEXT_PUBLIC_PADDLE_STARTER_PRICE_ID;
-      const proPriceId = process.env.NEXT_PUBLIC_PADDLE_PRO_PRICE_ID;
-      const businessPriceId = process.env.NEXT_PUBLIC_PADDLE_BUSINESS_PRICE_ID;
-
-      let targetPlan: Exclude<PlanId, "free">;
-      if (priceId === starterPriceId) targetPlan = "starter";
-      else if (priceId === proPriceId) targetPlan = "pro";
-      else if (priceId === businessPriceId) targetPlan = "business";
-      else {
-        console.error("Unknown price ID:", priceId);
-        return;
-      }
-
-      openCheckout(targetPlan, userId, userEmail);
+    (targetPlan: Exclude<PlanId, "free">, billingInterval: BillingInterval = "monthly") => {
+      openCheckout(targetPlan, billingInterval, userId, userEmail);
     },
     [userId, userEmail]
   );

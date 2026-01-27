@@ -65,13 +65,21 @@ function verifyPaddleSignature(
 
 // Map Paddle price ID to plan tier
 function mapPriceIdToPlan(priceId: string): PlanId {
-  const starterPriceId = process.env.NEXT_PUBLIC_PADDLE_STARTER_PRICE_ID;
-  const proPriceId = process.env.NEXT_PUBLIC_PADDLE_PRO_PRICE_ID;
-  const businessPriceId = process.env.NEXT_PUBLIC_PADDLE_BUSINESS_PRICE_ID;
+  // Starter price IDs (monthly and yearly)
+  const starterMonthly = process.env.NEXT_PUBLIC_PADDLE_STARTER_MONTHLY_PRICE_ID;
+  const starterYearly = process.env.NEXT_PUBLIC_PADDLE_STARTER_YEARLY_PRICE_ID;
 
-  if (priceId === starterPriceId) return "starter";
-  if (priceId === proPriceId) return "pro";
-  if (priceId === businessPriceId) return "business";
+  // Pro price IDs (monthly and yearly)
+  const proMonthly = process.env.NEXT_PUBLIC_PADDLE_PRO_MONTHLY_PRICE_ID;
+  const proYearly = process.env.NEXT_PUBLIC_PADDLE_PRO_YEARLY_PRICE_ID;
+
+  // Business price IDs (monthly and yearly)
+  const businessMonthly = process.env.NEXT_PUBLIC_PADDLE_BUSINESS_MONTHLY_PRICE_ID;
+  const businessYearly = process.env.NEXT_PUBLIC_PADDLE_BUSINESS_YEARLY_PRICE_ID;
+
+  if (priceId === starterMonthly || priceId === starterYearly) return "starter";
+  if (priceId === proMonthly || priceId === proYearly) return "pro";
+  if (priceId === businessMonthly || priceId === businessYearly) return "business";
 
   // Default to free if unknown
   console.warn(`Unknown price ID: ${priceId}, defaulting to free`);

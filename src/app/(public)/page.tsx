@@ -96,7 +96,7 @@ export default async function Home() {
                   </div>
                   <div className="flex-1 mx-4">
                     <div className="max-w-md mx-auto px-4 py-1.5 bg-neutral-700 rounded-md text-xs text-neutral-400 text-center">
-                      app.rankriot.com/projects
+                      app.rankriot.app/projects
                     </div>
                   </div>
                 </div>

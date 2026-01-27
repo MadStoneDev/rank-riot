@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -206,14 +206,14 @@ export default function PublicLayout({
             <p className="text-sm">
               &copy; {new Date().getFullYear()} RankRiot. All rights reserved.
             </p>
-            <div className="flex items-center space-x-6 text-sm">
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
-                GitHub
-              </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
-                Twitter
-              </a>
-            </div>
+            {/*<div className="flex items-center space-x-6 text-sm">*/}
+            {/*  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">*/}
+            {/*    GitHub*/}
+            {/*  </a>*/}
+            {/*  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">*/}
+            {/*    Twitter*/}
+            {/*  </a>*/}
+            {/*</div>*/}
           </div>
         </div>
       </footer>

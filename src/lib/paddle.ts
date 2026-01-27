@@ -1,4 +1,7 @@
-import { PlanId } from "@/types/subscription";
+import { PlanId, BillingInterval } from "@/types/subscription";
+
+// Re-export for convenience
+export type { BillingInterval };
 
 // Paddle environment type
 type PaddleEnvironment = "sandbox" | "production";
@@ -49,11 +52,23 @@ declare global {
   }
 }
 
-// Price IDs for each plan (loaded from env)
-export const PADDLE_PRICE_IDS: Record<Exclude<PlanId, "free">, string> = {
-  starter: process.env.NEXT_PUBLIC_PADDLE_STARTER_PRICE_ID || "",
-  pro: process.env.NEXT_PUBLIC_PADDLE_PRO_PRICE_ID || "",
-  business: process.env.NEXT_PUBLIC_PADDLE_BUSINESS_PRICE_ID || "",
+// Price IDs for each plan and billing interval (loaded from env)
+export const PADDLE_PRICE_IDS: Record<
+  Exclude<PlanId, "free">,
+  { monthly: string; yearly: string }
+> = {
+  starter: {
+    monthly: process.env.NEXT_PUBLIC_PADDLE_STARTER_MONTHLY_PRICE_ID || "",
+    yearly: process.env.NEXT_PUBLIC_PADDLE_STARTER_YEARLY_PRICE_ID || "",
+  },
+  pro: {
+    monthly: process.env.NEXT_PUBLIC_PADDLE_PRO_MONTHLY_PRICE_ID || "",
+    yearly: process.env.NEXT_PUBLIC_PADDLE_PRO_YEARLY_PRICE_ID || "",
+  },
+  business: {
+    monthly: process.env.NEXT_PUBLIC_PADDLE_BUSINESS_MONTHLY_PRICE_ID || "",
+    yearly: process.env.NEXT_PUBLIC_PADDLE_BUSINESS_YEARLY_PRICE_ID || "",
+  },
 };
 
 // Check if Paddle is loaded
@@ -116,30 +131,33 @@ function handlePaddleEvent(event: any) {
 // Open Paddle checkout for a specific plan
 export function openCheckout(
   planId: Exclude<PlanId, "free">,
+  billingInterval: BillingInterval,
   userId: string,
   userEmail: string,
-  onSuccess?: () => void
+  paddleCustomerId?: string
 ): boolean {
   if (!isPaddleLoaded()) {
     console.error("Paddle not loaded");
     return false;
   }
 
-  const priceId = PADDLE_PRICE_IDS[planId];
+  const priceId = PADDLE_PRICE_IDS[planId]?.[billingInterval];
   if (!priceId) {
-    console.error(`No price ID configured for plan: ${planId}`);
+    console.error(`No price ID configured for plan: ${planId} (${billingInterval})`);
     return false;
   }
 
   try {
     window.Paddle!.Checkout.open({
       items: [{ priceId, quantity: 1 }],
-      customer: {
-        email: userEmail,
-      },
+      customer: paddleCustomerId
+        ? { id: paddleCustomerId }
+        : { email: userEmail },
       customData: {
         userId,
         userEmail,
+        planId,
+        billingInterval,
       },
       settings: {
         displayMode: "overlay",
@@ -161,18 +179,24 @@ export function closeCheckout(): void {
   }
 }
 
-// Get price ID for a plan
+// Get price ID for a plan and billing interval
 export function getPriceIdForPlan(
-  planId: Exclude<PlanId, "free">
+  planId: Exclude<PlanId, "free">,
+  billingInterval: BillingInterval
 ): string | null {
-  return PADDLE_PRICE_IDS[planId] || null;
+  return PADDLE_PRICE_IDS[planId]?.[billingInterval] || null;
 }
 
-// Map Paddle price ID to plan ID
-export function getPlanFromPriceId(priceId: string): PlanId | null {
-  for (const [plan, id] of Object.entries(PADDLE_PRICE_IDS)) {
-    if (id === priceId) {
-      return plan as PlanId;
+// Map Paddle price ID to plan ID and billing interval
+export function getPlanFromPriceId(
+  priceId: string
+): { planId: PlanId; billingInterval: BillingInterval } | null {
+  for (const [plan, prices] of Object.entries(PADDLE_PRICE_IDS)) {
+    if (prices.monthly === priceId) {
+      return { planId: plan as PlanId, billingInterval: "monthly" };
+    }
+    if (prices.yearly === priceId) {
+      return { planId: plan as PlanId, billingInterval: "yearly" };
     }
   }
   return null;

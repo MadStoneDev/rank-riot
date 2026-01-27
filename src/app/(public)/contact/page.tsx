@@ -151,53 +151,53 @@ export default function ContactPage() {
                       For general inquiries and support
                     </p>
                     <a
-                      href="mailto:support@rankriot.com"
+                      href="mailto:support@rankriot.app"
                       className="text-primary hover:underline mt-2 inline-block"
                     >
-                      support@rankriot.com
+                      support@rankriot.app
                     </a>
                   </div>
                 </div>
 
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-neutral-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <IconBrandTwitter className="w-6 h-6 text-neutral-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-neutral-900">Twitter</h3>
-                    <p className="text-neutral-600 mt-1">
-                      Follow us for updates and tips
-                    </p>
-                    <a
-                      href="https://twitter.com/rankriot"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline mt-2 inline-block"
-                    >
-                      @rankriot
-                    </a>
-                  </div>
-                </div>
+                {/*<div className="flex gap-4">*/}
+                {/*  <div className="w-12 h-12 bg-neutral-100 rounded-xl flex items-center justify-center flex-shrink-0">*/}
+                {/*    <IconBrandTwitter className="w-6 h-6 text-neutral-600" />*/}
+                {/*  </div>*/}
+                {/*  <div>*/}
+                {/*    <h3 className="font-semibold text-neutral-900">Twitter</h3>*/}
+                {/*    <p className="text-neutral-600 mt-1">*/}
+                {/*      Follow us for updates and tips*/}
+                {/*    </p>*/}
+                {/*    <a*/}
+                {/*      href="https://twitter.com/rankriot"*/}
+                {/*      target="_blank"*/}
+                {/*      rel="noopener noreferrer"*/}
+                {/*      className="text-primary hover:underline mt-2 inline-block"*/}
+                {/*    >*/}
+                {/*      @rankriot*/}
+                {/*    </a>*/}
+                {/*  </div>*/}
+                {/*</div>*/}
 
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-neutral-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <IconBrandGithub className="w-6 h-6 text-neutral-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-neutral-900">GitHub</h3>
-                    <p className="text-neutral-600 mt-1">
-                      Report bugs or request features
-                    </p>
-                    <a
-                      href="https://github.com/rankriot"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline mt-2 inline-block"
-                    >
-                      github.com/rankriot
-                    </a>
-                  </div>
-                </div>
+                {/*<div className="flex gap-4">*/}
+                {/*  <div className="w-12 h-12 bg-neutral-100 rounded-xl flex items-center justify-center flex-shrink-0">*/}
+                {/*    <IconBrandGithub className="w-6 h-6 text-neutral-600" />*/}
+                {/*  </div>*/}
+                {/*  <div>*/}
+                {/*    <h3 className="font-semibold text-neutral-900">GitHub</h3>*/}
+                {/*    <p className="text-neutral-600 mt-1">*/}
+                {/*      Report bugs or request features*/}
+                {/*    </p>*/}
+                {/*    <a*/}
+                {/*      href="https://github.com/rankriot"*/}
+                {/*      target="_blank"*/}
+                {/*      rel="noopener noreferrer"*/}
+                {/*      className="text-primary hover:underline mt-2 inline-block"*/}
+                {/*    >*/}
+                {/*      github.com/rankriot*/}
+                {/*    </a>*/}
+                {/*  </div>*/}
+                {/*</div>*/}
               </div>
 
               {/* FAQ Link */}
