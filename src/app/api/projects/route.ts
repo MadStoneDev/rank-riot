@@ -135,19 +135,13 @@ export async function POST(request: NextRequest) {
 
     if (!crawlerApiUrl) {
       console.error("❌ CRAWLER_API_URL is not set in environment variables!");
-      console.error(
-        "Available env vars:",
-        Object.keys(process.env).filter(
-          (k) => k.includes("CRAWLER") || k.includes("API"),
-        ),
-      );
       return NextResponse.json(
         {
           error: "Server configuration error: CRAWLER_API_URL not set",
           id: projectId,
           scanFailed: true,
         },
-        { status: 201 },
+        { status: 500 },
       );
     }
 
@@ -179,13 +173,17 @@ export async function POST(request: NextRequest) {
         console.error(`   Status: ${scanResponse.status}`);
         console.error(`   URL was: ${fullUrl}`);
 
-        // Parse error if possible
-        try {
-          const errorJson = JSON.parse(errorText);
-          console.error(`   Error details:`, errorJson);
-        } catch {
-          // Not JSON, already logged as text
-        }
+        return NextResponse.json(
+          {
+            id: projectId,
+            existing: isExisting,
+            scanFailed: true,
+            message: isExisting
+              ? "Project updated but scan failed to start. Please try scanning manually."
+              : "Project created but scan failed to start. Please try scanning manually.",
+          },
+          { status: isExisting ? 200 : 201 },
+        );
       } else {
         const scanData = await scanResponse.json();
         console.log(
@@ -198,7 +196,18 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       console.error(`❌ Error initiating ${project_type} scan:`, error);
       console.error(`   Attempted URL: ${fullUrl}`);
-      // Don't fail project creation/update if scan fails
+      // Project was created but scan failed — inform the user
+      return NextResponse.json(
+        {
+          id: projectId,
+          existing: isExisting,
+          scanFailed: true,
+          message: isExisting
+            ? "Project updated but scan could not be started. Please try scanning manually."
+            : "Project created but scan could not be started. Please try scanning manually.",
+        },
+        { status: isExisting ? 200 : 201 },
+      );
     }
 
     // Return response with indicator if project already existed

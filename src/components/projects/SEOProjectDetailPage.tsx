@@ -17,10 +17,9 @@ import SiteArchitecture from "@/components/projects/SiteArchitecture";
 import TechnicalHealth from "@/components/projects/TechnicalHealth";
 import MediaAnalysis from "@/components/projects/MediaAnalysis";
 import HistoricalTrends from "@/components/projects/HistoricalTrends";
-import ExportButton from "@/components/export/ExportButton";
+import ExportDropdown from "@/components/export/ExportDropdown";
 
 import { Database } from "../../../database.types";
-import { PAGES_EXPORT_COLUMNS, ISSUES_EXPORT_COLUMNS } from "@/types/export";
 import { DEFAULT_THRESHOLDS, PageWithKeywords } from "@/types/content-intelligence";
 import {
   findDuplicates,
@@ -387,10 +386,16 @@ export default async function ProjectDetailPage({
   mediaAnalysisData.summary = calculateMediaAnalysisSummary(mediaAnalysisData);
 
   // Export Data Preparation
-  // Get all pages for export
+  // Get all pages for export (expanded fields for all export types)
   const { data: allPagesForExport } = await supabase
     .from("pages")
-    .select("url, title, meta_description, word_count, http_status, load_time_ms, depth, is_indexable")
+    .select(`id, url, title, title_length, meta_description, meta_description_length,
+      word_count, http_status, load_time_ms, depth, is_indexable,
+      first_byte_time_ms, size_bytes, canonical_url,
+      has_robots_noindex, has_robots_nofollow, redirect_url,
+      h1s, h2s, h3s, h4s, h5s, h6s,
+      images, schema_types, structured_data, open_graph, twitter_card,
+      js_count, css_count, content_type`)
     .eq("project_id", projectId)
     .order("url");
 
@@ -401,7 +406,9 @@ export default async function ProjectDetailPage({
       issue_type,
       severity,
       description,
+      details,
       created_at,
+      is_fixed,
       pages(url)
     `)
     .eq("project_id", projectId)
@@ -414,8 +421,64 @@ export default async function ProjectDetailPage({
     issue_type: issue.issue_type,
     severity: issue.severity,
     description: issue.description,
+    details: issue.details,
     created_at: issue.created_at,
+    is_fixed: issue.is_fixed,
   }));
+
+  // Get internal links for export
+  const { data: internalLinksForExport } = await supabase
+    .from("page_links")
+    .select("source_page_id, destination_url, anchor_text, is_followed, http_status")
+    .eq("project_id", projectId)
+    .eq("link_type", "internal");
+
+  const pagesById = new Map(
+    (allPagesForExport || []).map((p: any) => [p.id, p])
+  );
+
+  const internalLinksWithSource = (internalLinksForExport || []).map((link: any) => {
+    const sourcePage = pagesById.get(link.source_page_id);
+    return {
+      source_url: sourcePage?.url || "",
+      destination_url: link.destination_url,
+      anchor_text: link.anchor_text || "",
+      is_followed: link.is_followed,
+      http_status: link.http_status,
+    };
+  });
+
+  // Get external links for export
+  const { data: externalLinksForExport } = await supabase
+    .from("page_links")
+    .select("source_page_id, destination_url, anchor_text, is_followed, http_status, rel_attributes")
+    .eq("project_id", projectId)
+    .eq("link_type", "external");
+
+  const externalLinksWithSource = (externalLinksForExport || []).map((link: any) => {
+    const sourcePage = pagesById.get(link.source_page_id);
+    return {
+      source_url: sourcePage?.url || "",
+      destination_url: link.destination_url,
+      anchor_text: link.anchor_text || "",
+      is_followed: link.is_followed,
+      http_status: link.http_status,
+      rel_attributes: link.rel_attributes,
+    };
+  });
+
+  // Flatten images for per-image export
+  const flattenedImages = (allPagesForExport || []).flatMap((page: any) =>
+    (Array.isArray(page.images) ? page.images : []).map((img: any) => ({
+      pageUrl: page.url,
+      pageTitle: page.title || "",
+      imageSrc: img.src || "",
+      alt: img.alt || "",
+      hasAlt: !!(img.alt && img.alt.trim()),
+    }))
+  );
+
+  const exportFilenamePrefix = project.name.replace(/\s+/g, "-").toLowerCase();
 
   return (
     <div className="space-y-6">
@@ -438,18 +501,22 @@ export default async function ProjectDetailPage({
         <div className="flex flex-wrap items-center gap-3">
           <StartScanButton projectId={projectId} />
 
-          <ExportButton
-            data={allPagesForExport || []}
-            columns={PAGES_EXPORT_COLUMNS}
-            filename={`${project.name.replace(/\s+/g, "-").toLowerCase()}-pages`}
-            label="Export Pages"
-          />
-
-          <ExportButton
-            data={formattedIssuesForExport}
-            columns={ISSUES_EXPORT_COLUMNS}
-            filename={`${project.name.replace(/\s+/g, "-").toLowerCase()}-issues`}
-            label="Export Issues"
+          <ExportDropdown
+            filenamePrefix={exportFilenamePrefix}
+            projectName={project.name}
+            projectUrl={project.url}
+            entries={[
+              { dataType: "pages", data: allPagesForExport || [], label: "Page URLs" },
+              { dataType: "seo-metadata", data: allPagesForExport || [], label: "SEO Metadata" },
+              { dataType: "headings", data: allPagesForExport || [], label: "Headings" },
+              { dataType: "schema-data", data: allPagesForExport || [], label: "Schema Data" },
+              { dataType: "performance", data: allPagesForExport || [], label: "Performance" },
+              { dataType: "images-alt", data: flattenedImages, label: "Images & Alt Text" },
+              { dataType: "internal-links", data: internalLinksWithSource, label: "Internal Links" },
+              { dataType: "external-links", data: externalLinksWithSource, label: "External Links" },
+              { dataType: "broken-links", data: brokenLinksWithSource, label: "Broken Links" },
+              { dataType: "issues", data: formattedIssuesForExport, label: "Issues" },
+            ]}
           />
 
           <Link

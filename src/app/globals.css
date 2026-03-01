@@ -50,13 +50,3 @@
   overflow-x: hidden !important;
 }
 
-.slide-out-right::before {
-  content: "Animating";
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: rgba(255, 0, 0, 0.2);
-  padding: 2px;
-  font-size: 10px;
-  z-index: 100;
-}

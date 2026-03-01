@@ -1,4 +1,5 @@
-import { ExportColumn, ExportableData } from "@/types/export";
+import { ExportColumn, ExportableData, ExportFormat } from "@/types/export";
+import { toast } from "sonner";
 
 /**
  * Escape a value for CSV (handle commas, quotes, newlines)
@@ -48,25 +49,26 @@ export function generateCSV(
 }
 
 /**
+ * Trigger a file download from a Blob
+ */
+export function triggerDownload(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+/**
  * Download CSV content as a file
  */
 export function downloadCSV(content: string, filename: string): void {
-  // Add BOM for Excel UTF-8 compatibility
   const bom = "\uFEFF";
   const blob = new Blob([bom + content], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename.endsWith(".csv") ? filename : `${filename}.csv`;
-
-  // Trigger download
-  document.body.appendChild(link);
-  link.click();
-
-  // Cleanup
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  triggerDownload(blob, filename.endsWith(".csv") ? filename : `${filename}.csv`);
 }
 
 /**
@@ -96,4 +98,109 @@ export function formatDateForExport(date: string | Date | null): string {
 export function formatBooleanForExport(value: boolean | null): string {
   if (value === null || value === undefined) return "";
   return value ? "Yes" : "No";
+}
+
+/**
+ * Generate JSON string from data and column configuration
+ */
+export function generateJSON(
+  data: ExportableData,
+  columns: ExportColumn[]
+): string {
+  const mapped = data.map((row) => {
+    const obj: Record<string, any> = {};
+    for (const col of columns) {
+      const value = row[col.key];
+      obj[col.key] = col.formatter ? col.formatter(value) : value ?? null;
+    }
+    return obj;
+  });
+  return JSON.stringify(mapped, null, 2);
+}
+
+/**
+ * Download JSON content as a file
+ */
+export function downloadJSON(content: string, filename: string): void {
+  const blob = new Blob([content], { type: "application/json;charset=utf-8;" });
+  triggerDownload(blob, filename.endsWith(".json") ? filename : `${filename}.json`);
+}
+
+/**
+ * Export data to JSON file (convenience function)
+ */
+export function exportToJSON(
+  data: ExportableData,
+  columns: ExportColumn[],
+  filename: string
+): void {
+  const jsonContent = generateJSON(data, columns);
+  downloadJSON(jsonContent, filename);
+}
+
+/**
+ * Generate plain text — one value per line from a single column key
+ */
+export function generatePlainText(
+  data: ExportableData,
+  key: string,
+  formatter?: (value: any) => string
+): string {
+  return data
+    .map((row) => {
+      const value = row[key];
+      return formatter ? formatter(value) : (value ?? "");
+    })
+    .join("\n");
+}
+
+/**
+ * Download plain text content as a file
+ */
+export function downloadPlainText(content: string, filename: string): void {
+  const blob = new Blob([content], { type: "text/plain;charset=utf-8;" });
+  triggerDownload(blob, filename.endsWith(".txt") ? filename : `${filename}.txt`);
+}
+
+/**
+ * Export data to plain text file (convenience function)
+ */
+export function exportToPlainText(
+  data: ExportableData,
+  key: string,
+  filename: string,
+  formatter?: (value: any) => string
+): void {
+  const textContent = generatePlainText(data, key, formatter);
+  downloadPlainText(textContent, filename);
+}
+
+/**
+ * Dispatch export based on format
+ */
+export function executeExport(
+  format: ExportFormat,
+  data: ExportableData,
+  columns: ExportColumn[],
+  filename: string
+): void {
+  switch (format) {
+    case "csv":
+      exportToCSV(data, columns, filename);
+      break;
+    case "json":
+      exportToJSON(data, columns, filename);
+      break;
+    case "text": {
+      // Use first column key for plain text
+      const key = columns[0]?.key || "url";
+      const col = columns.find((c) => c.key === key);
+      exportToPlainText(data, key, filename, col?.formatter);
+      break;
+    }
+    case "pdf":
+    case "html":
+      toast.info("PDF and HTML reports are coming soon for Pro and Business plans.");
+      break;
+  }
 }

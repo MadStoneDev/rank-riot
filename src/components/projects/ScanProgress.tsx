@@ -66,8 +66,8 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
         console.log(`Subscription status: ${status}`);
       });
 
-    // Set up more frequent polling for progress updates
-    pollingInterval.current = setInterval(fetchScanData, 500); // Poll every 500ms
+    // Use polling only as a fallback — check every 5s in case the subscription misses an update
+    pollingInterval.current = setInterval(fetchScanData, 5000);
 
     return () => {
       if (pollingInterval.current) clearInterval(pollingInterval.current);

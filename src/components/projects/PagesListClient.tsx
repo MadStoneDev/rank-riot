@@ -15,6 +15,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import Pagination from "@/components/ui/Pagination";
+import ExportTriggerButton from "@/components/export/ExportTriggerButton";
 
 interface Page {
   id: string;
@@ -268,13 +269,21 @@ export default function PagesListClient({
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
       {/* Header with count */}
-      <div className="px-6 py-4 border-b border-neutral-200">
-        <h3 className="text-lg font-medium text-neutral-900">
-          {pages.length} Pages Crawled
-        </h3>
-        <p className="text-sm text-neutral-500 mt-1">
-          Showing {filteredPages.length} of {pages.length} pages
-        </p>
+      <div className="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-medium text-neutral-900">
+            {pages.length} Pages Crawled
+          </h3>
+          <p className="text-sm text-neutral-500 mt-1">
+            Showing {filteredPages.length} of {pages.length} pages
+          </p>
+        </div>
+        <ExportTriggerButton
+          dataType="pages"
+          data={sortedPages}
+          filenamePrefix="pages"
+          label="Export"
+        />
       </div>
 
       {/* Search & Filters */}

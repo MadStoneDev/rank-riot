@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 
 import Header from "@/components/dashboard/Header";
 import Sidebar from "@/components/dashboard/Sidebar";
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import SubscriptionProviderWrapper from "@/providers/SubscriptionProviderWrapper";
 
 import { Toaster } from "sonner";
@@ -34,7 +35,9 @@ export default async function DashboardLayout({
 
           <main className="flex-1 p-6 pb-24 md:pb-6">
             <div className="max-w-7xl mx-auto">
-              {children}
+              <ErrorBoundary>
+                {children}
+              </ErrorBoundary>
             </div>
             <Toaster />
           </main>
