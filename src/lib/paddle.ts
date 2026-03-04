@@ -71,9 +71,17 @@ export const PADDLE_PRICE_IDS: Record<
   },
 };
 
-// Check if Paddle is loaded
+// Module-level flag tracking successful initialization
+let _paddleInitialized = false;
+
+// Check if Paddle script is loaded on window
 export function isPaddleLoaded(): boolean {
   return typeof window !== "undefined" && !!window.Paddle;
+}
+
+// Check if Paddle is both loaded AND initialized
+export function isPaddleReady(): boolean {
+  return isPaddleLoaded() && _paddleInitialized;
 }
 
 // Initialize Paddle SDK
@@ -81,6 +89,10 @@ export function initializePaddle(): boolean {
   if (!isPaddleLoaded()) {
     console.warn("Paddle.js not loaded yet");
     return false;
+  }
+
+  if (_paddleInitialized) {
+    return true;
   }
 
   const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
@@ -98,6 +110,7 @@ export function initializePaddle(): boolean {
       token: clientToken,
       eventCallback: handlePaddleEvent,
     });
+    _paddleInitialized = true;
     return true;
   } catch (error) {
     console.error("Failed to initialize Paddle:", error);
@@ -136,14 +149,24 @@ export function openCheckout(
   userEmail: string,
   paddleCustomerId?: string
 ): boolean {
-  if (!isPaddleLoaded()) {
-    console.error("Paddle not loaded");
-    return false;
+  // Check if Paddle is ready; if not, attempt on-the-fly initialization
+  if (!isPaddleReady()) {
+    if (isPaddleLoaded()) {
+      console.warn("Paddle loaded but not initialized — attempting on-the-fly init");
+      const initSuccess = initializePaddle();
+      if (!initSuccess) {
+        console.error("Paddle on-the-fly initialization failed");
+        return false;
+      }
+    } else {
+      console.error("Paddle script not loaded on window");
+      return false;
+    }
   }
 
   const priceId = PADDLE_PRICE_IDS[planId]?.[billingInterval];
   if (!priceId) {
-    console.error(`No price ID configured for plan: ${planId} (${billingInterval})`);
+    console.error(`No price ID configured for plan: ${planId} (${billingInterval}). Check NEXT_PUBLIC_PADDLE_*_PRICE_ID env vars.`);
     return false;
   }
 
@@ -167,7 +190,7 @@ export function openCheckout(
     });
     return true;
   } catch (error) {
-    console.error("Failed to open checkout:", error);
+    console.error("Paddle Checkout.open() threw an error:", error);
     return false;
   }
 }

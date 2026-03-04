@@ -4,7 +4,7 @@ import { useState } from "react";
 import { IconLoader2 } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { PlanId } from "@/types/subscription";
-import { openCheckout, PADDLE_PRICE_IDS, BillingInterval } from "@/lib/paddle";
+import { openCheckout, isPaddleReady, PADDLE_PRICE_IDS, BillingInterval } from "@/lib/paddle";
 import { PLAN_INFO } from "@/lib/subscription-limits";
 
 interface CheckoutButtonProps {
@@ -40,12 +40,26 @@ export default function CheckoutButton({
 
   const info = PLAN_INFO[targetPlan];
 
+  const attemptCheckout = (): boolean => {
+    return openCheckout(targetPlan, billingInterval, userId, userEmail, paddleCustomerId);
+  };
+
   const handleClick = async () => {
     if (isCurrentPlan || !PADDLE_PRICE_IDS[targetPlan]?.[billingInterval]) return;
 
     setIsLoading(true);
     try {
-      const success = openCheckout(targetPlan, billingInterval, userId, userEmail, paddleCustomerId);
+      // If Paddle isn't ready yet, wait briefly and retry once
+      if (!isPaddleReady()) {
+        toast.info("Payment system is still loading. Please wait a moment...");
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        if (!isPaddleReady()) {
+          toast.error("Payment system failed to load. Please refresh the page and try again.");
+          return;
+        }
+      }
+
+      const success = attemptCheckout();
       if (!success) {
         toast.error("Unable to open checkout. Please refresh the page and try again.");
       }

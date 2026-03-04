@@ -7,6 +7,7 @@ import {
   IconAlertTriangle,
   IconSettings,
   IconFile,
+  IconMap,
 } from "@tabler/icons-react";
 
 import ScanHistory from "@/components/projects/ScanHistory";
@@ -533,6 +534,14 @@ export default async function ProjectDetailPage({
               { dataType: "issues", data: formattedIssuesForExport, label: "Issues" },
             ]}
           />
+
+          <Link
+            href={`/projects/${projectId}/sitemap`}
+            className="inline-flex items-center gap-2 px-4 py-2.5 border border-neutral-200 text-sm font-medium rounded-lg text-neutral-700 bg-white hover:bg-neutral-50 transition-colors"
+          >
+            <IconMap className="h-4 w-4" />
+            Site Map
+          </Link>
 
           <Link
             href={`/projects/${projectId}/schema`}

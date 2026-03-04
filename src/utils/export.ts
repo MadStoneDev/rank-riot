@@ -1,6 +1,7 @@
 import { ExportColumn, ExportableData, ExportFormat } from "@/types/export";
 import { toast } from "sonner";
 import { generatePdfReport, PdfBranding } from "@/utils/pdf-report";
+import { generateHtmlReport } from "@/utils/html-report";
 
 /**
  * Escape a value for CSV (handle commas, quotes, newlines)
@@ -205,7 +206,7 @@ export function executeExport(
       generatePdfReport(data, columns, filename, pdfBranding, projectName, projectUrl);
       break;
     case "html":
-      toast.info("HTML reports are coming soon.");
+      generateHtmlReport(data, columns, filename, pdfBranding, projectName, projectUrl);
       break;
   }
 }

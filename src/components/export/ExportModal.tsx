@@ -136,7 +136,7 @@ export default function ExportModal({
       processedData,
       activeColumnsArray,
       filename,
-      selectedFormat === "pdf" ? pdfBranding : undefined,
+      (selectedFormat === "pdf" || selectedFormat === "html") ? pdfBranding : undefined,
       projectName,
       projectUrl,
     );
@@ -213,8 +213,8 @@ export default function ExportModal({
           </div>
         </div>
 
-        {/* PDF Branding */}
-        {selectedFormat === "pdf" && (
+        {/* Report Branding */}
+        {(selectedFormat === "pdf" || selectedFormat === "html") && (
           <PdfBrandingForm onBrandingChange={handleBrandingChange} />
         )}
 

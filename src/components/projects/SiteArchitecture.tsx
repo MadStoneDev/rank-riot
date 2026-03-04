@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import {
   IconNetwork,
   IconAlertCircle,
   IconAlertTriangle,
   IconCircleCheck,
+  IconMap,
 } from "@tabler/icons-react";
 import { SiteArchitectureData } from "@/types/site-architecture";
 import DepthDistributionCard from "@/components/site-architecture/DepthDistributionCard";
@@ -49,7 +51,17 @@ export default function SiteArchitecture({
             </div>
           </div>
 
-          {/* Summary badges */}
+          {/* Actions + Summary badges */}
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/projects/${projectId}/sitemap`}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors"
+            >
+              <IconMap className="h-4 w-4" />
+              View Site Map
+            </Link>
+          </div>
+
           <div className="flex items-center gap-3">
             {criticalCount > 0 && (
               <div className="flex items-center gap-1 px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">
