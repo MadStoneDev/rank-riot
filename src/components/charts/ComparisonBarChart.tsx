@@ -61,6 +61,7 @@ export default function ComparisonBarChart({
   }));
 
   return (
+    <div role="img" aria-label="Comparison bar chart showing previous vs current scan data">
     <ResponsiveContainer width="100%" height={height}>
       <BarChart
         data={dataWithChange}
@@ -151,5 +152,6 @@ export default function ComparisonBarChart({
         </Bar>
       </BarChart>
     </ResponsiveContainer>
+    </div>
   );
 }

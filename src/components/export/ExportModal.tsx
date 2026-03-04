@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { toast } from "sonner";
 import {
   IconFileTypeCsv,
@@ -23,6 +23,8 @@ import {
   EXPORT_DATA_TYPE_LABELS,
 } from "@/types/export";
 import { executeExport } from "@/utils/export";
+import PdfBrandingForm from "@/components/export/PdfBrandingForm";
+import { PdfBranding } from "@/utils/pdf-report";
 
 interface ExportModalProps {
   isOpen: boolean;
@@ -54,6 +56,8 @@ export default function ExportModal({
   dataType,
   data,
   filenamePrefix,
+  projectName,
+  projectUrl,
   allowedFormats,
 }: ExportModalProps) {
   const hasPdfReports = useHasPdfReports();
@@ -69,6 +73,8 @@ export default function ExportModal({
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [limit, setLimit] = useState<number | null>(null);
   const [columnsExpanded, setColumnsExpanded] = useState(false);
+  const [pdfBranding, setPdfBranding] = useState<PdfBranding>({});
+  const handleBrandingChange = useCallback((b: PdfBranding) => setPdfBranding(b), []);
 
   const formats = allowedFormats
     ? FORMAT_OPTIONS.filter((f) => allowedFormats.includes(f.value))
@@ -125,14 +131,20 @@ export default function ExportModal({
     const ext = selectedFormat === "text" ? "txt" : selectedFormat;
     const filename = `${filenamePrefix}-${dataType}.${ext}`;
 
-    executeExport(selectedFormat, processedData, activeColumnsArray, filename);
+    executeExport(
+      selectedFormat,
+      processedData,
+      activeColumnsArray,
+      filename,
+      selectedFormat === "pdf" ? pdfBranding : undefined,
+      projectName,
+      projectUrl,
+    );
 
-    if (selectedFormat !== "pdf" && selectedFormat !== "html") {
-      toast.success(
-        `Exported ${processedData.length} items as ${selectedFormat.toUpperCase()}`
-      );
-      onClose();
-    }
+    toast.success(
+      `Exported ${processedData.length} items as ${selectedFormat.toUpperCase()}`
+    );
+    onClose();
   };
 
   const toggleColumn = (key: string) => {
@@ -179,6 +191,7 @@ export default function ExportModal({
                   key={value}
                   onClick={() => !disabled && setSelectedFormat(value)}
                   disabled={disabled}
+                  aria-pressed={selectedFormat === value}
                   className={`inline-flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg border transition-colors ${
                     selectedFormat === value
                       ? "border-primary bg-primary/10 text-primary font-medium"
@@ -199,6 +212,11 @@ export default function ExportModal({
             })}
           </div>
         </div>
+
+        {/* PDF Branding */}
+        {selectedFormat === "pdf" && (
+          <PdfBrandingForm onBrandingChange={handleBrandingChange} />
+        )}
 
         {/* Filter + Sort row */}
         <div className="grid grid-cols-2 gap-4">
@@ -337,7 +355,7 @@ export default function ExportModal({
 
       {/* Footer */}
       <div className="px-6 py-4 border-t border-neutral-200 flex items-center justify-between bg-neutral-50 rounded-b-2xl">
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-neutral-500" aria-live="polite">
           {processedData.length} items, {activeColumnsArray.length} columns
         </p>
         <div className="flex gap-3">

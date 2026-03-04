@@ -14,11 +14,13 @@ import ImageHeavyPagesCard from "@/components/media-analysis/ImageHeavyPagesCard
 interface MediaAnalysisProps {
   data: MediaAnalysisData;
   projectId: string;
+  children?: React.ReactNode;
 }
 
 export default function MediaAnalysis({
   data,
   projectId,
+  children,
 }: MediaAnalysisProps) {
   const { summary } = data;
 
@@ -43,8 +45,9 @@ export default function MediaAnalysis({
             </div>
           </div>
 
-          {/* Summary badges */}
+          {/* Summary badges + children link */}
           <div className="flex items-center gap-3">
+            {children}
             {summary.critical > 0 && (
               <div className="flex items-center gap-1 px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">
                 <IconAlertCircle className="h-4 w-4" />

@@ -56,6 +56,7 @@ export default function StackedBarChart({
   const hasInfo = data.some((d) => (d.info || 0) > 0);
 
   return (
+    <div role="img" aria-label="Stacked bar chart showing severity distribution">
     <ResponsiveContainer width="100%" height={height}>
       <BarChart
         data={data}
@@ -122,5 +123,6 @@ export default function StackedBarChart({
         )}
       </BarChart>
     </ResponsiveContainer>
+    </div>
   );
 }

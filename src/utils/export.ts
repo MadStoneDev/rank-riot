@@ -1,5 +1,6 @@
 import { ExportColumn, ExportableData, ExportFormat } from "@/types/export";
 import { toast } from "sonner";
+import { generatePdfReport, PdfBranding } from "@/utils/pdf-report";
 
 /**
  * Escape a value for CSV (handle commas, quotes, newlines)
@@ -182,7 +183,10 @@ export function executeExport(
   format: ExportFormat,
   data: ExportableData,
   columns: ExportColumn[],
-  filename: string
+  filename: string,
+  pdfBranding?: PdfBranding,
+  projectName?: string,
+  projectUrl?: string,
 ): void {
   switch (format) {
     case "csv":
@@ -192,15 +196,16 @@ export function executeExport(
       exportToJSON(data, columns, filename);
       break;
     case "text": {
-      // Use first column key for plain text
       const key = columns[0]?.key || "url";
       const col = columns.find((c) => c.key === key);
       exportToPlainText(data, key, filename, col?.formatter);
       break;
     }
     case "pdf":
+      generatePdfReport(data, columns, filename, pdfBranding, projectName, projectUrl);
+      break;
     case "html":
-      toast.info("PDF and HTML reports are coming soon for Pro and Business plans.");
+      toast.info("HTML reports are coming soon.");
       break;
   }
 }

@@ -50,6 +50,7 @@ export default function TrendLineChart({
   }
 
   return (
+    <div role="img" aria-label="Trend line chart showing data over time">
     <ResponsiveContainer width="100%" height={height}>
       <LineChart
         data={data}
@@ -96,5 +97,6 @@ export default function TrendLineChart({
         ))}
       </LineChart>
     </ResponsiveContainer>
+    </div>
   );
 }

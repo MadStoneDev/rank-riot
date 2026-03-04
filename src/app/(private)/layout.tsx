@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 
 import Header from "@/components/dashboard/Header";
 import Sidebar from "@/components/dashboard/Sidebar";
+import SkipLink from "@/components/ui/SkipLink";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import SubscriptionProviderWrapper from "@/providers/SubscriptionProviderWrapper";
 
@@ -27,13 +28,14 @@ export default async function DashboardLayout({
   return (
     <SubscriptionProviderWrapper userId={user.id} userEmail={user.email || ""}>
       <div className="min-h-screen bg-neutral-50">
+        <SkipLink />
         <Sidebar />
 
         {/* Main content area - offset by sidebar on desktop */}
         <div className="md:pl-64 flex flex-col min-h-screen">
           <Header />
 
-          <main className="flex-1 p-6 pb-24 md:pb-6">
+          <main id="main-content" className="flex-1 p-6 pb-24 md:pb-6">
             <div className="max-w-7xl mx-auto">
               <ErrorBoundary>
                 {children}

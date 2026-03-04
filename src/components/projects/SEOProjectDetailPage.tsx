@@ -18,6 +18,9 @@ import TechnicalHealth from "@/components/projects/TechnicalHealth";
 import MediaAnalysis from "@/components/projects/MediaAnalysis";
 import HistoricalTrends from "@/components/projects/HistoricalTrends";
 import ExportDropdown from "@/components/export/ExportDropdown";
+import FloatingExportButton from "@/components/export/FloatingExportButton";
+import AeoReadinessSection from "@/components/projects/AeoReadinessSection";
+import { calculateAggregateAeo, AeoPageInput } from "@/utils/aeo-readiness";
 
 import { Database } from "../../../database.types";
 import { DEFAULT_THRESHOLDS, PageWithKeywords } from "@/types/content-intelligence";
@@ -478,6 +481,18 @@ export default async function ProjectDetailPage({
     }))
   );
 
+  // AEO/GEO Readiness
+  const aeoPages: AeoPageInput[] = (allPagesForExport || []).map((p: any) => ({
+    schema_types: p.schema_types,
+    structured_data: p.structured_data,
+    open_graph: p.open_graph,
+    twitter_card: p.twitter_card,
+    meta_description: p.meta_description,
+    word_count: p.word_count,
+    title: p.title,
+  }));
+  const aeoAggregate = calculateAggregateAeo(aeoPages);
+
   const exportFilenamePrefix = project.name.replace(/\s+/g, "-").toLowerCase();
 
   return (
@@ -518,6 +533,13 @@ export default async function ProjectDetailPage({
               { dataType: "issues", data: formattedIssuesForExport, label: "Issues" },
             ]}
           />
+
+          <Link
+            href={`/projects/${projectId}/schema`}
+            className="inline-flex items-center gap-2 px-4 py-2.5 border border-neutral-200 text-sm font-medium rounded-lg text-neutral-700 bg-white hover:bg-neutral-50 transition-colors"
+          >
+            Schema
+          </Link>
 
           <Link
             href={`/projects/${projectId}/settings`}
@@ -608,7 +630,24 @@ export default async function ProjectDetailPage({
       <TechnicalHealth data={technicalHealthData} projectId={projectId} />
 
       {/* Media Analysis Section */}
-      <MediaAnalysis data={mediaAnalysisData} projectId={projectId} />
+      <MediaAnalysis data={mediaAnalysisData} projectId={projectId}>
+        <Link
+          href={`/projects/${projectId}/images`}
+          className="text-sm text-primary hover:text-primary/80 font-medium"
+        >
+          View All Images &rarr;
+        </Link>
+      </MediaAnalysis>
+
+      {/* AEO/GEO Readiness Section */}
+      {aeoPages.length > 0 && (
+        <AeoReadinessSection
+          averagePercent={aeoAggregate.averagePercent}
+          signalCoverage={aeoAggregate.signalCoverage}
+          totalPages={aeoPages.length}
+          topRecommendations={aeoAggregate.topRecommendations}
+        />
+      )}
 
       {/* Historical Trends Section */}
       <HistoricalTrends projectId={projectId} />
@@ -717,6 +756,25 @@ export default async function ProjectDetailPage({
           projectId={projectId}
         />
       </div>
+
+      {/* Floating Export Button */}
+      <FloatingExportButton
+        filenamePrefix={exportFilenamePrefix}
+        projectName={project.name}
+        projectUrl={project.url}
+        entries={[
+          { dataType: "pages", data: allPagesForExport || [], label: "Page URLs" },
+          { dataType: "seo-metadata", data: allPagesForExport || [], label: "SEO Metadata" },
+          { dataType: "headings", data: allPagesForExport || [], label: "Headings" },
+          { dataType: "schema-data", data: allPagesForExport || [], label: "Schema Data" },
+          { dataType: "performance", data: allPagesForExport || [], label: "Performance" },
+          { dataType: "images-alt", data: flattenedImages, label: "Images & Alt Text" },
+          { dataType: "internal-links", data: internalLinksWithSource, label: "Internal Links" },
+          { dataType: "external-links", data: externalLinksWithSource, label: "External Links" },
+          { dataType: "broken-links", data: brokenLinksWithSource, label: "Broken Links" },
+          { dataType: "issues", data: formattedIssuesForExport, label: "Issues" },
+        ]}
+      />
     </div>
   );
 }

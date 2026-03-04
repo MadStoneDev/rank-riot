@@ -59,7 +59,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-neutral-950 border-r border-neutral-800">
+      <aside aria-label="Main navigation" className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-neutral-950 border-r border-neutral-800">
         {/* Logo */}
         <div className="h-16 flex items-center px-6 border-b border-neutral-800">
           <Link href="/dashboard" className="flex items-center gap-2">
@@ -77,6 +77,7 @@ export default function Sidebar() {
               <Link
                 key={item.name}
                 href={item.href}
+                aria-current={isActive ? "page" : undefined}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-neutral-800 text-white"
@@ -103,7 +104,7 @@ export default function Sidebar() {
       </aside>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-neutral-950 border-t border-neutral-800 z-50">
+      <nav aria-label="Main navigation" className="md:hidden fixed bottom-0 left-0 right-0 bg-neutral-950 border-t border-neutral-800 z-50">
         <div className="flex justify-around items-center h-16 px-2">
           {navItems.map((item) => {
             const isActive = isActiveRoute(item.href);
@@ -112,6 +113,7 @@ export default function Sidebar() {
               <Link
                 key={item.name}
                 href={item.href}
+                aria-current={isActive ? "page" : undefined}
                 className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
                   isActive
                     ? "text-white"

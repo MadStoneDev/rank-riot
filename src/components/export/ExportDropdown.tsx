@@ -44,7 +44,7 @@ export default function ExportDropdown({
 
   return (
     <>
-      <div ref={dropdownRef} className="relative">
+      <div ref={dropdownRef} className="relative" data-export-dropdown>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="inline-flex items-center px-3 py-2 text-sm leading-4 font-medium rounded-md border border-neutral-300 shadow-sm text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
