@@ -4,7 +4,7 @@ import { useState } from "react";
 import { IconLoader2 } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { PlanId } from "@/types/subscription";
-import { openCheckout, isPaddleReady, PADDLE_PRICE_IDS, BillingInterval } from "@/lib/paddle";
+import { openCheckout, isPaddleReady, initializePaddleWithRetry, PADDLE_PRICE_IDS, BillingInterval } from "@/lib/paddle";
 import { PLAN_INFO } from "@/lib/subscription-limits";
 
 interface CheckoutButtonProps {
@@ -49,11 +49,11 @@ export default function CheckoutButton({
 
     setIsLoading(true);
     try {
-      // If Paddle isn't ready yet, wait briefly and retry once
+      // If Paddle isn't ready yet, try initializing with retries
       if (!isPaddleReady()) {
-        toast.info("Payment system is still loading. Please wait a moment...");
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        if (!isPaddleReady()) {
+        toast.info("Payment system is loading, please wait...");
+        const initOk = await initializePaddleWithRetry(4, 1500);
+        if (!initOk) {
           toast.error("Payment system failed to load. Please refresh the page and try again.");
           return;
         }

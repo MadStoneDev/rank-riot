@@ -22,7 +22,7 @@ import {
   canCreateProject,
   getRemainingProjects,
 } from "@/lib/subscription-limits";
-import { initializePaddle, openCheckout, isPaddleLoaded } from "@/lib/paddle";
+import { initializePaddleWithRetry, openCheckout, isPaddleLoaded } from "@/lib/paddle";
 
 // Default context value
 const defaultContext: SubscriptionContextValue = {
@@ -130,26 +130,16 @@ export function SubscriptionProvider({
   useEffect(() => {
     fetchSubscriptionData();
 
-    // Poll for Paddle script to be loaded, then initialize
+    // Initialize Paddle with retry — handles SDK internal race conditions
+    // (e.g. ProfitWell/Retain not ready) by retrying up to 8 times over ~12s.
     let cancelled = false;
-    let attempts = 0;
-    const maxAttempts = 50; // 50 x 200ms = 10s max wait
 
-    const tryInitPaddle = () => {
-      if (cancelled) return;
-      attempts++;
-
-      if (isPaddleLoaded()) {
-        const success = initializePaddle();
+    initializePaddleWithRetry(8, 1500).then((success) => {
+      if (!cancelled) {
         setPaddleInitialized(success);
-      } else if (attempts < maxAttempts) {
-        setTimeout(tryInitPaddle, 200);
-      } else {
-        console.warn("Paddle SDK failed to load after 10 seconds");
+        if (!success) console.warn("Paddle SDK initialization failed after all retries");
       }
-    };
-
-    tryInitPaddle();
+    });
 
     return () => { cancelled = true; };
   }, [fetchSubscriptionData]);

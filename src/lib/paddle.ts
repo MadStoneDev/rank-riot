@@ -84,7 +84,7 @@ export function isPaddleReady(): boolean {
   return isPaddleLoaded() && _paddleInitialized;
 }
 
-// Initialize Paddle SDK
+// Initialize Paddle SDK (single synchronous attempt)
 export function initializePaddle(): boolean {
   if (!isPaddleLoaded()) {
     console.warn("Paddle.js not loaded yet");
@@ -116,6 +116,26 @@ export function initializePaddle(): boolean {
     console.error("Failed to initialize Paddle:", error);
     return false;
   }
+}
+
+// Async initialization with retries — handles Paddle SDK internal race
+// conditions (e.g. ProfitWell/Retain not ready when Initialize is called).
+export async function initializePaddleWithRetry(
+  maxAttempts: number = 5,
+  delayMs: number = 1000,
+): Promise<boolean> {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    if (_paddleInitialized) return true;
+    if (!isPaddleLoaded()) {
+      await new Promise((r) => setTimeout(r, delayMs));
+      continue;
+    }
+    const success = initializePaddle();
+    if (success) return true;
+    console.warn(`Paddle init attempt ${attempt}/${maxAttempts} failed, retrying in ${delayMs}ms...`);
+    await new Promise((r) => setTimeout(r, delayMs));
+  }
+  return _paddleInitialized;
 }
 
 // Handle Paddle events (checkout completed, etc.)
