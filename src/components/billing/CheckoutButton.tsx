@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { IconLoader2 } from "@tabler/icons-react";
+import { toast } from "sonner";
 import { PlanId } from "@/types/subscription";
 import { openCheckout, PADDLE_PRICE_IDS, BillingInterval } from "@/lib/paddle";
 import { PLAN_INFO } from "@/lib/subscription-limits";
@@ -44,11 +45,14 @@ export default function CheckoutButton({
 
     setIsLoading(true);
     try {
-      openCheckout(targetPlan, billingInterval, userId, userEmail, paddleCustomerId);
+      const success = openCheckout(targetPlan, billingInterval, userId, userEmail, paddleCustomerId);
+      if (!success) {
+        toast.error("Unable to open checkout. Please refresh the page and try again.");
+      }
     } catch (error) {
       console.error("Failed to open checkout:", error);
+      toast.error("Something went wrong. Please try again.");
     } finally {
-      // Keep loading for a bit to show feedback
       setTimeout(() => setIsLoading(false), 1000);
     }
   };

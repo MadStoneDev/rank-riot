@@ -130,15 +130,28 @@ export function SubscriptionProvider({
   useEffect(() => {
     fetchSubscriptionData();
 
-    // Initialize Paddle after a short delay to ensure script is loaded
-    const initTimer = setTimeout(() => {
+    // Poll for Paddle script to be loaded, then initialize
+    let cancelled = false;
+    let attempts = 0;
+    const maxAttempts = 50; // 50 x 200ms = 10s max wait
+
+    const tryInitPaddle = () => {
+      if (cancelled) return;
+      attempts++;
+
       if (isPaddleLoaded()) {
         const success = initializePaddle();
         setPaddleInitialized(success);
+      } else if (attempts < maxAttempts) {
+        setTimeout(tryInitPaddle, 200);
+      } else {
+        console.warn("Paddle SDK failed to load after 10 seconds");
       }
-    }, 500);
+    };
 
-    return () => clearTimeout(initTimer);
+    tryInitPaddle();
+
+    return () => { cancelled = true; };
   }, [fetchSubscriptionData]);
 
   // Subscribe to profile changes for real-time updates
