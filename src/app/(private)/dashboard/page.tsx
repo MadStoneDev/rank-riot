@@ -22,28 +22,12 @@ import ProjectHealthGrid from "@/components/dashboard/ProjectHealthGrid";
 import NeedsAttentionCard from "@/components/dashboard/NeedsAttentionCard";
 import QuickActions from "@/components/dashboard/QuickActions";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
+import { computeHealthScore } from "@/utils/health-score";
 
 type Issue = Database["public"]["Tables"]["issues"]["Row"] & {
   pages?: { url: string; title: string | null };
   projects?: { name: string };
 };
-
-function computeHealthScore(
-  criticalCount: number,
-  highCount: number,
-  mediumCount: number,
-  lowCount: number,
-  brokenLinksCount: number,
-): number {
-  const raw =
-    100 -
-    criticalCount * 10 -
-    highCount * 5 -
-    mediumCount * 2 -
-    lowCount * 0.5 -
-    brokenLinksCount * 3;
-  return Math.max(0, Math.min(100, Math.round(raw)));
-}
 
 export default async function Dashboard() {
   const supabase = await createClient();
@@ -68,6 +52,9 @@ export default async function Dashboard() {
         { count: pagesCount },
         { count: issuesCount },
         { count: brokenLinksCount },
+        { count: totalLinksCount },
+        { data: pageData },
+        { data: severityCounts },
       ] = await Promise.all([
         supabase
           .from("pages")
@@ -83,20 +70,44 @@ export default async function Dashboard() {
           .select("*", { count: "exact", head: true })
           .eq("project_id", project.id)
           .eq("is_broken", true),
+        supabase
+          .from("page_links")
+          .select("*", { count: "exact", head: true })
+          .eq("project_id", project.id),
+        supabase
+          .from("pages")
+          .select("http_status, is_indexable, title, meta_description, word_count, h1s, load_time_ms")
+          .eq("project_id", project.id),
+        supabase
+          .from("issues")
+          .select("severity")
+          .eq("project_id", project.id)
+          .eq("is_fixed", false),
       ]);
 
-      // Get severity breakdown for health score
-      const { data: severityCounts } = await supabase
-        .from("issues")
-        .select("severity")
-        .eq("project_id", project.id)
-        .eq("is_fixed", false);
+      // Compute page-level signals
+      const pages = pageData || [];
+      const total = pages.length;
+      const with200Status = pages.filter((p: any) => p.http_status >= 200 && p.http_status < 300).length;
+      const indexable = pages.filter((p: any) => p.is_indexable === true).length;
+      const withTitle = pages.filter((p: any) => p.title && p.title.trim().length > 0).length;
+      const withMetaDescription = pages.filter((p: any) => p.meta_description && p.meta_description.trim().length > 0).length;
+      const withAdequateContent = pages.filter((p: any) => (p.word_count || 0) >= 300).length;
+      const withH1 = pages.filter((p: any) => Array.isArray(p.h1s) && p.h1s.length > 0).length;
+      const slowPages = pages.filter((p: any) => (p.load_time_ms || 0) > 3000).length;
 
+      // Issue severity breakdown
       const sev = { critical: 0, high: 0, medium: 0, low: 0 };
       (severityCounts || []).forEach((i: any) => {
         const s = i.severity?.toLowerCase();
         if (s in sev) sev[s as keyof typeof sev]++;
       });
+
+      const healthScore = computeHealthScore(
+        { total, with200Status, indexable, withTitle, withMetaDescription, withAdequateContent, withH1, slowPages },
+        { totalLinks: totalLinksCount || 0, brokenLinks: brokenLinksCount || 0 },
+        sev,
+      );
 
       return {
         id: project.id,
@@ -105,13 +116,7 @@ export default async function Dashboard() {
         pagesCount: pagesCount || 0,
         issuesCount: issuesCount || 0,
         brokenLinksCount: brokenLinksCount || 0,
-        healthScore: computeHealthScore(
-          sev.critical,
-          sev.high,
-          sev.medium,
-          sev.low,
-          brokenLinksCount || 0,
-        ),
+        healthScore,
       };
     }),
   );
