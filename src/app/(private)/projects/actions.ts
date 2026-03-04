@@ -83,12 +83,19 @@ export async function createProject(formData: FormData) {
   // Trigger appropriate scan type
   const endpoint = project_type === "audit" ? "/api/scan/audit" : "/api/scan";
 
+  // Get access token for backend auth
+  const { data: sessionData } = await supabase.auth.getSession();
+  const accessToken = sessionData?.session?.access_token;
+
   try {
     const scanResponse = await fetch(
       `${process.env.CRAWLER_API_URL}${endpoint}`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        },
         body: JSON.stringify({
           project_id: data.id,
           email: user.email,
@@ -267,6 +274,10 @@ export async function startScan(projectId: string) {
     };
   }
 
+  // Get access token for backend auth
+  const { data: sessionData } = await supabase.auth.getSession();
+  const accessToken = sessionData?.session?.access_token;
+
   // Trigger a scan using the backend API
   try {
     const controller = new AbortController();
@@ -276,7 +287,10 @@ export async function startScan(projectId: string) {
       `${process.env.CRAWLER_API_URL}/api/scan`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        },
         body: JSON.stringify({
           project_id: projectId,
           email: user.email,
@@ -348,25 +362,15 @@ export async function startScan(projectId: string) {
 
 // Start an audit scan
 export async function startAuditScan(projectId: string) {
-  console.log("================================");
-  console.log("🟦 SERVER ACTION: startAuditScan called");
-  console.log("🟦 projectId:", projectId);
-  console.log("🟦 CRAWLER_API_URL:", process.env.CRAWLER_API_URL);
-  console.log("================================");
-
   try {
     const supabase = await createClient();
-    console.log("🟦 Supabase client created");
 
     // Get authenticated user
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
-    console.log("🟦 User:", user?.id);
-
     if (!user) {
-      console.log("🟦 No user - returning error");
       return { error: "You must be logged in to start an audit" };
     }
 
@@ -392,6 +396,10 @@ export async function startAuditScan(projectId: string) {
       };
     }
 
+    // Get access token for backend auth
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+
     // Trigger an audit scan using the backend API
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -400,7 +408,10 @@ export async function startAuditScan(projectId: string) {
       `${process.env.CRAWLER_API_URL}/api/scan/audit`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        },
         body: JSON.stringify({
           project_id: projectId,
           email: user.email,

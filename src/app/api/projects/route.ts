@@ -149,18 +149,17 @@ export async function POST(request: NextRequest) {
     const endpoint = project_type === "audit" ? "/api/scan/audit" : "/api/scan";
     const fullUrl = `${crawlerApiUrl}${endpoint}`;
 
-    console.log(`🚀 Triggering ${project_type} scan:`);
-    console.log(`   URL: ${fullUrl}`);
-    console.log(`   Project ID: ${projectId}`);
+    // Get access token for backend auth
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
 
     try {
-      console.log("🔍 CRAWLER_API_URL:", process.env.CRAWLER_API_URL);
-      console.log("🔍 Full URL:", `${process.env.CRAWLER_API_URL}${endpoint}`);
-      console.log("🔍 Endpoint:", endpoint);
-
       const scanResponse = await fetch(fullUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        },
         body: JSON.stringify({
           project_id: projectId,
           email: user.email,
