@@ -5,6 +5,7 @@ import Link from "next/link";
 import { IconArrowLeft, IconPhoto, IconDownload } from "@tabler/icons-react";
 import Pagination from "@/components/ui/Pagination";
 import ExportTriggerButton from "@/components/export/ExportTriggerButton";
+import { sanitizeFilename } from "@/utils/export";
 
 interface ImageRow {
   pageUrl: string;
@@ -60,7 +61,7 @@ export default function ImageAuditView({ images, projectId, projectName }: Image
         <ExportTriggerButton
           dataType="images-alt"
           data={images}
-          filenamePrefix={projectName.replace(/\s+/g, "-").toLowerCase()}
+          filenamePrefix={sanitizeFilename(projectName)}
           projectName={projectName}
           label="Export Images"
           icon={<IconDownload className="w-4 h-4" />}

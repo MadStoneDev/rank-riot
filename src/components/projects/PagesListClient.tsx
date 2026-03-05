@@ -16,6 +16,7 @@ import {
 } from "@tabler/icons-react";
 import Pagination from "@/components/ui/Pagination";
 import ExportTriggerButton from "@/components/export/ExportTriggerButton";
+import { sanitizeFilename } from "@/utils/export";
 
 interface Page {
   id: string;
@@ -45,6 +46,7 @@ interface PageLinkCount {
 interface PagesListClientProps {
   pages: Page[];
   projectId: string;
+  projectName?: string;
   issueCounts?: PageIssueCount;
   linkCounts?: PageLinkCount;
 }
@@ -113,6 +115,7 @@ function calculatePageScore(page: Page): number {
 export default function PagesListClient({
   pages,
   projectId,
+  projectName,
   issueCounts = {},
   linkCounts = {},
 }: PagesListClientProps) {
@@ -281,7 +284,8 @@ export default function PagesListClient({
         <ExportTriggerButton
           dataType="pages"
           data={sortedPages}
-          filenamePrefix="pages"
+          filenamePrefix={projectName ? `${sanitizeFilename(projectName)}-pages` : "pages"}
+          projectName={projectName}
           label="Export"
         />
       </div>

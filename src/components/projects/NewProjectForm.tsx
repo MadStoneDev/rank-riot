@@ -274,13 +274,14 @@ export default function NewProjectForm({
                 disabled={isLoading}
                 defaultValue="weekly"
               >
+                <option value="manual">Manual only</option>
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
                 <option value="monthly">Monthly</option>
               </select>
             </div>
             <p className="mt-1 text-xs text-neutral-500">
-              How often would you like us to scan your website automatically.
+              How often to scan automatically, or choose manual to scan on demand only.
             </p>
           </div>
         )}

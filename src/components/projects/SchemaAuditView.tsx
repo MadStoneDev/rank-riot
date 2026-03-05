@@ -11,6 +11,7 @@ import {
 } from "@tabler/icons-react";
 import Pagination from "@/components/ui/Pagination";
 import ExportTriggerButton from "@/components/export/ExportTriggerButton";
+import { sanitizeFilename } from "@/utils/export";
 
 interface SchemaPage {
   id: string;
@@ -94,7 +95,7 @@ export default function SchemaAuditView({ pages, projectId, projectName }: Schem
         <ExportTriggerButton
           dataType="schema-data"
           data={pages}
-          filenamePrefix={projectName.replace(/\s+/g, "-").toLowerCase()}
+          filenamePrefix={sanitizeFilename(projectName)}
           projectName={projectName}
           label="Export Schema"
           icon={<IconDownload className="w-4 h-4" />}

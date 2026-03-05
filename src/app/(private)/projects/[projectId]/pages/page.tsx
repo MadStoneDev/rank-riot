@@ -134,6 +134,7 @@ export default async function ProjectPagesPage({
         <PagesListClient
           pages={pages}
           projectId={projectId}
+          projectName={project.name}
           issueCounts={issueCounts}
           linkCounts={linkCounts}
         />

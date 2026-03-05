@@ -4,6 +4,20 @@ import { generatePdfReport, PdfBranding } from "@/utils/pdf-report";
 import { generateHtmlReport } from "@/utils/html-report";
 
 /**
+ * Sanitize a string for use as a filename.
+ * Replaces spaces with hyphens, strips special characters, lowercases,
+ * and collapses multiple hyphens.
+ */
+export function sanitizeFilename(name: string): string {
+  return name
+    .replace(/\s+/g, "-")
+    .replace(/[^a-zA-Z0-9\-_]/g, "")
+    .toLowerCase()
+    .replace(/-{2,}/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+/**
  * Escape a value for CSV (handle commas, quotes, newlines)
  */
 export function escapeCSVValue(value: any): string {

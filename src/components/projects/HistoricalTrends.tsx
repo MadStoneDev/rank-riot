@@ -70,11 +70,12 @@ export default function HistoricalTrends({ projectId }: HistoricalTrendsProps) {
     .reverse()
     .map((snapshot) => {
       const data = snapshot.snapshot_data;
+      const issues = data.issues ?? { critical: 0, high: 0, medium: 0, low: 0, total: 0 };
       return {
         name: format(new Date(snapshot.created_at), "MMM d"),
-        critical: data.issues.critical,
-        warning: data.issues.high + data.issues.medium,
-        info: data.issues.low,
+        critical: issues.critical ?? 0,
+        warning: (issues.high ?? 0) + (issues.medium ?? 0),
+        info: issues.low ?? 0,
       };
     });
 
@@ -83,11 +84,13 @@ export default function HistoricalTrends({ projectId }: HistoricalTrendsProps) {
     .reverse()
     .map((snapshot) => {
       const data = snapshot.snapshot_data;
+      const issues = data.issues ?? { total: 0 };
+      const metrics = data.metrics ?? { totalPages: 0, avgSeoScore: 0 };
       return {
         date: format(new Date(snapshot.created_at), "MMM d"),
-        pages: data.metrics.totalPages,
-        issues: data.issues.total,
-        score: data.metrics.avgSeoScore,
+        pages: metrics.totalPages ?? 0,
+        issues: issues.total ?? 0,
+        score: metrics.avgSeoScore ?? 0,
       };
     });
 

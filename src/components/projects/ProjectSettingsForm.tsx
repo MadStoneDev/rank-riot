@@ -131,6 +131,7 @@ export default function ProjectSettingsForm({
                   defaultValue={project.scan_frequency || ""}
                   disabled={isLoading}
                 >
+                  <option value="manual">Manual only</option>
                   <option value="daily">Daily</option>
                   <option value="weekly">Weekly</option>
                   <option value="monthly">Monthly</option>

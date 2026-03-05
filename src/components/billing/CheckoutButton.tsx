@@ -33,9 +33,8 @@ export default function CheckoutButton({
   const [isLoading, setIsLoading] = useState(false);
 
   const isCurrentPlan = currentPlan === targetPlan;
-  const isDowngrade =
-    ["business", "pro", "starter"].indexOf(currentPlan) >
-    ["business", "pro", "starter"].indexOf(targetPlan);
+  const tierOrder = ["free", "starter", "pro", "business"];
+  const isDowngrade = tierOrder.indexOf(currentPlan) > tierOrder.indexOf(targetPlan);
   const isUpgrade = !isCurrentPlan && !isDowngrade;
 
   const info = PLAN_INFO[targetPlan];

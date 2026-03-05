@@ -22,6 +22,7 @@ import ExportDropdown from "@/components/export/ExportDropdown";
 import FloatingExportButton from "@/components/export/FloatingExportButton";
 import AeoReadinessSection from "@/components/projects/AeoReadinessSection";
 import { calculateAggregateAeo, AeoPageInput } from "@/utils/aeo-readiness";
+import { sanitizeFilename } from "@/utils/export";
 
 import { Database } from "../../../database.types";
 import { DEFAULT_THRESHOLDS, PageWithKeywords } from "@/types/content-intelligence";
@@ -494,7 +495,7 @@ export default async function ProjectDetailPage({
   }));
   const aeoAggregate = calculateAggregateAeo(aeoPages);
 
-  const exportFilenamePrefix = project.name.replace(/\s+/g, "-").toLowerCase();
+  const exportFilenamePrefix = sanitizeFilename(project.name);
 
   return (
     <div className="space-y-6">

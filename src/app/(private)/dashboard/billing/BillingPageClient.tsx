@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { IconCheck, IconArrowRight } from "@tabler/icons-react";
+import { IconCheck, IconArrowRight, IconAlertTriangle } from "@tabler/icons-react";
 import Link from "next/link";
 
 import { PlanId, SubscriptionStatus } from "@/types/subscription";
@@ -192,6 +192,16 @@ export default function BillingPageClient({
                     </li>
                   </ul>
 
+                  {/* Quota warning for downgrades */}
+                  {!isCurrentPlan && planLimits.maxProjects !== -1 && projectCount > planLimits.maxProjects && (
+                    <div className="mt-4 p-2 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-1.5">
+                      <IconAlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <p className="text-xs text-amber-700">
+                        You have {projectCount} projects but this plan allows {planLimits.maxProjects}. You&apos;ll need to remove {projectCount - planLimits.maxProjects} project{projectCount - planLimits.maxProjects > 1 ? "s" : ""} first.
+                      </p>
+                    </div>
+                  )}
+
                   <div className="mt-5">
                     {planId === "free" ? (
                       isCurrentPlan ? (
@@ -199,9 +209,12 @@ export default function BillingPageClient({
                           Current Plan
                         </span>
                       ) : (
-                        <span className="block text-center text-sm text-neutral-400 py-2.5">
-                          -
-                        </span>
+                        <Link
+                          href="/dashboard/billing/cancel"
+                          className="block text-center text-sm text-neutral-500 hover:text-neutral-700 py-2.5 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
+                        >
+                          Downgrade to Free
+                        </Link>
                       )
                     ) : (
                       <CheckoutButton
