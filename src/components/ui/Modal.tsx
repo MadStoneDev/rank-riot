@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, type RefObject } from "react";
 import { IconX } from "@tabler/icons-react";
 
 interface ModalProps {
@@ -23,11 +23,13 @@ export default function Modal({
   const overlayRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const onCloseRef: RefObject<() => void> = useRef(onClose);
+  onCloseRef.current = onClose;
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -54,7 +56,7 @@ export default function Modal({
         }
       }
     },
-    [onClose]
+    []
   );
 
   useEffect(() => {
@@ -84,7 +86,7 @@ export default function Modal({
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-in fade-in duration-200"
+      className="fixed top-0 right-0 bottom-0 left-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === overlayRef.current) onClose();
       }}

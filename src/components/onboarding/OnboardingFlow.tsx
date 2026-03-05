@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { IconChartBar, IconSearch, IconLoader2, IconRocket } from "@tabler/icons-react";
+import { IconChartBar, IconSearch, IconLoader2, IconRocket, IconReportSearch } from "@tabler/icons-react";
 import Modal from "@/components/ui/Modal";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
 
 const DISMISS_KEY = "rankriot-onboarding-dismissed";
 
-type Step = "welcome" | "url" | "scanning";
+type Step = "welcome" | "type" | "url" | "scanning";
+type ProjectType = "seo" | "audit";
 
 export default function OnboardingFlow() {
   const [dismissed, setDismissed] = useState(() => {
@@ -20,16 +21,17 @@ export default function OnboardingFlow() {
     }
   });
   const [step, setStep] = useState<Step>("welcome");
+  const [projectType, setProjectType] = useState<ProjectType>("seo");
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   if (dismissed) return null;
 
-  const handleDismiss = () => {
+  const handleDismiss = useCallback(() => {
     localStorage.setItem(DISMISS_KEY, "true");
     setDismissed(true);
-  };
+  }, []);
 
   const handleScan = async () => {
     const trimmed = url.trim();
@@ -62,7 +64,7 @@ export default function OnboardingFlow() {
       const name = new URL(normalized).hostname.replace("www.", "");
       const { data: project, error } = await supabase
         .from("projects")
-        .insert({ name, url: normalized, user_id: user.id })
+        .insert({ name, url: normalized, user_id: user.id, project_type: projectType })
         .select()
         .single();
 
@@ -107,11 +109,68 @@ export default function OnboardingFlow() {
                 Skip for now
               </button>
               <button
-                onClick={() => setStep("url")}
+                onClick={() => setStep("type")}
                 className="px-6 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
               >
                 <IconRocket className="w-4 h-4" />
                 Get Started
+              </button>
+            </div>
+          </div>
+        )}
+
+        {step === "type" && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold text-neutral-900">
+              What type of project?
+            </h2>
+            <p className="text-sm text-neutral-500">
+              Choose how you&apos;d like to analyse this website.
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setProjectType("seo")}
+                className={`relative p-4 rounded-lg border-2 transition-all text-left ${
+                  projectType === "seo"
+                    ? "border-primary bg-primary/5"
+                    : "border-neutral-200 hover:border-neutral-300"
+                }`}
+              >
+                <IconChartBar className={`w-6 h-6 mb-2 ${projectType === "seo" ? "text-primary" : "text-neutral-400"}`} />
+                <h3 className="text-sm font-semibold text-neutral-900">SEO Project</h3>
+                <p className="text-xs text-neutral-500 mt-1">
+                  Full crawl, page-by-page analysis, scheduled scans
+                </p>
+              </button>
+              <button
+                type="button"
+                onClick={() => setProjectType("audit")}
+                className={`relative p-4 rounded-lg border-2 transition-all text-left ${
+                  projectType === "audit"
+                    ? "border-primary bg-primary/5"
+                    : "border-neutral-200 hover:border-neutral-300"
+                }`}
+              >
+                <IconReportSearch className={`w-6 h-6 mb-2 ${projectType === "audit" ? "text-primary" : "text-neutral-400"}`} />
+                <h3 className="text-sm font-semibold text-neutral-900">Audit Project</h3>
+                <p className="text-xs text-neutral-500 mt-1">
+                  Quick analysis, scores &amp; recommendations
+                </p>
+              </button>
+            </div>
+            <div className="flex gap-3 justify-end pt-1">
+              <button
+                onClick={() => setStep("welcome")}
+                className="px-4 py-2.5 text-sm font-medium text-neutral-600 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
+              >
+                Back
+              </button>
+              <button
+                onClick={() => setStep("url")}
+                className="px-6 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Continue
               </button>
             </div>
           </div>
@@ -139,7 +198,7 @@ export default function OnboardingFlow() {
             </div>
             <div className="flex gap-3 justify-end">
               <button
-                onClick={() => setStep("welcome")}
+                onClick={() => setStep("type")}
                 className="px-4 py-2.5 text-sm font-medium text-neutral-600 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
               >
                 Back
@@ -149,7 +208,7 @@ export default function OnboardingFlow() {
                 disabled={!url.trim()}
                 className="px-6 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Create Project
+                Create {projectType === "seo" ? "SEO" : "Audit"} Project
               </button>
             </div>
           </div>
