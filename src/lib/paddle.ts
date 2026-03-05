@@ -96,8 +96,8 @@ export function initializePaddle(): boolean {
   }
 
   const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
-  const environment = (process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT ||
-    "sandbox") as PaddleEnvironment;
+  const envValue = process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || "sandbox";
+  const environment: PaddleEnvironment = envValue === "live" ? "production" : envValue as PaddleEnvironment;
 
   if (!clientToken) {
     console.error("NEXT_PUBLIC_PADDLE_CLIENT_TOKEN not configured");
@@ -161,25 +161,19 @@ function handlePaddleEvent(event: any) {
   }
 }
 
-// Open Paddle checkout for a specific plan
-export function openCheckout(
+// Open Paddle checkout for a specific plan (with retries for SDK internal readiness)
+export async function openCheckout(
   planId: Exclude<PlanId, "free">,
   billingInterval: BillingInterval,
   userId: string,
   userEmail: string,
   paddleCustomerId?: string
-): boolean {
+): Promise<boolean> {
   // Check if Paddle is ready; if not, attempt on-the-fly initialization
   if (!isPaddleReady()) {
-    if (isPaddleLoaded()) {
-      console.warn("Paddle loaded but not initialized — attempting on-the-fly init");
-      const initSuccess = initializePaddle();
-      if (!initSuccess) {
-        console.error("Paddle on-the-fly initialization failed");
-        return false;
-      }
-    } else {
-      console.error("Paddle script not loaded on window");
+    const ready = await initializePaddleWithRetry(4, 1500);
+    if (!ready) {
+      console.error("Paddle initialization failed after retries");
       return false;
     }
   }
@@ -190,29 +184,38 @@ export function openCheckout(
     return false;
   }
 
-  try {
-    window.Paddle!.Checkout.open({
-      items: [{ priceId, quantity: 1 }],
-      customer: paddleCustomerId
-        ? { id: paddleCustomerId }
-        : { email: userEmail },
-      customData: {
-        userId,
-        userEmail,
-        planId,
-        billingInterval,
-      },
-      settings: {
-        displayMode: "overlay",
-        theme: "light",
-        successUrl: `${window.location.origin}/dashboard/billing?checkout=success`,
-      },
-    });
-    return true;
-  } catch (error) {
-    console.error("Paddle Checkout.open() threw an error:", error);
-    return false;
+  const checkoutOptions: PaddleCheckoutOptions = {
+    items: [{ priceId, quantity: 1 }],
+    customer: paddleCustomerId
+      ? { id: paddleCustomerId }
+      : { email: userEmail },
+    customData: {
+      userId,
+      userEmail,
+      planId,
+      billingInterval,
+    },
+    settings: {
+      displayMode: "overlay",
+      theme: "light",
+      successUrl: `${window.location.origin}/dashboard/billing?checkout=success`,
+    },
+  };
+
+  // Retry Checkout.open — SDK internals may not be ready immediately after Initialize
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      window.Paddle!.Checkout.open(checkoutOptions);
+      return true;
+    } catch (error) {
+      console.warn(`Paddle Checkout.open() attempt ${attempt}/3 failed:`, error);
+      if (attempt < 3) {
+        await new Promise((r) => setTimeout(r, 1500));
+      }
+    }
   }
+  console.error("Paddle Checkout.open() failed after all retries");
+  return false;
 }
 
 // Close any open checkout

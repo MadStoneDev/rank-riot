@@ -40,26 +40,12 @@ export default function CheckoutButton({
 
   const info = PLAN_INFO[targetPlan];
 
-  const attemptCheckout = (): boolean => {
-    return openCheckout(targetPlan, billingInterval, userId, userEmail, paddleCustomerId);
-  };
-
   const handleClick = async () => {
     if (isCurrentPlan || !PADDLE_PRICE_IDS[targetPlan]?.[billingInterval]) return;
 
     setIsLoading(true);
     try {
-      // If Paddle isn't ready yet, try initializing with retries
-      if (!isPaddleReady()) {
-        toast.info("Payment system is loading, please wait...");
-        const initOk = await initializePaddleWithRetry(4, 1500);
-        if (!initOk) {
-          toast.error("Payment system failed to load. Please refresh the page and try again.");
-          return;
-        }
-      }
-
-      const success = attemptCheckout();
+      const success = await openCheckout(targetPlan, billingInterval, userId, userEmail, paddleCustomerId);
       if (!success) {
         toast.error("Unable to open checkout. Please refresh the page and try again.");
       }
