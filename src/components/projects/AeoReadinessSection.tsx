@@ -96,7 +96,7 @@ export default function AeoReadinessSection({
           <div className="bg-neutral-50 rounded-xl p-5 flex flex-col items-center">
             <h4 className="text-sm font-medium text-neutral-700 mb-3">Readiness Overview</h4>
             <div className="w-32 h-32 relative">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                 <PieChart>
                   <Pie
                     data={donutData}

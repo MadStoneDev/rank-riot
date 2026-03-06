@@ -7,6 +7,7 @@ import PaginatedList from "@/components/projects/PaginatedListBlock";
 
 import { Database } from "../../../database.types";
 import { decode } from "html-entities";
+import { safeHref } from "@/utils/safe-url";
 
 type Link = Database["public"]["Tables"]["page_links"]["Row"] & {
   pages: {
@@ -87,7 +88,7 @@ export default function LinkListClient({
         )}
 
         <Link
-          href={link.destination_url}
+          href={safeHref(link.destination_url)}
           target={`_blank`}
           className={`mt-2 pt-1 flex items-center w-fit border-t border-neutral-300 text-sm text-primary hover:text-primary/70 transition-all duration-300 ease-in-out`}
         >

@@ -57,7 +57,7 @@ export default function StackedBarChart({
 
   return (
     <div role="img" aria-label="Stacked bar chart showing severity distribution">
-    <ResponsiveContainer width="100%" height={height}>
+    <ResponsiveContainer width="100%" height={height} minWidth={0}>
       <BarChart
         data={data}
         margin={{ top: 10, right: 30, left: 0, bottom: 0 }}

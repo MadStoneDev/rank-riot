@@ -236,8 +236,7 @@ export async function deleteProject(projectId: string) {
   // Revalidate projects page
   revalidatePath("/projects");
 
-  // Redirect to projects list
-  redirect("/projects");
+  return { success: true };
 }
 
 // Start an SEO scan
@@ -358,6 +357,49 @@ export async function startScan(projectId: string) {
       };
     }
   }
+}
+
+// Delete a scan (with ownership check)
+export async function deleteScan(scanId: string) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "You must be logged in to delete a scan" };
+  }
+
+  // Verify the scan belongs to a project owned by this user
+  const { data: scan, error: scanError } = await supabase
+    .from("scans")
+    .select("id, project_id")
+    .eq("id", scanId)
+    .single();
+
+  if (scanError || !scan) {
+    return { error: "Scan not found" };
+  }
+
+  const { data: project } = await supabase
+    .from("projects")
+    .select("id")
+    .eq("id", scan.project_id)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!project) {
+    return { error: "You do not have permission to delete this scan" };
+  }
+
+  const { error } = await supabase.from("scans").delete().eq("id", scanId);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath(`/projects/${scan.project_id}`);
+  return { success: true };
 }
 
 // Start an audit scan

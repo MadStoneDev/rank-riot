@@ -102,6 +102,9 @@ export default async function PageDetailPage({
 
   const normalizedPageUrl = normalizeUrl(page.url);
 
+  // Escape LIKE pattern characters to prevent injection
+  const escapedUrl = normalizedPageUrl.replace(/[%_\\]/g, "\\$&");
+
   const { data: inPageLinks } = await supabase
     .from("page_links")
     .select(
@@ -112,7 +115,7 @@ export default async function PageDetailPage({
       )
     `
     )
-    .filter("destination_url", "ilike", `%${normalizedPageUrl}`);
+    .filter("destination_url", "ilike", `%${escapedUrl}`);
 
   const filteredInPageLinks =
     inPageLinks?.filter((link) => {

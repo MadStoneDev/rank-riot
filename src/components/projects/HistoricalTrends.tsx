@@ -218,9 +218,13 @@ export default function HistoricalTrends({ projectId }: HistoricalTrendsProps) {
               {(() => {
                 const first = snapshots[snapshots.length - 1].snapshot_data;
                 const latest = snapshots[0].snapshot_data;
-                const issueChange = latest.issues.total - first.issues.total;
-                const pageChange = latest.metrics.totalPages - first.metrics.totalPages;
-                const scoreChange = latest.metrics.avgSeoScore - first.metrics.avgSeoScore;
+                const latestIssues = latest.issues ?? { total: 0 };
+                const firstIssues = first.issues ?? { total: 0 };
+                const latestMetrics = latest.metrics ?? { totalPages: 0, avgSeoScore: 0 };
+                const firstMetrics = first.metrics ?? { totalPages: 0, avgSeoScore: 0 };
+                const issueChange = (latestIssues.total ?? 0) - (firstIssues.total ?? 0);
+                const pageChange = (latestMetrics.totalPages ?? 0) - (firstMetrics.totalPages ?? 0);
+                const scoreChange = (latestMetrics.avgSeoScore ?? 0) - (firstMetrics.avgSeoScore ?? 0);
 
                 return (
                   <>

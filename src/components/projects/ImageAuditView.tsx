@@ -6,6 +6,7 @@ import { IconArrowLeft, IconPhoto, IconDownload } from "@tabler/icons-react";
 import Pagination from "@/components/ui/Pagination";
 import ExportTriggerButton from "@/components/export/ExportTriggerButton";
 import { sanitizeFilename } from "@/utils/export";
+import { safeHref } from "@/utils/safe-url";
 
 interface ImageRow {
   pageUrl: string;
@@ -109,7 +110,7 @@ export default function ImageAuditView({ images, projectId, projectName }: Image
                       {img.imageSrc ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={img.imageSrc}
+                          src={safeHref(img.imageSrc, "")}
                           alt={img.alt || ""}
                           className="w-full h-full object-cover"
                           onError={(e) => {

@@ -10,6 +10,7 @@ import {
   IconFilter,
 } from "@tabler/icons-react";
 import { decode } from "html-entities";
+import { safeHref } from "@/utils/safe-url";
 import CollapsibleSection from "@/components/ui/CollapsibleSection";
 import Pagination from "@/components/ui/Pagination";
 
@@ -220,7 +221,7 @@ export default function EnhancedLinkList({
                           <span className="text-neutral-600 truncate">{url}</span>
                         )}
                         <a
-                          href={url}
+                          href={safeHref(url)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex-shrink-0 text-neutral-400 hover:text-primary"

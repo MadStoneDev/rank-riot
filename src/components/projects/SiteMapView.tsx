@@ -15,6 +15,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import SiteMapNode, { type SiteMapNodeData } from "./SiteMapNode";
 import { truncateUrl } from "@/utils/site-architecture";
+import { safeHref } from "@/utils/safe-url";
 
 interface PageNode {
   id: string;
@@ -182,7 +183,7 @@ export default function SiteMapView({ pages, links, totalPageCount }: SiteMapVie
             <div>
               <span className="text-neutral-500 text-xs block">URL</span>
               <a
-                href={selectedPage.url}
+                href={safeHref(selectedPage.url)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline break-all text-xs"

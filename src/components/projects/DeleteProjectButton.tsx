@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { IconTrash } from "@tabler/icons-react";
 import { deleteProject } from "@/app/(private)/projects/actions";
 
@@ -11,6 +12,7 @@ interface DeleteProjectButtonProps {
 export default function DeleteProjectButton({
   projectId,
 }: DeleteProjectButtonProps) {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -26,8 +28,14 @@ export default function DeleteProjectButton({
     setIsLoading(true);
 
     try {
-      await deleteProject(projectId);
-      // No need to handle success as the action will redirect
+      const result = await deleteProject(projectId);
+      if (result?.error) {
+        console.error("Error deleting project:", result.error);
+        setIsLoading(false);
+        setShowConfirm(false);
+      } else {
+        router.push("/projects");
+      }
     } catch (error) {
       console.error("Error deleting project:", error);
       setIsLoading(false);

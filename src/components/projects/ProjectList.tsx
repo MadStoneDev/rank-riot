@@ -4,14 +4,19 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { format } from "date-fns";
 import {
-  IconRefresh,
   IconChevronRight,
   IconSearch,
   IconSortAscending,
   IconSortDescending,
   IconFileSearch,
   IconChartBar,
+  IconSettings,
+  IconTrash,
+  IconLoader2,
+  IconDotsVertical,
 } from "@tabler/icons-react";
+import { deleteProject } from "@/app/(private)/projects/actions";
+import { toast } from "sonner";
 import { Database } from "../../../database.types";
 
 type Project = Database["public"]["Tables"]["projects"]["Row"];
@@ -28,15 +33,20 @@ type SortField = "name" | "last_scan" | "created";
 type SortDirection = "asc" | "desc";
 
 export default function ProjectList({
-  projects,
+  projects: initialProjects,
   projectType,
   emptyMessage,
   pageCount = {},
   issueCount = {},
 }: ProjectListProps) {
+  const [projects, setProjects] = useState(initialProjects);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("created");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+
+  const handleDeleteProject = (id: string) => {
+    setProjects((prev) => prev.filter((p) => p.id !== id));
+  };
 
   // Filter projects by search query
   const filteredProjects = useMemo(() => {
@@ -175,6 +185,7 @@ export default function ProjectList({
                 projectType={projectType}
                 pageCount={pageCount[project.id]}
                 issueCount={issueCount[project.id]}
+                onDelete={handleDeleteProject}
               />
             ))}
           </ul>
@@ -193,17 +204,45 @@ function ProjectListItem({
   projectType,
   pageCount,
   issueCount,
+  onDelete,
 }: {
   project: Project;
   projectType: "seo" | "audit";
   pageCount?: number;
   issueCount?: number;
+  onDelete: (id: string) => void;
 }) {
+  const [showActions, setShowActions] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      return;
+    }
+
+    setIsDeleting(true);
+    const result = await deleteProject(project.id);
+    if (result?.error) {
+      toast.error(result.error);
+      setIsDeleting(false);
+      setConfirmDelete(false);
+    } else {
+      toast.success("Project deleted");
+      onDelete(project.id);
+    }
+  };
+
   return (
-    <li>
+    <li className="group/project relative flex items-stretch">
+      {/* Main content */}
       <Link
         href={`/projects/${project.id}`}
-        className="block hover:bg-neutral-50 transition-colors"
+        className="block flex-1 min-w-0 hover:bg-neutral-50 transition-colors"
       >
         <div className="px-4 py-4 sm:px-6">
           <div className="flex items-center justify-between">
@@ -249,7 +288,7 @@ function ProjectListItem({
                   </span>
                 )}
               </div>
-              <div className="text-sm text-neutral-500 text-right">
+              <div className="hidden sm:block text-sm text-neutral-500 text-right">
                 <p>
                   Last scan:{" "}
                   {project.last_scan_at
@@ -257,7 +296,7 @@ function ProjectListItem({
                     : "Never"}
                 </p>
               </div>
-              <div>
+              <div className="hidden lg:block">
                 <IconChevronRight className="h-5 w-5 text-neutral-400" />
               </div>
             </div>
@@ -292,6 +331,59 @@ function ProjectListItem({
           </div>
         </div>
       </Link>
+
+      {/* Mobile toggle button */}
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          setShowActions(!showActions);
+          setConfirmDelete(false);
+        }}
+        className="lg:hidden flex-shrink-0 grid place-content-center w-10 text-neutral-400 hover:text-neutral-600"
+        aria-label="Toggle actions"
+      >
+        <IconDotsVertical className="h-5 w-5" />
+      </button>
+
+      {/* Slide-out actions panel */}
+      <div
+        className={`
+          flex-shrink-0 flex items-stretch
+          overflow-hidden transition-all duration-300 ease-in-out
+          ${showActions ? "max-w-[120px]" : "max-w-0 lg:group-hover/project:max-w-[120px]"}
+        `}
+        onMouseLeave={() => setConfirmDelete(false)}
+      >
+        <div className="flex items-stretch bg-neutral-800 w-[120px]">
+          {/* Settings */}
+          <Link
+            href={`/projects/${project.id}/settings`}
+            className="flex-1 grid place-content-center text-neutral-300 hover:text-white hover:bg-neutral-700 transition-colors"
+            title="Settings"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <IconSettings className="h-5 w-5" />
+          </Link>
+
+          {/* Delete */}
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className={`flex-1 grid place-content-center transition-colors ${
+              confirmDelete
+                ? "bg-red-600 text-white hover:bg-red-700"
+                : "text-neutral-300 hover:text-red-400 hover:bg-neutral-700"
+            }`}
+            title={confirmDelete ? "Click again to confirm" : "Delete project"}
+          >
+            {isDeleting ? (
+              <IconLoader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <IconTrash className="h-5 w-5" />
+            )}
+          </button>
+        </div>
+      </div>
     </li>
   );
 }

@@ -122,8 +122,31 @@ async function handleSubscriptionUpdate(data: PaddleWebhookPayload["data"]) {
       subscriptionStatus = "active";
   }
 
-  // Update user profile
+  // Verify userId matches existing paddle_customer_id to prevent hijacking
   const db = getSupabaseClient();
+  const { data: profile } = await db
+    .from("profiles")
+    .select("paddle_customer_id")
+    .eq("id", userId)
+    .single();
+
+  if (!profile) {
+    console.error(`Profile not found for userId: ${userId}`);
+    return;
+  }
+
+  // If the profile already has a paddle_customer_id, ensure it matches
+  if (
+    profile.paddle_customer_id &&
+    profile.paddle_customer_id !== data.customer_id
+  ) {
+    console.error(
+      `Customer ID mismatch for user ${userId}: expected ${profile.paddle_customer_id}, got ${data.customer_id}`
+    );
+    throw new Error("Customer ID mismatch — possible webhook spoofing");
+  }
+
+  // Update user profile
   const { error } = await db
     .from("profiles")
     .update({

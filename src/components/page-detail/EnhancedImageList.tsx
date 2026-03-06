@@ -9,6 +9,7 @@ import {
   IconPhoto,
 } from "@tabler/icons-react";
 import CollapsibleSection from "@/components/ui/CollapsibleSection";
+import { safeHref } from "@/utils/safe-url";
 import Pagination from "@/components/ui/Pagination";
 
 interface ImageData {
@@ -56,8 +57,9 @@ export default function EnhancedImageList({
         {/* Thumbnail */}
         <div className="aspect-video relative bg-neutral-100 overflow-hidden">
           {!imgError ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={image.src}
+              src={safeHref(image.src, "")}
               alt={image.alt || "Image preview"}
               className="w-full h-full object-cover"
               onError={() => setImgError(true)}
@@ -87,7 +89,7 @@ export default function EnhancedImageList({
           {/* Hover overlay with actions */}
           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <a
-              href={image.src}
+              href={safeHref(image.src)}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 px-3 py-2 bg-white rounded text-sm font-medium text-neutral-900 hover:bg-neutral-100"
