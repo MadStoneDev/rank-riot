@@ -206,6 +206,7 @@ export default async function ProjectsPage({
         <div className="p-6">
           {activeTab === "seo" ? (
             <ProjectList
+              key="seo"
               projects={seoProjects || []}
               projectType="seo"
               emptyMessage="No SEO projects yet. Create your first SEO project to start comprehensive website analysis."
@@ -214,6 +215,7 @@ export default async function ProjectsPage({
             />
           ) : (
             <ProjectList
+              key="audit"
               projects={auditProjects || []}
               projectType="audit"
               emptyMessage="No audit projects yet. Create your first audit project for quick website assessments."
