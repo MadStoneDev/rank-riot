@@ -50,8 +50,8 @@ export default function TrendLineChart({
   }
 
   return (
-    <div role="img" aria-label="Trend line chart showing data over time">
-    <ResponsiveContainer width="100%" height={height} minWidth={0}>
+    <div role="img" aria-label="Trend line chart showing data over time" style={{ width: "100%", height }}>
+    <ResponsiveContainer width="100%" height="100%">
       <LineChart
         data={data}
         margin={{ top: 10, right: 30, left: 0, bottom: 0 }}

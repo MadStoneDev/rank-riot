@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { IconRefresh, IconAlertCircle, IconCheck } from "@tabler/icons-react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
@@ -22,13 +22,86 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
   const completedTimeout = useRef<NodeJS.Timeout | null>(null);
   const pollingInterval = useRef<NodeJS.Timeout | null>(null);
 
+  // Use refs to avoid stale closures in subscription callbacks
+  const scanRef = useRef<any>(null);
+  const showCompletedRef = useRef(false);
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    scanRef.current = scan;
+  }, [scan]);
+
+  useEffect(() => {
+    showCompletedRef.current = showCompleted;
+  }, [showCompleted]);
+
   // Custom event for scan completion
-  const triggerScanCompletedEvent = () => {
+  const triggerScanCompletedEvent = useCallback(() => {
     const event = new CustomEvent("scanCompleted", {
       detail: { scanId, projectId },
     });
     window.dispatchEvent(event);
-  };
+  }, [scanId, projectId]);
+
+  const handleScanCompleted = useCallback(() => {
+    setShowCompleted(true);
+    triggerScanCompletedEvent();
+
+    // Clear polling interval
+    if (pollingInterval.current) {
+      clearInterval(pollingInterval.current);
+      pollingInterval.current = null;
+    }
+
+    // Refresh page after showing completed state
+    completedTimeout.current = setTimeout(() => {
+      router.refresh();
+    }, 2000);
+  }, [triggerScanCompletedEvent, router]);
+
+  const fetchScanData = useCallback(async () => {
+    try {
+      setError(null);
+      const { data, error: fetchError } = await supabase
+        .from("scans")
+        .select("*")
+        .eq("id", scanId)
+        .single();
+
+      if (fetchError) {
+        console.error("Error fetching scan:", fetchError);
+        setError("Failed to fetch scan status");
+      } else {
+        const currentScan = scanRef.current;
+
+        // Track previous pages for progress animation
+        if (currentScan && currentScan.pages_scanned !== data.pages_scanned) {
+          setPreviousPagesScanned(currentScan.pages_scanned || 0);
+        }
+
+        // Check if scan status changed to completed
+        if (
+          currentScan &&
+          currentScan.status === "in_progress" &&
+          data.status === "completed"
+        ) {
+          triggerScanCompletedEvent();
+        }
+
+        setScan(data);
+        setLastUpdateTime(new Date());
+
+        if (data.status === "completed" && !showCompletedRef.current) {
+          handleScanCompleted();
+        }
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      setError("An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
+  }, [scanId, supabase, handleScanCompleted, triggerScanCompletedEvent]);
 
   useEffect(() => {
     // Initial fetch
@@ -46,21 +119,27 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
           filter: `id=eq.${scanId}`,
         },
         (payload) => {
+          const currentScan = scanRef.current;
+
           // Track previous pages scanned for animation
-          if (scan) {
-            setPreviousPagesScanned(scan.pages_scanned || 0);
+          if (currentScan) {
+            setPreviousPagesScanned(currentScan.pages_scanned || 0);
           }
 
           setScan(payload.new);
           setLastUpdateTime(new Date());
 
           // Check if scan just completed
-          if (payload.new.status === "completed" && !showCompleted) {
+          if (
+            payload.new.status === "completed" &&
+            !showCompletedRef.current
+          ) {
             handleScanCompleted();
           }
         },
       )
       .subscribe((status) => {
+        console.log("Scan subscription status:", status);
         // If subscription fails, fall back to polling
         if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
           console.warn(`Subscription ${status}, falling back to polling`);
@@ -75,80 +154,19 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
       if (completedTimeout.current) clearTimeout(completedTimeout.current);
       supabase.removeChannel(channel);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scanId]);
-
-  const fetchScanData = async () => {
-    try {
-      setError(null);
-      const { data, error } = await supabase
-        .from("scans")
-        .select("*")
-        .eq("id", scanId)
-        .single();
-
-      if (error) {
-        console.error("Error fetching scan:", error);
-        setError("Failed to fetch scan status");
-      } else {
-        // Track previous pages for progress animation
-        if (scan && scan.pages_scanned !== data.pages_scanned) {
-          setPreviousPagesScanned(scan.pages_scanned || 0);
-        }
-
-        // Check if scan status changed from in_progress to completed
-        if (
-          scan &&
-          scan.status === "in_progress" &&
-          data.status === "completed"
-        ) {
-          triggerScanCompletedEvent();
-        }
-
-        setScan(data);
-        setLastUpdateTime(new Date());
-
-        // Check if scan is completed
-        if (data.status === "completed" && !showCompleted) {
-          handleScanCompleted();
-        }
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setError("An unexpected error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleScanCompleted = () => {
-    setShowCompleted(true);
-    triggerScanCompletedEvent();
-
-    // Clear polling interval
-    if (pollingInterval.current) {
-      clearInterval(pollingInterval.current);
-      pollingInterval.current = null;
-    }
-
-    // Set timeout to refresh page after showing completed state
-    completedTimeout.current = setTimeout(() => {
-      router.refresh();
-    }, 2000); // Show completed state for 2 seconds
-  };
 
   // Enhanced progress calculation
   const calculateProgress = () => {
     if (!scan) return 0;
 
-    // If completed or showing completed state, return 100%
     if (scan.status === "completed" || showCompleted) return 100;
 
-    // Use backend-calculated progress if available
     if (scan.summary_stats?.current_progress) {
       return Math.min(100, scan.summary_stats.current_progress);
     }
 
-    // Fallback calculation
     if (scan.summary_stats?.estimated_total) {
       return Math.min(
         95,
@@ -158,7 +176,6 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
       );
     }
 
-    // Basic estimate if no detailed stats
     if (scan.pages_scanned > 0) {
       const estimatedTotal = Math.max(10, scan.pages_scanned * 1.3);
       return Math.min(
@@ -167,10 +184,9 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
       );
     }
 
-    return 5; // Starting progress
+    return 5;
   };
 
-  // Get estimated time remaining
   const getEstimatedTimeRemaining = () => {
     if (!scan || !scan.started_at || scan.pages_scanned <= 1) return null;
 
@@ -219,7 +235,7 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
 
   if (!scan) return null;
 
-  // If showing completed state
+  // Completed state
   if (showCompleted) {
     return (
       <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-400 text-green-800 rounded-md">

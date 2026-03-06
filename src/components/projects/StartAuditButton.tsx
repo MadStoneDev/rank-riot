@@ -1,8 +1,9 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { IconChartBar, IconRefresh } from "@tabler/icons-react";
 import { startAuditScan } from "@/app/(private)/projects/actions";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 interface StartAuditButtonProps {
@@ -11,21 +12,15 @@ interface StartAuditButtonProps {
 
 export default function StartAuditButton({ projectId }: StartAuditButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleStartAudit = async () => {
     setIsLoading(true);
 
     try {
-      console.log("🔵 Calling startAuditScan with projectId:", projectId);
-
       const result: any = await startAuditScan(projectId);
 
-      console.log("🔵 Result from startAuditScan:", result);
-      console.log("🔵 Result type:", typeof result);
-      console.log("🔵 Result keys:", Object.keys(result || {}));
-
       if (result.error) {
-        console.log("🔴 Error path - result.error:", result.error);
         const errorMessage =
           typeof result.error === "string"
             ? result.error
@@ -35,14 +30,12 @@ export default function StartAuditButton({ projectId }: StartAuditButtonProps) {
 
         toast.error(errorMessage);
       } else if (result.success) {
-        console.log("🟢 Success path");
         toast.success("Audit scan started successfully");
+        router.refresh();
       } else {
-        console.log("🟡 Unexpected result structure:", result);
-        toast.error("Unexpected response: " + JSON.stringify(result));
+        toast.error("Unexpected response from server");
       }
     } catch (error) {
-      console.error("🔴 Caught exception:", error);
       const errorMessage =
         error instanceof Error
           ? error.message
