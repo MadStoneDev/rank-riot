@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/utils/supabase/server";
 import { PlanId } from "@/types/subscription";
-import { canCreateProject, PLAN_LIMITS, PLAN_INFO } from "@/lib/subscription-limits";
+import { canCreateProject, getPlanLimits, PLAN_LIMITS, PLAN_INFO } from "@/lib/subscription-limits";
 
 // Create a new project
 export async function createProject(formData: FormData) {
@@ -82,6 +82,7 @@ export async function createProject(formData: FormData) {
 
   // Trigger appropriate scan type
   const endpoint = project_type === "audit" ? "/api/scan/audit" : "/api/scan";
+  const createPlanLimits = getPlanLimits(userPlan);
 
   // Get access token for backend auth
   const { data: sessionData } = await supabase.auth.getSession();
@@ -99,6 +100,9 @@ export async function createProject(formData: FormData) {
         body: JSON.stringify({
           project_id: data.id,
           email: user.email,
+          options: {
+            maxPages: createPlanLimits.maxPagesPerScan,
+          },
         }),
       },
     );
@@ -273,6 +277,16 @@ export async function startScan(projectId: string) {
     };
   }
 
+  // Get user's subscription tier for page limits
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("subscription_tier")
+    .eq("id", user.id)
+    .single();
+
+  const userPlan = (profile?.subscription_tier as PlanId) || "free";
+  const planLimits = getPlanLimits(userPlan);
+
   // Get access token for backend auth
   const { data: sessionData } = await supabase.auth.getSession();
   const accessToken = sessionData?.session?.access_token;
@@ -293,6 +307,9 @@ export async function startScan(projectId: string) {
         body: JSON.stringify({
           project_id: projectId,
           email: user.email,
+          options: {
+            maxPages: planLimits.maxPagesPerScan,
+          },
         }),
         signal: controller.signal,
       },
@@ -438,6 +455,16 @@ export async function startAuditScan(projectId: string) {
       };
     }
 
+    // Get user's subscription tier for page limits
+    const { data: auditProfile } = await supabase
+      .from("profiles")
+      .select("subscription_tier")
+      .eq("id", user.id)
+      .single();
+
+    const auditPlan = (auditProfile?.subscription_tier as PlanId) || "free";
+    const auditLimits = getPlanLimits(auditPlan);
+
     // Get access token for backend auth
     const { data: sessionData } = await supabase.auth.getSession();
     const accessToken = sessionData?.session?.access_token;
@@ -457,6 +484,9 @@ export async function startAuditScan(projectId: string) {
         body: JSON.stringify({
           project_id: projectId,
           email: user.email,
+          options: {
+            maxPages: auditLimits.maxPagesPerScan,
+          },
         }),
         signal: controller.signal,
       },
