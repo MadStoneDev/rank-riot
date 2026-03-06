@@ -41,6 +41,7 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
       if (mounted) setShowCompleted(true);
       triggerCompletedEvent();
 
+      // Stop polling once completed
       if (pollingRef.current) {
         clearInterval(pollingRef.current);
         pollingRef.current = null;
@@ -52,6 +53,9 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
     };
 
     const fetchScan = async () => {
+      // Don't fetch if already completed
+      if (showCompletedRef.current) return;
+
       try {
         const { data, error: fetchErr } = await supabase
           .from("scans")
@@ -88,7 +92,10 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
     // Initial fetch
     fetchScan();
 
-    // Real-time subscription
+    // Always poll every 3 seconds — realtime subscriptions are unreliable
+    pollingRef.current = setInterval(fetchScan, 3000);
+
+    // Also try real-time subscription for instant updates
     const channel = supabase
       .channel(`scan-${scanId}`)
       .on(
@@ -119,18 +126,7 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
           }
         },
       )
-      .subscribe((status) => {
-        // Fall back to polling if subscription fails or closes
-        if (
-          status === "CHANNEL_ERROR" ||
-          status === "TIMED_OUT" ||
-          status === "CLOSED"
-        ) {
-          if (!pollingRef.current) {
-            pollingRef.current = setInterval(fetchScan, 5000);
-          }
-        }
-      });
+      .subscribe();
 
     return () => {
       mounted = false;
