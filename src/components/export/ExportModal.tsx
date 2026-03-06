@@ -219,7 +219,7 @@ export default function ExportModal({
         )}
 
         {/* Filter + Sort row */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Filter */}
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-1.5">
@@ -332,7 +332,7 @@ export default function ExportModal({
                   Select None
                 </button>
               </div>
-              <div className="grid grid-cols-2 gap-1.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                 {availableColumns.map((col) => (
                   <label
                     key={col.key}

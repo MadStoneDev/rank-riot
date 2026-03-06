@@ -199,8 +199,8 @@ export async function POST(request: NextRequest) {
     const body = await request.text();
     const signature = request.headers.get("paddle-signature");
 
-    // Verify webhook signature in production
-    if (process.env.NODE_ENV === "production") {
+    // Verify webhook signature (skip only if explicitly disabled for local dev)
+    if (process.env.PADDLE_SKIP_SIGNATURE_VERIFICATION !== "true") {
       if (!verifyPaddleSignature(body, signature)) {
         console.error("Invalid webhook signature");
         return NextResponse.json(

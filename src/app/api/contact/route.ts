@@ -30,6 +30,16 @@ function isValidEmail(email: string): boolean {
   return emailRegex.test(email);
 }
 
+// HTML-encode a string to prevent injection in email templates
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 // Map subject value to readable text
 function getSubjectText(subject: string): string {
   const subjects: Record<string, string> = {
@@ -81,6 +91,11 @@ export async function POST(request: NextRequest) {
     const subjectText = getSubjectText(subject);
     const fullName = `${firstName} ${lastName}`;
 
+    // Sanitize user input for HTML email
+    const safeFullName = escapeHtml(fullName);
+    const safeEmail = escapeHtml(email);
+    const safeMessage = escapeHtml(message);
+
     // Send email via Resend
     const { data, error } = await getResendClient().emails.send({
       from: "RankRiot <noreply@rankriot.app>",
@@ -92,14 +107,14 @@ export async function POST(request: NextRequest) {
           <h2 style="color: #171717; margin-bottom: 24px;">New Contact Form Submission</h2>
 
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
-            <p style="margin: 0 0 12px 0;"><strong>Name:</strong> ${fullName}</p>
-            <p style="margin: 0 0 12px 0;"><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+            <p style="margin: 0 0 12px 0;"><strong>Name:</strong> ${safeFullName}</p>
+            <p style="margin: 0 0 12px 0;"><strong>Email:</strong> <a href="mailto:${safeEmail}">${safeEmail}</a></p>
             <p style="margin: 0;"><strong>Subject:</strong> ${subjectText}</p>
           </div>
 
           <div style="background-color: #ffffff; border: 1px solid #e5e5e5; padding: 20px; border-radius: 8px;">
             <h3 style="color: #171717; margin-top: 0;">Message:</h3>
-            <p style="color: #525252; white-space: pre-wrap; line-height: 1.6;">${message}</p>
+            <p style="color: #525252; white-space: pre-wrap; line-height: 1.6;">${safeMessage}</p>
           </div>
 
           <p style="color: #a3a3a3; font-size: 12px; margin-top: 24px;">

@@ -78,7 +78,7 @@ export default function PdfBrandingForm({ onBrandingChange }: PdfBrandingFormPro
     <div className="border border-neutral-200 rounded-lg p-4 space-y-3 bg-neutral-50/50">
       <p className="text-sm font-medium text-neutral-700">PDF Branding</p>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs text-neutral-500 mb-1">Business Name</label>
           <input

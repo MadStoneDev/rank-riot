@@ -318,7 +318,7 @@ export default function PagesListClient({
             <FilterButton filterValue="non-indexable" label="Non-Indexable" />
           </div>
 
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-2 sm:ml-auto">
             <span className="text-xs text-neutral-500">Sort:</span>
             <SortButton field="url" label="URL" />
             <SortButton field="score" label="Score" />
@@ -346,7 +346,7 @@ export default function PagesListClient({
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
                     <div className="min-w-0">
                       <h4 className="text-sm font-medium text-neutral-900 truncate">
                         {page.title ? decode(page.title) : "Untitled Page"}
@@ -357,7 +357,7 @@ export default function PagesListClient({
                     </div>
 
                     {/* Status badges */}
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 sm:flex-shrink-0">
                       {page.issueCount > 0 && (
                         <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded text-xs">
                           <IconAlertCircle className="h-3 w-3" />

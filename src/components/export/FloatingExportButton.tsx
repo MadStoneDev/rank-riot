@@ -72,7 +72,7 @@ export default function FloatingExportButton({
 
   return (
     <>
-      <div ref={menuRef} className="fixed bottom-6 right-6 z-40 md:bottom-8 md:right-8">
+      <div ref={menuRef} className="fixed bottom-20 right-6 z-40 md:bottom-8 md:right-8">
         {/* Menu */}
         {menuOpen && (
           <div className="absolute bottom-14 right-0 w-56 bg-white border border-neutral-200 rounded-lg shadow-xl py-1 mb-2">

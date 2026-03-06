@@ -65,13 +65,13 @@ export default function QuickScanInput() {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="Enter a URL to scan (e.g. example.com)"
-          className="w-full pl-12 pr-32 py-4 text-sm border border-neutral-200 rounded-2xl bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent shadow-sm"
+          className="w-full pl-12 pr-24 sm:pr-32 py-4 text-sm border border-neutral-200 rounded-2xl bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent shadow-sm"
           disabled={loading}
         />
         <button
           type="submit"
           disabled={loading || !url.trim()}
-          className="absolute right-2 inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="absolute right-2 inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-3 sm:px-5 py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
             <IconLoader2 className="w-4 h-4 animate-spin" />

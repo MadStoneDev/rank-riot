@@ -47,7 +47,7 @@ export default function CurrentPlanCard({
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-primary/10 rounded-lg">
             <Icon className="h-6 w-6 text-primary" />
@@ -69,7 +69,7 @@ export default function CurrentPlanCard({
           </div>
         </div>
 
-        <div className="text-right">
+        <div className="sm:text-right">
           <p className="text-2xl font-bold text-neutral-900">
             ${info.priceMonthly}
             {info.priceMonthly > 0 && (

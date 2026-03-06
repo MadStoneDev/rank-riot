@@ -249,7 +249,7 @@ export default function ScanHistory({
 
   return (
     <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-      <div className="px-6 py-4 border-b border-neutral-100 flex justify-between items-center">
+      <div className="px-6 py-4 border-b border-neutral-100 flex flex-wrap justify-between items-center gap-2">
         <h3 className="text-lg font-semibold text-neutral-900">Scan History</h3>
         <div className="flex items-center gap-3">
           {completedScans.length >= 2 && (

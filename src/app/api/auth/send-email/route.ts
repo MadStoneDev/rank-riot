@@ -145,16 +145,14 @@ ${button("Confirm New Email", confirmUrl)}
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify shared secret
+    // Verify shared secret (GoTrue hook authentication)
     const hookSecret = process.env.AUTH_SEND_EMAIL_HOOK_SECRET;
     if (hookSecret) {
       const authHeader = request.headers.get("authorization") || "";
       const providedSecret = authHeader.replace("Bearer ", "").trim();
-      // Simple shared secret check (for internal service-to-service)
-      if (providedSecret !== hookSecret && authHeader !== `Bearer ${hookSecret}`) {
-        // If it's a JWT from GoTrue, just let it through for now
-        // GoTrue signs with GOTRUE_HOOK_SEND_EMAIL_SECRETS
-        console.log("Auth header present, proceeding with request");
+      if (providedSecret !== hookSecret) {
+        console.error("Send-email hook: invalid authorization");
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
     }
 

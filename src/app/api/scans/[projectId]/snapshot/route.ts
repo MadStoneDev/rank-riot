@@ -20,6 +20,21 @@ export async function POST(
 
     const supabase = await createClient();
 
+    // Verify authentication and project ownership
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const { data: ownedProject } = await supabase
+      .from("projects")
+      .select("id")
+      .eq("id", projectId)
+      .eq("user_id", user.id)
+      .single();
+    if (!ownedProject) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
     // Get scan details
     const { data: scan, error: scanError } = await supabase
       .from("scans")
@@ -159,6 +174,21 @@ export async function GET(
     const limit = parseInt(searchParams.get("limit") || "12");
 
     const supabase = await createClient();
+
+    // Verify authentication and project ownership
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const { data: ownedProject } = await supabase
+      .from("projects")
+      .select("id")
+      .eq("id", projectId)
+      .eq("user_id", user.id)
+      .single();
+    if (!ownedProject) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
 
     // Try to get snapshots from scan_snapshots table
     const { data: existingSnapshots, error: snapshotsError } = await supabase

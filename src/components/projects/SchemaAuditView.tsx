@@ -189,7 +189,7 @@ export default function SchemaAuditView({ pages, projectId, projectName }: Schem
                             <IconChevronDown className="w-4 h-4" />
                           )}
                         </button>
-                        <div className="flex-1 grid grid-cols-[1fr_auto_auto_auto] gap-4 items-center">
+                        <div className="flex-1 grid grid-cols-1 sm:grid-cols-[1fr_auto_auto_auto] gap-2 sm:gap-4 items-center">
                           <p className="text-xs text-neutral-600 truncate" title={p.url}>
                             {p.url}
                           </p>

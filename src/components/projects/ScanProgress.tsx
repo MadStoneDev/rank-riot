@@ -46,8 +46,6 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
           filter: `id=eq.${scanId}`,
         },
         (payload) => {
-          console.log("Real-time scan update:", payload.new);
-
           // Track previous pages scanned for animation
           if (scan) {
             setPreviousPagesScanned(scan.pages_scanned || 0);
@@ -63,11 +61,14 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
         },
       )
       .subscribe((status) => {
-        console.log(`Subscription status: ${status}`);
+        // If subscription fails, fall back to polling
+        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          console.warn(`Subscription ${status}, falling back to polling`);
+          if (!pollingInterval.current) {
+            pollingInterval.current = setInterval(fetchScanData, 5000);
+          }
+        }
       });
-
-    // Use polling only as a fallback — check every 5s in case the subscription misses an update
-    pollingInterval.current = setInterval(fetchScanData, 5000);
 
     return () => {
       if (pollingInterval.current) clearInterval(pollingInterval.current);

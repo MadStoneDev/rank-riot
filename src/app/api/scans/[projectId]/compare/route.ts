@@ -20,6 +20,21 @@ export async function GET(
 
     const supabase = await createClient();
 
+    // Verify authentication and project ownership
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const { data: project } = await supabase
+      .from("projects")
+      .select("id")
+      .eq("id", projectId)
+      .eq("user_id", user.id)
+      .single();
+    if (!project) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
     // Get both scans
     const { data: scans, error: scansError } = await supabase
       .from("scans")
