@@ -12,7 +12,6 @@ interface StartScanButtonProps {
 
 export default function StartScanButton({ projectId }: StartScanButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [scanStarted, setScanStarted] = useState(false);
   const router = useRouter();
 
   const handleStartScan = async () => {
@@ -33,9 +32,9 @@ export default function StartScanButton({ projectId }: StartScanButtonProps) {
         setIsLoading(false);
       } else {
         toast.success("Scan started successfully");
-        setScanStarted(true);
         // Refresh the page so the server re-renders with ScanProgress
         router.refresh();
+        // Keep button disabled — ScanProgress will take over
       }
     } catch (error) {
       const errorMessage =
@@ -47,29 +46,6 @@ export default function StartScanButton({ projectId }: StartScanButtonProps) {
       setIsLoading(false);
     }
   };
-
-  // Show skeleton progress box while waiting for page to re-render
-  if (scanStarted) {
-    return (
-      <div className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded-md animate-pulse">
-        <div className="flex items-center">
-          <IconRefresh className="h-5 w-5 mr-2 animate-spin" />
-          <p className="text-sm font-medium">Starting scan...</p>
-        </div>
-        <div className="mt-2 w-full bg-yellow-200 rounded-full h-2.5">
-          <div
-            className="bg-yellow-500 h-2.5 rounded-full transition-all duration-1000"
-            style={{ width: "5%" }}
-          ></div>
-        </div>
-        <div className="mt-3 grid grid-cols-3 gap-2">
-          <div className="h-4 bg-yellow-200 rounded" />
-          <div className="h-4 bg-yellow-200 rounded" />
-          <div className="h-4 bg-yellow-200 rounded" />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <button
