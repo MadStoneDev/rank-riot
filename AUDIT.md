@@ -46,72 +46,43 @@ Comprehensive audit of both **rank-riot** (frontend) and **crawl-rank-riot** (cr
 
 ---
 
-## 3. TODO — Crawler Gaps Still Open
+## 3. FIXED — Remaining Crawler Gaps (Round 2)
 
-### 3a. Image dimensions always 0 in HTTP path
-- **Severity:** Low
-- **What:** HTTP scan stores `{ width: 0, height: 0 }` for all images. Only headless gets real dimensions via `naturalWidth`/`naturalHeight`.
-- **Why it's hard:** Getting dimensions requires either a HEAD request per image (expensive) or parsing `width`/`height` HTML attributes (unreliable).
-- **Recommendation:** Parse `width`/`height` attributes from `<img>` tags in the regex extraction. Won't be pixel-accurate but better than 0.
-
-### 3b. `broken-asset-analyzer.ts` is dead code
-- **Severity:** Low
-- **What:** File exists at `src/services/broken-asset-analyzer.ts` but is never imported or called anywhere.
-- **Options:**
-  1. Integrate into scan flow to check external links for broken status
-  2. Delete if not needed
-- **Recommendation:** Integrate as an optional post-scan step for external link validation. This would catch broken outbound links (currently only internal broken links are detected).
-
-### 3c. Headless `first_byte_time_ms` not captured
-- **Severity:** Low
-- **What:** Fixed for HTTP scan but headless scan still reports 0 for TTFB. Puppeteer doesn't expose this directly without using Performance API or CDP.
-- **Recommendation:** Use `page.metrics()` or `page.evaluate(() => performance.timing.responseStart - performance.timing.requestStart)` in headless path.
-
-### 3d. `@graph` arrays in JSON-LD not fully handled
-- **Severity:** Low
-- **What:** JSON-LD extraction checks `data["@type"]` and `data[0]["@type"]` but doesn't handle `data["@graph"]` arrays which contain multiple schema types.
-- **Example:** `{"@context":"https://schema.org","@graph":[{"@type":"Organization",...},{"@type":"WebPage",...}]}`
-- **Recommendation:** Add check for `data["@graph"]` and iterate to extract all `@type` values.
-
-### 3e. Audit analyzer tech detection has false positives
-- **Severity:** Low
-- **What:** Shopify detection uses `content.includes("shopify.")` which can match mentions in text content. NextJS detection similarly loose.
-- **Recommendation:** Restrict detection to script sources, link tags, and meta generators rather than full content string matching.
+| # | Issue | Fix applied |
+|---|-------|-------------|
+| 20 | Image dimensions always 0 in HTTP path | Parse `width`/`height` attributes from `<img>` tags in `extractImagesFromHtml` |
+| 21 | `broken-asset-analyzer.ts` dead code | Deleted — redundant with issue detector's broken link detection |
+| 22 | Headless `first_byte_time_ms` not captured | Added `Date.now()` timing around `page.goto()` in headless path |
+| 23 | `@graph` arrays in JSON-LD not handled | Added `@graph` iteration in both headless and HTTP extraction paths |
+| 24 | Audit analyzer tech detection false positives | Replaced `JSON.stringify` broad search with targeted field checks on URLs, link tags, and meta values |
 
 ---
 
-## 4. TODO — Frontend Gaps Still Open
+## 4. FIXED — Remaining Frontend Gaps (Round 2)
 
-### 4a. Backlinks feature not built
+| # | Issue | Fix applied |
+|---|-------|-------------|
+| 25 | No cross-page duplicate detection in issues | Added `detectCrossPageDuplicates()` to issue detector — finds duplicate titles and meta descriptions, creates issue per affected page |
+| 26 | Keywords display already correct | `KeywordListClient.tsx` already shows `{word, count}` with badges — no change needed |
+| 27 | @graph in schema display already handled | `SchemaAuditView` uses `JSON.stringify`, `SocialStructuredData` handles arrays — no change needed |
+| 28 | Export issue columns verified correct | `ISSUES_FULL_COLUMNS` keys match exactly what `SEOProjectDetailPage` prepares — no change needed |
+| 29 | Snapshot broken links limitation documented | Added comments to `snapshot/route.ts` explaining project-wide broken links count (no `scan_id` on `page_links`) |
+
+## 5. Remaining Known Limitations
+
+### 5a. Backlinks feature not built
 - **Severity:** Medium
-- **What:** `backlinks` table exists in the database. Crawler deletes backlink records when pages are removed. But there is no UI to display backlinks, and no code to populate them during scans.
-- **Recommendation:** Either build a backlinks UI or remove the dead table references.
+- **What:** `backlinks` table exists but is never populated or displayed. Crawler only deletes backlink records during cleanup.
+- **Action needed:** Either build backlinks UI + population logic, or remove dead table references.
 
-### 4b. Snapshot broken links count is project-wide
-- **Severity:** Low
-- **What:** `page_links` table has no `scan_id` column, so historical snapshots can't store scan-specific broken link counts. All snapshots get the current project-wide count.
-- **Impact:** Historical trends for broken links won't show true per-scan values.
-- **Recommendation:** Accept as limitation or add `scan_id` to `page_links` table.
-
-### 4c. Keywords display in page detail could be improved
-- **Severity:** Low
-- **What:** Page detail page shows keywords as a simple list. Now that keywords are actually extracted (word + count), could show frequency/relevance visualization.
-- **Recommendation:** Update the keywords section to show word counts or a tag cloud.
-
-### 4d. No duplicate title/description detection in issue detector
-- **Severity:** Medium
-- **What:** The issue detector checks per-page issues. Duplicate titles and descriptions across pages are detected by `ContentIntelligence.tsx` client-side but not stored as issues in the database.
-- **Why:** The detector runs per-page. Cross-page analysis (finding duplicates) requires comparing all pages against each other.
-- **Recommendation:** Add a post-per-page analysis pass in the issue detector that finds duplicate titles and meta descriptions across all scan results and creates issues for them.
-
-### 4e. Export "Issues" will now work but column mapping should be verified
-- **Severity:** Low
-- **What:** Issues are now generated. The export config in `types/export.ts` defines issue columns (`issue_type`, `severity`, `description`, `page_url`, etc.). Should verify the exported fields match the actual issue records.
-- **Recommendation:** Do a test export after running a scan to verify formatting.
+### 5b. Snapshot broken links count is project-wide
+- **Severity:** Low (documented)
+- **What:** `page_links` has no `scan_id` column. Historical snapshots all show current broken link count.
+- **Action needed:** Accept or add `scan_id` to `page_links` schema.
 
 ---
 
-## 5. Architecture Notes
+## 6. Architecture Notes
 
 ### Data flow
 ```
@@ -147,7 +118,7 @@ User clicks "Start Scan"
 
 ---
 
-## 6. Testing Checklist
+## 7. Testing Checklist
 
 After deploying these changes, verify:
 
