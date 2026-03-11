@@ -85,6 +85,11 @@ export async function POST(
       .eq("project_id", projectId)
       .eq("is_indexable", true);
 
+    // NOTE: Broken links count is project-wide, not scoped to a specific scan_id.
+    // The page_links table stores the latest crawl state and does not track which
+    // scan produced each link. This means historical snapshots will all reflect the
+    // current broken-link count rather than the count at the time of each scan.
+    // To fix this, page_links would need a scan_id column and per-scan inserts.
     const { count: brokenLinks } = await supabase
       .from("page_links")
       .select("*", { count: "exact", head: true })
@@ -246,7 +251,7 @@ export async function GET(
           low: issues?.filter((i) => i.severity === "low").length || 0,
         };
 
-        // Get broken links count
+        // Get broken links count (project-wide, not scan-scoped — see NOTE above)
         const { count: brokenLinksCount } = await supabase
           .from("page_links")
           .select("*", { count: "exact", head: true })
