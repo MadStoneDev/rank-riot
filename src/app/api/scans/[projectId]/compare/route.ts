@@ -79,12 +79,12 @@ export async function GET(
       if (snapshot?.snapshot_data) {
         const data = snapshot.snapshot_data as any;
         return {
-          totalPages: data.metrics?.totalPages || 0,
-          totalIssues: data.issues?.total || issueCounts.total,
-          criticalIssues: data.issues?.critical || issueCounts.critical,
-          warningIssues: (data.issues?.high || 0) + (data.issues?.medium || 0) || issueCounts.high + issueCounts.medium,
-          brokenLinks: data.metrics?.brokenLinks || 0,
-          avgScore: data.metrics?.avgSeoScore || 0,
+          totalPages: data.metrics?.totalPages ?? 0,
+          totalIssues: data.issues?.total ?? issueCounts.total,
+          criticalIssues: data.issues?.critical ?? issueCounts.critical,
+          warningIssues: data.issues?.high != null ? (data.issues.high || 0) + (data.issues.medium || 0) : issueCounts.high + issueCounts.medium,
+          brokenLinks: data.metrics?.brokenLinks ?? 0,
+          avgScore: data.metrics?.avgSeoScore ?? 0,
         };
       }
 

@@ -109,8 +109,8 @@ export function findSimilarContent(
               title: pages[j].title,
             });
           }
-          // Update similarity to highest found
-          existingGroup.similarity = Math.max(existingGroup.similarity, similarity);
+          // Update similarity to highest found (convert to percentage to match stored format)
+          existingGroup.similarity = Math.max(existingGroup.similarity, Math.round(similarity * 100));
         } else {
           // Create new group
           groups.push({

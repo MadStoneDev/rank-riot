@@ -158,7 +158,7 @@ export default async function ProjectDetailPage({
   const { data: scanHistory } = await supabase
     .from("scans")
     .select(
-      "id, status, started_at, completed_at, pages_scanned, issues_found, links_scanned, project_id",
+      "id, status, started_at, completed_at, pages_scanned, issues_found, links_scanned, project_id, summary_stats",
     )
     .eq("project_id", projectId)
     .order("started_at", { ascending: false })
