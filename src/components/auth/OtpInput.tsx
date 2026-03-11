@@ -123,10 +123,12 @@ export default function OtpInput() {
 
   // Handle container click to focus on the first empty input
   // This helps on mobile when clicking anywhere in the container
-  const handleContainerClick = () => {
+  const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Don't override focus if the user clicked directly on an input
+    if ((e.target as HTMLElement).tagName === "INPUT") return;
     // Find the first empty input or the last input if all filled
-    const firstEmptyIndex = otp.findIndex((digit) => digit === "") || 5;
-    inputRefs.current[firstEmptyIndex]?.focus();
+    const firstEmptyIndex = otp.findIndex((digit) => digit === "");
+    inputRefs.current[firstEmptyIndex === -1 ? 5 : firstEmptyIndex]?.focus();
   };
 
   // Combine all digits into a single OTP value for the form

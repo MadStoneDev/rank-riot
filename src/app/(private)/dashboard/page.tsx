@@ -48,6 +48,33 @@ export default async function Dashboard() {
   // Build health data per project
   const projectHealthData = await Promise.all(
     (projects || []).map(async (project) => {
+      // For audit projects, use the overall_score from audit_results
+      if (project.project_type === "audit") {
+        const { data: auditResult } = await supabase
+          .from("audit_results")
+          .select("overall_score")
+          .eq("project_id", project.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .single();
+
+        const { count: pagesCount } = await supabase
+          .from("pages")
+          .select("*", { count: "exact", head: true })
+          .eq("project_id", project.id);
+
+        return {
+          id: project.id,
+          name: project.name,
+          url: project.url,
+          projectType: project.project_type as string,
+          pagesCount: pagesCount || 0,
+          issuesCount: 0,
+          brokenLinksCount: 0,
+          healthScore: auditResult?.overall_score ?? 0,
+        };
+      }
+
       const [
         { count: pagesCount },
         { count: issuesCount },
@@ -113,6 +140,7 @@ export default async function Dashboard() {
         id: project.id,
         name: project.name,
         url: project.url,
+        projectType: project.project_type as string,
         pagesCount: pagesCount || 0,
         issuesCount: issuesCount || 0,
         brokenLinksCount: brokenLinksCount || 0,

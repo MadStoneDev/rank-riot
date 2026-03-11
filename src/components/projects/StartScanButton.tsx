@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { IconRefresh } from "@tabler/icons-react";
 import { startScan } from "@/app/(private)/projects/actions";
 import { useRouter } from "next/navigation";
@@ -13,6 +13,16 @@ interface StartScanButtonProps {
 export default function StartScanButton({ projectId }: StartScanButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  // Listen for scan completion from ScanProgress component
+  const handleScanCompleted = useCallback(() => {
+    setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("scanCompleted", handleScanCompleted);
+    return () => window.removeEventListener("scanCompleted", handleScanCompleted);
+  }, [handleScanCompleted]);
 
   const handleStartScan = async () => {
     setIsLoading(true);

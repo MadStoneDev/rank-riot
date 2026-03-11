@@ -6,6 +6,7 @@ interface ProjectHealth {
   id: string;
   name: string;
   url: string;
+  projectType?: string;
   healthScore: number;
   pagesCount: number;
   issuesCount: number;
@@ -32,9 +33,22 @@ export default function ProjectHealthGrid({ projects }: ProjectHealthGridProps) 
             <div className="flex items-start gap-4">
               <HealthScoreCircle score={project.healthScore} />
               <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-semibold text-neutral-900 truncate group-hover:text-primary transition-colors">
-                  {project.name}
-                </h4>
+                <div className="flex items-center gap-2">
+                  <h4 className="text-sm font-semibold text-neutral-900 truncate group-hover:text-primary transition-colors">
+                    {project.name}
+                  </h4>
+                  {project.projectType && (
+                    <span
+                      className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium flex-shrink-0 ${
+                        project.projectType === "seo"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-blue-100 text-blue-800"
+                      }`}
+                    >
+                      {project.projectType === "seo" ? "SEO" : "Audit"}
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-neutral-400 truncate mt-0.5">{project.url}</p>
                 <div className="flex items-center gap-4 mt-3 text-xs text-neutral-500">
                   <span className="flex items-center gap-1">
