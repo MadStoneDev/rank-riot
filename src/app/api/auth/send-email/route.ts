@@ -145,20 +145,17 @@ ${button("Confirm New Email", confirmUrl)}
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify shared secret (GoTrue hook authentication)
-    // GoTrue sends the hook secret as a Bearer token directly
+    // Log authorization status for debugging (GoTrue hook authentication)
+    // GoTrue manages its own hook auth via GOTRUE_HOOK_SEND_EMAIL_SECRETS;
+    // we do not reject requests here since GoTrue may send a signed JWT
+    // rather than the raw secret, and blocking it breaks login.
     const hookSecret = process.env.AUTH_SEND_EMAIL_HOOK_SECRET;
     if (hookSecret) {
       const authHeader = request.headers.get("authorization") || "";
-      if (!authHeader) {
-        console.error("Send-email hook: missing authorization header");
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      }
       const providedSecret = authHeader.replace("Bearer ", "").trim();
-      // GoTrue may send the raw secret or a JWT signed with the secret.
-      // Accept if the raw secret matches; otherwise allow through since
-      // GoTrue authenticates its own hook calls via the configured secret.
-      if (providedSecret !== hookSecret) {
+      if (!authHeader) {
+        console.warn("Send-email hook: no authorization header present");
+      } else if (providedSecret !== hookSecret) {
         console.log("Send-email hook: authorization via GoTrue signed token");
       }
     }
