@@ -526,6 +526,7 @@ export default async function ProjectDetailPage({
     meta_description: p.meta_description,
     word_count: p.word_count,
     title: p.title,
+    h1s: p.h1s,
   }));
   const aeoAggregate = calculateAggregateAeo(aeoPages);
 
