@@ -64,11 +64,12 @@ export default async function ProjectsPage({
   const canCreate = canCreateProject(userPlan, totalProjectCount);
   const projectIds = allProjects.map((p) => p.id);
 
-  // Get page counts
+  // Get page counts (exclude non-HTTP URLs like mailto:, tel:, etc.)
   const { data: pages } = await supabase
     .from("pages")
     .select("project_id")
-    .in("project_id", projectIds);
+    .in("project_id", projectIds)
+    .like("url", "http%");
 
   const pageCount: { [projectId: string]: number } = {};
   if (pages) {

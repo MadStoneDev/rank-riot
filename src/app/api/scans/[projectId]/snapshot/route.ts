@@ -73,17 +73,19 @@ export async function POST(
       });
     }
 
-    // Get page statistics
+    // Get page statistics (exclude non-HTTP URLs like mailto:, tel:, etc.)
     const { count: totalPages } = await supabase
       .from("pages")
       .select("*", { count: "exact", head: true })
-      .eq("project_id", projectId);
+      .eq("project_id", projectId)
+      .like("url", "http%");
 
     const { count: indexablePages } = await supabase
       .from("pages")
       .select("*", { count: "exact", head: true })
       .eq("project_id", projectId)
-      .eq("is_indexable", true);
+      .eq("is_indexable", true)
+      .like("url", "http%");
 
     // NOTE: Broken links count is project-wide, not scoped to a specific scan_id.
     // The page_links table stores the latest crawl state and does not track which
@@ -96,11 +98,12 @@ export async function POST(
       .eq("project_id", projectId)
       .eq("is_broken", true);
 
-    // Calculate average SEO score (simplified)
+    // Calculate average SEO score (simplified, excluding non-HTTP URLs)
     const { data: pagesWithData } = await supabase
       .from("pages")
       .select("title, meta_description, h1s")
-      .eq("project_id", projectId);
+      .eq("project_id", projectId)
+      .like("url", "http%");
 
     let avgScore = 0;
     if (pagesWithData && pagesWithData.length > 0) {

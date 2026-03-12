@@ -59,8 +59,8 @@ export default async function ProjectPagesPage({
     notFound();
   }
 
-  // Get all pages with relevant fields
-  const { data: pages } = await supabase
+  // Get all pages with relevant fields (filter out non-HTTP URLs like mailto:, tel:, etc.)
+  const { data: allPages } = await supabase
     .from("pages")
     .select(
       "id, url, title, http_status, is_indexable, has_robots_noindex, word_count, meta_description, h1s, h2s, canonical_url, images, open_graph"
@@ -68,9 +68,11 @@ export default async function ProjectPagesPage({
     .eq("project_id", projectId)
     .order("url", { ascending: true });
 
-  if (!pages) {
+  if (!allPages) {
     notFound();
   }
+
+  const pages = allPages.filter((page) => /^https?:\/\//i.test(page.url));
 
   // Get issue counts per page
   const { data: issues } = await supabase

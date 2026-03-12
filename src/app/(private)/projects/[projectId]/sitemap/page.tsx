@@ -46,11 +46,12 @@ export default async function SiteMapPage({
 
   if (!project) notFound();
 
-  // Fetch pages with depth
+  // Fetch pages with depth (exclude non-HTTP URLs like mailto:, tel:, etc.)
   const { data: allPages, count: totalCount } = await supabase
     .from("pages")
     .select("id, url, title, depth", { count: "exact" })
     .eq("project_id", projectId)
+    .like("url", "http%")
     .order("depth", { ascending: true })
     .limit(PAGE_LIMIT);
 

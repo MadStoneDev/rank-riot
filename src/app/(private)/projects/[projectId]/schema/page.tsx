@@ -29,11 +29,12 @@ export default async function SchemaAuditPage({
 
   if (!project) notFound();
 
-  // Get all pages with schema / OG data
+  // Get all pages with schema / OG data (exclude non-HTTP URLs)
   const { data: pages } = await supabase
     .from("pages")
     .select("id, url, title, schema_types, structured_data, open_graph, twitter_card")
     .eq("project_id", projectId)
+    .like("url", "http%")
     .order("url");
 
   return (

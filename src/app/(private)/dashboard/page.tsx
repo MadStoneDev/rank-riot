@@ -61,7 +61,8 @@ export default async function Dashboard() {
         const { count: pagesCount } = await supabase
           .from("pages")
           .select("*", { count: "exact", head: true })
-          .eq("project_id", project.id);
+          .eq("project_id", project.id)
+          .like("url", "http%");
 
         return {
           id: project.id,
@@ -86,7 +87,8 @@ export default async function Dashboard() {
         supabase
           .from("pages")
           .select("*", { count: "exact", head: true })
-          .eq("project_id", project.id),
+          .eq("project_id", project.id)
+          .like("url", "http%"),
         supabase
           .from("issues")
           .select("*", { count: "exact", head: true })
@@ -104,7 +106,8 @@ export default async function Dashboard() {
         supabase
           .from("pages")
           .select("http_status, is_indexable, title, meta_description, word_count, h1s, load_time_ms")
-          .eq("project_id", project.id),
+          .eq("project_id", project.id)
+          .like("url", "http%"),
         supabase
           .from("issues")
           .select("severity")

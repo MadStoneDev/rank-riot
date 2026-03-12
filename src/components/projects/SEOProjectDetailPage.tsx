@@ -114,11 +114,12 @@ export default async function ProjectDetailPage({
     notFound();
   }
 
-  // Get project statistics
+  // Get project statistics (exclude non-HTTP URLs like mailto:, tel:, etc.)
   const { count: pagesCount } = await supabase
     .from("pages")
     .select("*", { count: "exact", head: true })
-    .eq("project_id", projectId);
+    .eq("project_id", projectId)
+    .like("url", "http%");
 
   const { count: issuesCount } = await supabase
     .from("issues")
@@ -165,12 +166,13 @@ export default async function ProjectDetailPage({
     .order("started_at", { ascending: false })
     .limit(10);
 
-  // Content Intelligence Data
+  // Content Intelligence Data (all queries exclude non-HTTP URLs like mailto:, tel:, etc.)
   // Thin content pages (< 300 words)
   const { data: thinContentPages } = await supabase
     .from("pages")
     .select("id, url, title, word_count")
     .eq("project_id", projectId)
+    .like("url", "http%")
     .lt("word_count", DEFAULT_THRESHOLDS.thinContentWords)
     .order("word_count", { ascending: true });
 
@@ -179,6 +181,7 @@ export default async function ProjectDetailPage({
     .from("pages")
     .select("id, url, title")
     .eq("project_id", projectId)
+    .like("url", "http%")
     .or("meta_description.is.null,meta_description.eq.");
 
   // Missing titles
@@ -186,19 +189,22 @@ export default async function ProjectDetailPage({
     .from("pages")
     .select("id, url, title")
     .eq("project_id", projectId)
+    .like("url", "http%")
     .or("title.is.null,title.eq.");
 
   // Get all pages for duplicate detection
   const { data: allPagesForDuplicates } = await supabase
     .from("pages")
     .select("id, url, title, meta_description")
-    .eq("project_id", projectId);
+    .eq("project_id", projectId)
+    .like("url", "http%");
 
   // Get pages with keywords for similar content detection
   const { data: pagesWithKeywords } = await supabase
     .from("pages")
     .select("id, url, title, keywords")
     .eq("project_id", projectId)
+    .like("url", "http%")
     .not("keywords", "is", null);
 
   // Process duplicate titles and descriptions
@@ -249,7 +255,8 @@ export default async function ProjectDetailPage({
   const { data: pagesWithDepth } = await supabase
     .from("pages")
     .select("id, url, title, depth")
-    .eq("project_id", projectId);
+    .eq("project_id", projectId)
+    .like("url", "http%");
 
   // Get internal links for orphan/linking analysis
   const { data: internalLinks } = await supabase
@@ -296,7 +303,8 @@ export default async function ProjectDetailPage({
   const { data: pagesWithTechnical } = await supabase
     .from("pages")
     .select("id, url, title, http_status, redirect_url, is_indexable, has_robots_noindex, canonical_url, load_time_ms, first_byte_time_ms, size_bytes")
-    .eq("project_id", projectId);
+    .eq("project_id", projectId)
+    .like("url", "http%");
 
   // Get broken links with source page info
   const { data: brokenLinksData } = await supabase
@@ -364,6 +372,7 @@ export default async function ProjectDetailPage({
     .from("pages")
     .select("id, url, title, images")
     .eq("project_id", projectId)
+    .like("url", "http%")
     .not("images", "is", null);
 
   // Process media analysis data
@@ -403,6 +412,7 @@ export default async function ProjectDetailPage({
       images, schema_types, structured_data, open_graph, twitter_card,
       js_count, css_count, content_type`)
     .eq("project_id", projectId)
+    .like("url", "http%")
     .order("url");
 
   // Get all issues for export

@@ -29,11 +29,12 @@ export default async function ImageAuditPage({
 
   if (!project) notFound();
 
-  // Get all pages with images
+  // Get all pages with images (exclude non-HTTP URLs)
   const { data: pagesWithImages } = await supabase
     .from("pages")
     .select("id, url, title, images")
     .eq("project_id", projectId)
+    .like("url", "http%")
     .not("images", "is", null);
 
   // Flatten to per-image rows
