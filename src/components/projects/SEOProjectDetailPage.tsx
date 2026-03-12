@@ -21,6 +21,7 @@ import HistoricalTrends from "@/components/projects/HistoricalTrends";
 import ExportDropdown from "@/components/export/ExportDropdown";
 import FloatingExportButton from "@/components/export/FloatingExportButton";
 import AeoReadinessSection from "@/components/projects/AeoReadinessSection";
+import Backlinks, { BacklinksData, BacklinkItem } from "@/components/projects/Backlinks";
 import { calculateAggregateAeo, AeoPageInput } from "@/utils/aeo-readiness";
 import { sanitizeFilename } from "@/utils/export";
 
@@ -483,6 +484,39 @@ export default async function ProjectDetailPage({
     }))
   );
 
+  // Backlinks Data
+  const { data: backlinksRaw } = await supabase
+    .from("backlinks")
+    .select("id, source_url, source_domain, anchor_text, is_followed, page_id, first_seen_at, last_seen_at")
+    .eq("project_id", projectId)
+    .order("source_domain");
+
+  // Enrich backlinks with target page info
+  const backlinksEnriched: BacklinkItem[] = (backlinksRaw || []).map((bl: any) => {
+    const targetPage = bl.page_id ? pagesById.get(bl.page_id) : null;
+    return {
+      id: bl.id,
+      source_url: bl.source_url,
+      source_domain: bl.source_domain,
+      anchor_text: bl.anchor_text,
+      is_followed: bl.is_followed,
+      page_id: bl.page_id,
+      target_page_url: targetPage?.url ?? null,
+      target_page_title: targetPage?.title ?? null,
+      first_seen_at: bl.first_seen_at,
+      last_seen_at: bl.last_seen_at,
+    };
+  });
+
+  const uniqueBacklinkDomains = new Set(backlinksEnriched.map((bl) => bl.source_domain));
+  const backlinksData: BacklinksData = {
+    backlinks: backlinksEnriched,
+    totalCount: backlinksEnriched.length,
+    uniqueDomains: uniqueBacklinkDomains.size,
+    followedCount: backlinksEnriched.filter((bl) => bl.is_followed).length,
+    nofollowCount: backlinksEnriched.filter((bl) => !bl.is_followed).length,
+  };
+
   // AEO/GEO Readiness
   const aeoPages: AeoPageInput[] = (allPagesForExport || []).map((p: any) => ({
     schema_types: p.schema_types,
@@ -533,6 +567,7 @@ export default async function ProjectDetailPage({
               { dataType: "external-links", data: externalLinksWithSource, label: "External Links" },
               { dataType: "broken-links", data: brokenLinksWithSource, label: "Broken Links" },
               { dataType: "issues", data: formattedIssuesForExport, label: "Issues" },
+              { dataType: "backlinks", data: backlinksEnriched, label: "Backlinks" },
             ]}
           />
 
@@ -648,6 +683,9 @@ export default async function ProjectDetailPage({
           View All Images &rarr;
         </Link>
       </MediaAnalysis>
+
+      {/* Backlinks Section */}
+      <Backlinks data={backlinksData} projectId={projectId} />
 
       {/* AEO/GEO Readiness Section */}
       {aeoPages.length > 0 && (

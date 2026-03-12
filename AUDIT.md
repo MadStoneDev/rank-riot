@@ -70,10 +70,9 @@ Comprehensive audit of both **rank-riot** (frontend) and **crawl-rank-riot** (cr
 
 ## 5. Remaining Known Limitations
 
-### 5a. Backlinks feature not built
-- **Severity:** Medium
-- **What:** `backlinks` table exists but is never populated or displayed. Crawler only deletes backlink records during cleanup.
-- **Action needed:** Either build backlinks UI + population logic, or remove dead table references.
+### 5a. ~~Backlinks feature not built~~ ✅ FIXED
+- **What was wrong:** `backlinks` table existed but was never populated or displayed.
+- **Fix applied:** Created `backlink-checker.ts` in crawler — after each scan, fetches up to 100 unique external pages and checks for links back to the project domain. Stores results in `backlinks` table. Frontend `Backlinks` section added to SEO project detail page with stats, domain counts, follow/nofollow breakdown, and "work in progress" disclaimer banner. Backlinks also added to export system.
 
 ### 5b. Snapshot broken links count is project-wide
 - **Severity:** Low (documented)
