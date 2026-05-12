@@ -8,7 +8,18 @@ import {
   IconSettings,
   IconFile,
   IconMap,
+  IconHeartRateMonitor,
+  IconBrain,
+  IconNetwork,
+  IconPhoto,
+  IconBolt,
+  IconCode,
 } from "@tabler/icons-react";
+
+import ScoreRing from "@/components/ui/ScoreRing";
+import { SeverityBadge } from "@/components/ui/Badge";
+import CategoryCard from "@/components/ui/CategoryCard";
+import StatCard from "@/components/ui/StatCard";
 
 import ScanHistory from "@/components/projects/ScanHistory";
 import ScanProgress from "@/components/projects/ScanProgress";
@@ -21,9 +32,13 @@ import HistoricalTrends from "@/components/projects/HistoricalTrends";
 import ExportDropdown from "@/components/export/ExportDropdown";
 import FloatingExportButton from "@/components/export/FloatingExportButton";
 import AeoReadinessSection from "@/components/projects/AeoReadinessSection";
+import IssueAdvicePanel from "@/components/issues/IssueAdvicePanel";
+import GeoReadinessSection from "@/components/projects/GeoReadinessSection";
+import ChecklistView from "@/components/projects/ChecklistView";
 import Backlinks, { BacklinksData, BacklinkItem } from "@/components/projects/Backlinks";
 import { calculateAggregateAeo, AeoPageInput } from "@/utils/aeo-readiness";
 import { sanitizeFilename } from "@/utils/export";
+import { ChecklistScanData } from "@/utils/checklist";
 
 import { Database } from "../../../database.types";
 import { DEFAULT_THRESHOLDS, PageWithKeywords } from "@/types/content-intelligence";
@@ -154,7 +169,7 @@ export default async function ProjectDetailPage({
     .eq("project_id", projectId)
     .eq("is_fixed", false)
     .order("created_at", { ascending: false })
-    .limit(5);
+    .limit(50);
 
   // Get scan history
   const { data: scanHistory } = await supabase
@@ -182,7 +197,7 @@ export default async function ProjectDetailPage({
     .select("id, url, title")
     .eq("project_id", projectId)
     .like("url", "http%")
-    .or("meta_description.is.null,meta_description.eq.");
+    .or("meta_description.is.null,meta_description.eq.''");
 
   // Missing titles
   const { data: missingTitlePages } = await supabase
@@ -190,7 +205,7 @@ export default async function ProjectDetailPage({
     .select("id, url, title")
     .eq("project_id", projectId)
     .like("url", "http%")
-    .or("title.is.null,title.eq.");
+    .or("title.is.null,title.eq.''");
 
   // Get all pages for duplicate detection
   const { data: allPagesForDuplicates } = await supabase
@@ -529,6 +544,7 @@ export default async function ProjectDetailPage({
 
   // AEO/GEO Readiness
   const aeoPages: AeoPageInput[] = (allPagesForExport || []).map((p: any) => ({
+    url: p.url,
     schema_types: p.schema_types,
     structured_data: p.structured_data,
     open_graph: p.open_graph,
@@ -537,23 +553,168 @@ export default async function ProjectDetailPage({
     word_count: p.word_count,
     title: p.title,
     h1s: p.h1s,
+    h2s: p.h2s,
   }));
   const aeoAggregate = calculateAggregateAeo(aeoPages);
 
+  // Extract site-level data from latest scan for GEO readiness
+  const siteLevelData = latestScan?.summary_stats && typeof latestScan.summary_stats === 'object' && 'site_level_data' in (latestScan.summary_stats as any)
+    ? (latestScan.summary_stats as any).site_level_data
+    : null;
+
+  // Build checklist scan data from all available data
+  const allExportPages = allPagesForExport || [];
+  const checklistScanData: ChecklistScanData = {
+    totalPages: allExportPages.length,
+    pagesWithTitle: allExportPages.filter((p: any) => p.title && p.title.trim()).length,
+    pagesWithMetaDescription: allExportPages.filter((p: any) => p.meta_description && p.meta_description.trim()).length,
+    pagesWithH1: allExportPages.filter((p: any) => Array.isArray(p.h1s) && p.h1s.length > 0).length,
+    pagesWithMultipleH1: allExportPages.filter((p: any) => Array.isArray(p.h1s) && p.h1s.length > 1).length,
+    pagesWithCanonical: allExportPages.filter((p: any) => p.canonical_url).length,
+    pagesWithStructuredData: allExportPages.filter((p: any) => p.structured_data && (Array.isArray(p.structured_data) ? p.structured_data.length > 0 : true)).length,
+    pagesWithOpenGraph: allExportPages.filter((p: any) => p.open_graph && Object.keys(p.open_graph).length > 0).length,
+    pagesWithTwitterCard: allExportPages.filter((p: any) => p.twitter_card && Object.keys(p.twitter_card).length > 0).length,
+    indexablePages: allExportPages.filter((p: any) => p.is_indexable).length,
+    thinContentPages: (thinContentPages || []).length,
+    brokenLinks: brokenLinksWithSource.length,
+    totalLinks: (internalLinksForExport || []).length + (externalLinksForExport || []).length,
+    totalImages: altCoverage.total,
+    imagesWithAlt: altCoverage.withAlt,
+    avgLoadTime: allExportPages.length > 0
+      ? allExportPages.reduce((sum: number, p: any) => sum + (p.load_time_ms || 0), 0) / allExportPages.length
+      : 0,
+    pagesOver3s: (slowPages || []).length,
+    pagesWithRobotsNoindex: allExportPages.filter((p: any) => p.has_robots_noindex).length,
+    duplicateTitles: duplicateTitles.length,
+    duplicateDescriptions: duplicateDescriptions.length,
+    orphanPages: orphanPages.length,
+    deepPages: deepPages.length,
+    hasRobotsTxt: siteLevelData?.robots_txt?.exists ?? false,
+    hasSitemap: siteLevelData?.sitemap_validation?.found ?? false,
+    sitemapValid: siteLevelData?.sitemap_validation?.valid ?? false,
+    sitemapHasLastmod: siteLevelData?.sitemap_validation?.has_lastmod ?? false,
+    hasLlmsTxt: siteLevelData?.llms_txt?.exists ?? false,
+    aiBotBlocked: siteLevelData?.robots_txt?.ai_bots_blocked?.length ?? 0,
+    aiBotCount: (siteLevelData?.robots_txt?.ai_bots_blocked?.length ?? 0) + (siteLevelData?.robots_txt?.ai_bots_allowed?.length ?? 0),
+    pagesWithViewportMeta: allExportPages.filter((p: any) => p.has_viewport_meta).length,
+    pagesWithMixedContent: allExportPages.filter((p: any) => p.has_mixed_content).length,
+    pagesWithValidHeadingHierarchy: allExportPages.filter((p: any) => p.heading_hierarchy_valid).length,
+    pagesWithSecurityHeaders: allExportPages.filter((p: any) => p.security_headers && Object.keys(p.security_headers).length > 0).length,
+    pagesWithRedirectChains: allExportPages.filter((p: any) => Array.isArray(p.redirect_chain) && p.redirect_chain.length >= 3).length,
+    pagesWithFaqSchema: allExportPages.filter((p: any) => Array.isArray(p.schema_types) && p.schema_types.some((t: string) => t.toLowerCase().includes('faq'))).length,
+    pagesWithHowToSchema: allExportPages.filter((p: any) => Array.isArray(p.schema_types) && p.schema_types.some((t: string) => t.toLowerCase().includes('howto'))).length,
+    pagesWithBreadcrumbSchema: allExportPages.filter((p: any) => Array.isArray(p.schema_types) && p.schema_types.some((t: string) => t.toLowerCase().includes('breadcrumb'))).length,
+    pagesWithArticleSchema: allExportPages.filter((p: any) => Array.isArray(p.schema_types) && p.schema_types.some((t: string) => t.toLowerCase().includes('article'))).length,
+    pagesWithOrganizationSchema: allExportPages.filter((p: any) => Array.isArray(p.schema_types) && p.schema_types.some((t: string) => t.toLowerCase().includes('organization'))).length,
+  };
+
   const exportFilenamePrefix = sanitizeFilename(project.name);
+
+  // Calculate category scores for the overview
+  const technicalScore = Math.round(
+    100 - (technicalHealthData.summary.critical * 15 + technicalHealthData.summary.warnings * 5)
+  );
+  const contentScore = Math.round(
+    100 - (contentIntelligenceData.summary.critical * 15 + contentIntelligenceData.summary.warnings * 5)
+  );
+  const mediaScore = Math.round(
+    mediaAnalysisData.totalImages > 0 ? mediaAnalysisData.altCoveragePercent : 100
+  );
+  const aeoScore = aeoAggregate.averagePercent;
+  const overallScore = Math.round(
+    (Math.max(0, Math.min(100, technicalScore)) +
+     Math.max(0, Math.min(100, contentScore)) +
+     Math.max(0, Math.min(100, mediaScore)) +
+     Math.max(0, Math.min(100, aeoScore))) / 4
+  );
+
+  // Build actionable items for category cards
+  const technicalItems = [
+    ...(technicalHealthData.brokenLinks.length > 0
+      ? [{ type: "critical" as const, text: `${technicalHealthData.brokenLinks.length} broken links found`, detail: technicalHealthData.brokenLinks[0]?.destination_url }]
+      : []),
+    ...(technicalHealthData.nonIndexablePages.length > 0
+      ? [{ type: "critical" as const, text: `${technicalHealthData.nonIndexablePages.length} pages not indexable` }]
+      : []),
+    ...(technicalHealthData.slowPages.length > 0
+      ? [{ type: "warning" as const, text: `${technicalHealthData.slowPages.length} slow-loading pages` }]
+      : []),
+    ...(technicalHealthData.redirectPages.length > 0
+      ? [{ type: "warning" as const, text: `${technicalHealthData.redirectPages.length} redirect pages` }]
+      : []),
+    ...(technicalHealthData.largePages.length > 0
+      ? [{ type: "info" as const, text: `${technicalHealthData.largePages.length} oversized pages` }]
+      : []),
+  ];
+
+  const contentItems = [
+    ...(contentIntelligenceData.missingTitles.length > 0
+      ? [{ type: "critical" as const, text: `${contentIntelligenceData.missingTitles.length} pages missing titles` }]
+      : []),
+    ...(contentIntelligenceData.missingMetaDescriptions.length > 0
+      ? [{ type: "warning" as const, text: `${contentIntelligenceData.missingMetaDescriptions.length} pages missing meta descriptions` }]
+      : []),
+    ...(contentIntelligenceData.thinContent.length > 0
+      ? [{ type: "warning" as const, text: `${contentIntelligenceData.thinContent.length} thin content pages` }]
+      : []),
+    ...(contentIntelligenceData.duplicateTitles.length > 0
+      ? [{ type: "warning" as const, text: `${contentIntelligenceData.duplicateTitles.length} groups of duplicate titles` }]
+      : []),
+    ...(contentIntelligenceData.similarContent.length > 0
+      ? [{ type: "info" as const, text: `${contentIntelligenceData.similarContent.length} similar content groups` }]
+      : []),
+  ];
+
+  const architectureItems = [
+    ...(siteArchitectureData.orphanPages.length > 0
+      ? [{ type: "critical" as const, text: `${siteArchitectureData.orphanPages.length} orphan pages (no inbound links)` }]
+      : []),
+    ...(siteArchitectureData.deepPages.length > 0
+      ? [{ type: "warning" as const, text: `${siteArchitectureData.deepPages.length} pages at depth 4+` }]
+      : []),
+    ...(siteArchitectureData.summary.totalPages > 0
+      ? [{ type: "info" as const, text: `Avg depth: ${siteArchitectureData.summary.avgDepth}, max: ${siteArchitectureData.summary.maxDepth}` }]
+      : []),
+  ];
+
+  const mediaItems = [
+    ...(mediaAnalysisData.imagesMissingAlt > 0
+      ? [{ type: "critical" as const, text: `${mediaAnalysisData.imagesMissingAlt} images missing alt text` }]
+      : []),
+    ...(mediaAnalysisData.totalImages > 0
+      ? [{ type: "info" as const, text: `${mediaAnalysisData.totalImages} total images, ${mediaAnalysisData.altCoveragePercent}% coverage` }]
+      : []),
+  ];
+
+  const aeoItems = [
+    ...aeoAggregate.topRecommendations.slice(0, 3).map(rec => ({
+      type: (aeoScore < 30 ? "critical" : aeoScore < 60 ? "warning" : "info") as "critical" | "warning" | "info",
+      text: rec,
+    })),
+  ];
+
+  const linkArchitectureScore = Math.max(0, Math.min(100, Math.round(
+    100 - (siteArchitectureData.orphanPages.length * 10 + siteArchitectureData.deepPages.length * 3)
+  )));
+
+  // Issue severity counts
+  const allIssues = recentIssues || [];
+  const criticalIssueCount = technicalHealthData.summary.critical + contentIntelligenceData.summary.critical;
+  const highIssueCount = technicalHealthData.summary.warnings;
+  const warningIssueCount = contentIntelligenceData.summary.warnings;
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900">{project.name}</h1>
-          <p className="text-neutral-500 mt-1">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">{project.name}</h1>
+          <p className="text-[var(--color-text-secondary)] mt-1">
             <a
               href={project.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:underline hover:text-neutral-700"
+              className="hover:underline hover:text-[var(--color-text-primary)]"
             >
               {project.url}
             </a>
@@ -584,7 +745,7 @@ export default async function ProjectDetailPage({
 
           <Link
             href={`/projects/${projectId}/sitemap`}
-            className="inline-flex items-center gap-2 px-4 py-2.5 border border-neutral-200 text-sm font-medium rounded-lg text-neutral-700 bg-white hover:bg-neutral-50 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 border border-[var(--color-border-default)] text-sm font-medium rounded-lg text-[var(--color-text-secondary)] bg-[var(--color-surface-raised)] hover:bg-[var(--color-surface-hover)] transition-colors"
           >
             <IconMap className="h-4 w-4" />
             Site Map
@@ -592,14 +753,14 @@ export default async function ProjectDetailPage({
 
           <Link
             href={`/projects/${projectId}/schema`}
-            className="inline-flex items-center gap-2 px-4 py-2.5 border border-neutral-200 text-sm font-medium rounded-lg text-neutral-700 bg-white hover:bg-neutral-50 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 border border-[var(--color-border-default)] text-sm font-medium rounded-lg text-[var(--color-text-secondary)] bg-[var(--color-surface-raised)] hover:bg-[var(--color-surface-hover)] transition-colors"
           >
             Schema
           </Link>
 
           <Link
             href={`/projects/${projectId}/settings`}
-            className="inline-flex items-center gap-2 px-4 py-2.5 border border-neutral-200 text-sm font-medium rounded-lg text-neutral-700 bg-white hover:bg-neutral-50 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 border border-[var(--color-border-default)] text-sm font-medium rounded-lg text-[var(--color-text-secondary)] bg-[var(--color-surface-raised)] hover:bg-[var(--color-surface-hover)] transition-colors"
           >
             <IconSettings className="h-4 w-4" />
             Settings
@@ -611,70 +772,110 @@ export default async function ProjectDetailPage({
         <ScanProgress scanId={latestScan.id} projectId={projectId} />
       )}
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Link
-          href={`/projects/${projectId}/pages`}
-          className="group bg-white rounded-2xl border border-neutral-200 p-6 hover:border-neutral-300 hover:shadow-lg transition-all"
-        >
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-sm font-medium text-neutral-500">Pages</p>
-              <h2 className="text-3xl font-bold text-neutral-900 mt-2">
-                {pagesCount || 0}
-              </h2>
-              <p className="text-sm text-neutral-400 mt-1">
-                Total pages scanned
-              </p>
-            </div>
-            <div className="p-3 bg-primary/10 rounded-xl">
-              <IconFile className="w-6 h-6 text-primary" />
+      {/* Score Overview Row */}
+      <div className="glass-card p-6">
+        <div className="flex flex-wrap items-center justify-between gap-6">
+          <div className="flex items-center gap-8">
+            <ScoreRing score={Math.max(0, Math.min(100, overallScore))} size="xl" label="Overall" />
+            <div className="flex gap-6">
+              <ScoreRing score={Math.max(0, Math.min(100, technicalScore))} size="md" label="Technical" />
+              <ScoreRing score={Math.max(0, Math.min(100, contentScore))} size="md" label="Content" />
+              <ScoreRing score={Math.max(0, Math.min(100, aeoScore))} size="md" label="AEO/GEO" />
             </div>
           </div>
-        </Link>
 
-        <div className="bg-white rounded-2xl border border-neutral-200 p-6">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-sm font-medium text-neutral-500">Broken Links</p>
-              <h2 className={`text-3xl font-bold mt-2 ${
-                brokenLinksCount && brokenLinksCount > 0
-                  ? "text-red-600"
-                  : "text-neutral-900"
-              }`}>
-                {brokenLinksCount || 0}
-              </h2>
-              <p className="text-sm text-neutral-400 mt-1">
-                Links returning 404 status
-              </p>
-            </div>
-            <div className="p-3 bg-red-50 rounded-xl">
-              <IconLink className="w-6 h-6 text-red-500" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-neutral-200 p-6">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-sm font-medium text-neutral-500">Issues</p>
-              <h2 className={`text-3xl font-bold mt-2 ${
-                issuesCount && issuesCount > 0
-                  ? "text-yellow-600"
-                  : "text-neutral-900"
-              }`}>
-                {issuesCount || 0}
-              </h2>
-              <p className="text-sm text-neutral-400 mt-1">
-                SEO issues detected
-              </p>
-            </div>
-            <div className="p-3 bg-yellow-50 rounded-xl">
-              <IconAlertTriangle className="w-6 h-6 text-yellow-500" />
-            </div>
+          {/* Quick Issues Summary */}
+          <div className="flex flex-wrap items-center gap-2">
+            <SeverityBadge severity="critical" count={criticalIssueCount} />
+            <SeverityBadge severity="high" count={highIssueCount} />
+            <SeverityBadge severity="medium" count={warningIssueCount} />
           </div>
         </div>
       </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Link href={`/projects/${projectId}/pages`} className="block">
+          <StatCard
+            label="Pages Scanned"
+            value={pagesCount || 0}
+            icon={<IconFile className="w-5 h-5 text-[var(--color-primary)]" />}
+          />
+        </Link>
+
+        <StatCard
+          label="Broken Links"
+          value={brokenLinksCount || 0}
+          icon={<IconLink className="w-5 h-5 text-[var(--color-severity-critical)]" />}
+        />
+
+        <StatCard
+          label="SEO Issues"
+          value={issuesCount || 0}
+          icon={<IconAlertTriangle className="w-5 h-5 text-[var(--color-score-warning)]" />}
+        />
+      </div>
+
+      {/* Category Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <CategoryCard
+          title="Technical Health"
+          icon={<IconHeartRateMonitor className="w-5 h-5" />}
+          score={Math.max(0, Math.min(100, technicalScore))}
+          items={technicalItems}
+        />
+        <CategoryCard
+          title="Content Quality"
+          icon={<IconBrain className="w-5 h-5" />}
+          score={Math.max(0, Math.min(100, contentScore))}
+          items={contentItems}
+        />
+        <CategoryCard
+          title="Links & Architecture"
+          icon={<IconNetwork className="w-5 h-5" />}
+          score={linkArchitectureScore}
+          items={architectureItems}
+        />
+        <CategoryCard
+          title="Media & Accessibility"
+          icon={<IconPhoto className="w-5 h-5" />}
+          score={Math.max(0, Math.min(100, mediaScore))}
+          items={mediaItems}
+        />
+        <CategoryCard
+          title="AEO / GEO Readiness"
+          icon={<IconBolt className="w-5 h-5" />}
+          score={Math.max(0, Math.min(100, aeoScore))}
+          items={aeoItems}
+        />
+        <CategoryCard
+          title="Schema & Structured Data"
+          icon={<IconCode className="w-5 h-5" />}
+          score={Math.max(0, Math.min(100, aeoScore))}
+          items={Object.entries(aeoAggregate.signalCoverage).slice(0, 3).map(([name, count]) => ({
+            type: "info" as const,
+            text: `${name}: ${aeoPages.length > 0 ? Math.round((count / aeoPages.length) * 100) : 0}% coverage`,
+          }))}
+        />
+      </div>
+
+      {/* Issue Advice Panel */}
+      {recentIssues && recentIssues.length > 0 && (
+        <IssueAdvicePanel
+          issues={recentIssues.map((issue: any) => ({
+            id: issue.id,
+            issue_type: issue.issue_type,
+            severity: issue.severity,
+            description: issue.description,
+            details: issue.details,
+            page_url: issue.pages?.url,
+            page_title: issue.pages?.title,
+          }))}
+          title="All Issues"
+          maxItems={10}
+          projectId={projectId}
+        />
+      )}
 
       {/* Content Intelligence Section */}
       <ContentIntelligence data={contentIntelligenceData} projectId={projectId} />
@@ -689,7 +890,7 @@ export default async function ProjectDetailPage({
       <MediaAnalysis data={mediaAnalysisData} projectId={projectId}>
         <Link
           href={`/projects/${projectId}/images`}
-          className="text-sm text-primary hover:text-primary/80 font-medium"
+          className="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium"
         >
           View All Images &rarr;
         </Link>
@@ -702,114 +903,24 @@ export default async function ProjectDetailPage({
       {aeoPages.length > 0 && (
         <AeoReadinessSection
           averagePercent={aeoAggregate.averagePercent}
+          homepagePercent={aeoAggregate.homepagePercent}
           signalCoverage={aeoAggregate.signalCoverage}
           totalPages={aeoPages.length}
           topRecommendations={aeoAggregate.topRecommendations}
         />
       )}
 
+      {/* GEO Readiness Section */}
+      <GeoReadinessSection siteLevelData={siteLevelData} />
+
+      {/* SEO Checklist */}
+      <ChecklistView scanData={checklistScanData} />
+
       {/* Historical Trends Section */}
       <HistoricalTrends projectId={projectId} />
 
       {/* Scan History */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {/*<div className="bg-white rounded-lg shadow overflow-hidden">*/}
-        {/*  <div className="px-6 py-4 border-b border-neutral-200">*/}
-        {/*    <h3 className="text-lg font-medium text-neutral-900">*/}
-        {/*      Recent Issues*/}
-        {/*    </h3>*/}
-        {/*  </div>*/}
-
-        {/*  {recentIssues && recentIssues.length > 0 ? (*/}
-        {/*    <div className="divide-y divide-neutral-200">*/}
-        {/*      {recentIssues.map((issue: any) => (*/}
-        {/*        <div key={issue.id} className="p-4">*/}
-        {/*          <div className="flex items-start">*/}
-        {/*            <div*/}
-        {/*              className={`mt-1 flex-shrink-0 rounded-full p-1 ${*/}
-        {/*                issue.severity === "critical"*/}
-        {/*                  ? "bg-red-100"*/}
-        {/*                  : issue.severity === "high"*/}
-        {/*                    ? "bg-orange-100"*/}
-        {/*                    : issue.severity === "medium"*/}
-        {/*                      ? "bg-yellow-100"*/}
-        {/*                      : "bg-blue-100"*/}
-        {/*              }`}*/}
-        {/*            >*/}
-        {/*              <IconAlertTriangle*/}
-        {/*                className={`h-4 w-4 ${*/}
-        {/*                  issue.severity === "critical"*/}
-        {/*                    ? "text-red-600"*/}
-        {/*                    : issue.severity === "high"*/}
-        {/*                      ? "text-orange-600"*/}
-        {/*                      : issue.severity === "medium"*/}
-        {/*                        ? "text-yellow-600"*/}
-        {/*                        : "text-blue-600"*/}
-        {/*                }`}*/}
-        {/*              />*/}
-        {/*            </div>*/}
-        {/*            <div className="ml-3 flex-1">*/}
-        {/*              <h4 className="text-sm font-medium text-neutral-900">*/}
-        {/*                {issue.issue_type*/}
-        {/*                  .replace(/_/g, " ")*/}
-        {/*                  .replace(/\b[a-z]/g, (c: string) => c.toUpperCase())}*/}
-        {/*              </h4>*/}
-        {/*              <p className="mt-1 text-sm text-neutral-500">*/}
-        {/*                {issue.description}*/}
-        {/*              </p>*/}
-        {/*              <p*/}
-        {/*                className={`mt-1 flex items-center gap-1 text-xs text-neutral-500`}*/}
-        {/*              >*/}
-        {/*                Page:{" "}*/}
-        {/*                <a*/}
-        {/*                  href={issue.pages.url}*/}
-        {/*                  target="_blank"*/}
-        {/*                  rel="noopener noreferrer"*/}
-        {/*                  className="hover:underline truncate inline-block max-w-xs"*/}
-        {/*                >*/}
-        {/*                  {issue.pages.title || issue.pages.url}*/}
-        {/*                </a>*/}
-        {/*              </p>*/}
-        {/*            </div>*/}
-        {/*            <div className="ml-3 flex-shrink-0">*/}
-        {/*              <span*/}
-        {/*                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${*/}
-        {/*                  issue.severity === "critical"*/}
-        {/*                    ? "bg-red-100 text-red-800"*/}
-        {/*                    : issue.severity === "high"*/}
-        {/*                      ? "bg-orange-100 text-orange-800"*/}
-        {/*                      : issue.severity === "medium"*/}
-        {/*                        ? "bg-yellow-100 text-yellow-800"*/}
-        {/*                        : "bg-blue-100 text-blue-800"*/}
-        {/*                }`}*/}
-        {/*              >*/}
-        {/*                {issue.severity}*/}
-        {/*              </span>*/}
-        {/*            </div>*/}
-        {/*          </div>*/}
-        {/*        </div>*/}
-        {/*      ))}*/}
-        {/*    </div>*/}
-        {/*  ) : (*/}
-        {/*    <div className="p-6 text-center">*/}
-        {/*      <p className="text-neutral-500">*/}
-        {/*        No issues detected in the latest scan.*/}
-        {/*      </p>*/}
-        {/*    </div>*/}
-        {/*  )}*/}
-
-        {/*  {recentIssues && recentIssues.length > 0 && (*/}
-        {/*    <div className="px-6 py-4 border-t border-neutral-200">*/}
-        {/*      <Link*/}
-        {/*        href={`/projects/${projectId}/issues`}*/}
-        {/*        className="text-secondary hover:text-secondary text-sm font-medium"*/}
-        {/*      >*/}
-        {/*        View all issues*/}
-        {/*      </Link>*/}
-        {/*    </div>*/}
-        {/*  )}*/}
-        {/*</div>*/}
-
         <ScanHistory
           initialScans={(scanHistory as Scan[]) || []}
           projectId={projectId}

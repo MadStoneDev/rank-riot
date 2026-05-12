@@ -2,6 +2,7 @@
 
 import { IconArticle, IconLabel } from "@tabler/icons-react";
 import CollapsibleSection from "@/components/ui/CollapsibleSection";
+import Badge from "@/components/ui/Badge";
 
 interface MetadataCardProps {
   title?: string | null;
@@ -52,17 +53,17 @@ function LengthIndicator({
 
   const getBarColor = () => {
     if (current >= optimal.min && current <= optimal.max)
-      return "bg-green-500";
-    if (current < optimal.min * 0.6 || current > max * 0.95) return "bg-red-500";
-    return "bg-orange-500";
+      return "bg-[var(--color-score-good)]";
+    if (current < optimal.min * 0.6 || current > max * 0.95) return "bg-[var(--color-score-critical)]";
+    return "bg-[var(--color-score-warning)]";
   };
 
   return (
     <div className="mt-2 w-full">
-      <div className="relative h-2 bg-neutral-200 rounded-full overflow-hidden">
+      <div className="relative h-2 bg-[var(--color-surface-elevated)] rounded-full overflow-hidden">
         {/* Optimal range indicator */}
         <div
-          className="absolute h-full bg-green-200"
+          className="absolute h-full bg-[var(--color-score-good-muted)]"
           style={{
             left: `${optimalStart}%`,
             width: `${optimalEnd - optimalStart}%`,
@@ -74,7 +75,7 @@ function LengthIndicator({
           style={{ width: `${percentage}%` }}
         />
       </div>
-      <div className="mt-1 flex justify-between text-xs text-neutral-500">
+      <div className="mt-1 flex justify-between text-xs text-[var(--color-text-muted)]">
         <span>{current} chars</span>
         <span>Optimal: {optimal.min}-{optimal.max}</span>
       </div>
@@ -83,18 +84,16 @@ function LengthIndicator({
 }
 
 function FeedbackBadge({ feedback }: { feedback: FeedbackResult }) {
-  const colorClasses = {
-    red: "bg-red-100 text-red-600",
-    orange: "bg-orange-100 text-orange-600",
-    green: "bg-green-100 text-green-600",
+  const variantMap: Record<string, "critical" | "warning" | "good"> = {
+    red: "critical",
+    orange: "warning",
+    green: "good",
   };
 
   return (
-    <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colorClasses[feedback.color]}`}
-    >
+    <Badge variant={variantMap[feedback.color]}>
       {feedback.text}
-    </span>
+    </Badge>
   );
 }
 
@@ -112,28 +111,28 @@ export default function MetadataCard({
     <CollapsibleSection
       title="Metadata"
       badge={
-        <span className="text-sm text-neutral-500">
+        <span className="text-sm text-[var(--color-text-muted)]">
           {titleFeedback.color === "green" && descriptionFeedback.color === "green"
             ? "All good"
             : "Needs attention"}
         </span>
       }
     >
-      <div className="divide-y divide-neutral-200">
+      <div className="divide-y divide-[var(--color-border-subtle)]">
         {/* Title section */}
         <div className="p-4">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-3 flex-1 min-w-0">
-              <div className="flex-shrink-0 rounded-full p-1 text-primary">
+              <div className="flex-shrink-0 rounded-full p-1 text-[var(--color-primary)]">
                 <IconLabel className="h-5 w-5" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <h4 className="text-sm font-medium text-neutral-900">Title</h4>
+                  <h4 className="text-sm font-medium text-[var(--color-text-primary)]">Title</h4>
                   <FeedbackBadge feedback={titleFeedback} />
                 </div>
                 <p
-                  className={`text-sm ${title ? "text-neutral-600" : "text-red-600"} break-words`}
+                  className={`text-sm ${title ? "text-[var(--color-text-secondary)]" : "text-[var(--color-score-critical)]"} break-words`}
                 >
                   {title || "No title found"}
                 </p>
@@ -153,18 +152,18 @@ export default function MetadataCard({
         <div className="p-4">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-3 flex-1 min-w-0">
-              <div className="flex-shrink-0 rounded-full p-1 text-primary">
+              <div className="flex-shrink-0 rounded-full p-1 text-[var(--color-primary)]">
                 <IconArticle className="h-5 w-5" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <h4 className="text-sm font-medium text-neutral-900">
+                  <h4 className="text-sm font-medium text-[var(--color-text-primary)]">
                     Description
                   </h4>
                   <FeedbackBadge feedback={descriptionFeedback} />
                 </div>
                 <p
-                  className={`text-sm ${metaDescription ? "text-neutral-600" : "text-red-600"} break-words`}
+                  className={`text-sm ${metaDescription ? "text-[var(--color-text-secondary)]" : "text-[var(--color-score-critical)]"} break-words`}
                 >
                   {metaDescription || "No meta description found"}
                 </p>

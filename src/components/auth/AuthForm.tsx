@@ -14,6 +14,7 @@ export default function AuthForm() {
   const [authState, setAuthState] = useState<AuthState>("email");
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -40,8 +41,14 @@ export default function AuthForm() {
 
   // Handle OTP verification
   const handleVerifyOtp = async (formData: FormData) => {
-    // This is a client-side wrapper for the server action
-    await verifyOtp(formData);
+    setIsVerifying(true);
+    setError(null);
+    try {
+      await verifyOtp(formData);
+    } catch {
+      setError("Verification failed. Please try again.");
+      setIsVerifying(false);
+    }
   };
 
   // Handle Google sign-in
@@ -161,9 +168,10 @@ export default function AuthForm() {
 
             <button
               type="submit"
-              className="w-full bg-neutral-800 text-white py-2 px-4 rounded-md font-medium hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              disabled={isVerifying}
+              className="w-full bg-neutral-800 text-white py-2 px-4 rounded-md font-medium hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Verify and Sign In
+              {isVerifying ? "Verifying..." : "Verify and Sign In"}
             </button>
 
             <button

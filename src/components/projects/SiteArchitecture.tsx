@@ -32,19 +32,19 @@ export default function SiteArchitecture({
   const warningCount = data.deepPages.length;
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
+    <div className="glass-card overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-neutral-200">
+      <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <IconNetwork className="h-6 w-6 text-primary" />
+            <div className="p-2 bg-[var(--color-primary-muted)] rounded-lg">
+              <IconNetwork className="h-6 w-6 text-[var(--color-primary)]" />
             </div>
             <div>
-              <h3 className="text-lg font-medium text-neutral-900">
+              <h3 className="text-lg font-medium text-[var(--color-text-primary)]">
                 Site Architecture
               </h3>
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-[var(--color-text-secondary)]">
                 {summary.totalPages} pages | Avg depth: {summary.avgDepth} | Max
                 depth: {summary.maxDepth}
               </p>
@@ -55,7 +55,7 @@ export default function SiteArchitecture({
           <div className="flex items-center gap-3">
             <Link
               href={`/projects/${projectId}/sitemap`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[var(--color-primary)] bg-[var(--color-primary-muted)] rounded-lg hover:bg-[var(--color-primary)]/20 transition-colors"
             >
               <IconMap className="h-4 w-4" />
               View Site Map
@@ -64,19 +64,19 @@ export default function SiteArchitecture({
 
           <div className="flex items-center gap-3">
             {criticalCount > 0 && (
-              <div className="flex items-center gap-1 px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">
+              <div className="flex items-center gap-1 px-3 py-1 bg-[var(--color-score-critical-muted)] text-[var(--color-severity-critical)] rounded-full text-sm font-medium">
                 <IconAlertCircle className="h-4 w-4" />
                 <span>{criticalCount} Orphan</span>
               </div>
             )}
             {warningCount > 0 && (
-              <div className="flex items-center gap-1 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium">
+              <div className="flex items-center gap-1 px-3 py-1 bg-[#f9731620] text-[var(--color-severity-high)] rounded-full text-sm font-medium">
                 <IconAlertTriangle className="h-4 w-4" />
                 <span>{warningCount} Deep</span>
               </div>
             )}
             {!hasAnyIssues && (
-              <div className="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+              <div className="flex items-center gap-1 px-3 py-1 bg-[var(--color-score-good-muted)] text-[var(--color-score-good)] rounded-full text-sm font-medium">
                 <IconCircleCheck className="h-4 w-4" />
                 <span>Good Structure</span>
               </div>

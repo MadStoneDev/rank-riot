@@ -4,48 +4,115 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary: #223971;
-  --color-primary-dark: #121F45;
+  /* ── Brand Colors ── */
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-muted: #3b82f620;
 
-  --color-secondary: #CC1E4A;
-  --color-tertiary: #FFC906;
+  /* ── Semantic Score Colors ── */
+  --color-score-good: #10b981;
+  --color-score-good-muted: #10b98120;
+  --color-score-warning: #f59e0b;
+  --color-score-warning-muted: #f59e0b20;
+  --color-score-critical: #f43f5e;
+  --color-score-critical-muted: #f43f5e20;
 
-  --color-danger-100: #FADFD3;
-  --color-danger-200: #F6BAA9;
-  --color-danger-300: #E6887A;
-  --color-danger-400: #CD5955;
-  --color-danger-500: #AC262D;
-  --color-danger-600: #931B2C;
-  --color-danger-700: #7B132B;
-  --color-danger-800: #630C28;
-  --color-danger-900: #520726;
+  /* ── Dark Surface Palette ── */
+  --color-surface-base: #0a0a0f;
+  --color-surface-raised: #12121a;
+  --color-surface-overlay: #1a1a25;
+  --color-surface-elevated: #222230;
+  --color-surface-hover: #2a2a3a;
 
-  --font-sans: "Outfit", sans-serif;
-  --font-display: "Playfair Display", serif;
+  /* ── Border & Ring ── */
+  --color-border-subtle: #ffffff0d;
+  --color-border-default: #ffffff15;
+  --color-border-strong: #ffffff25;
+
+  /* ── Text ── */
+  --color-text-primary: #f0f0f5;
+  --color-text-secondary: #a0a0b5;
+  --color-text-muted: #6b6b80;
+  --color-text-inverse: #0a0a0f;
+
+  /* ── Severity Colors ── */
+  --color-severity-critical: #f43f5e;
+  --color-severity-high: #f97316;
+  --color-severity-medium: #f59e0b;
+  --color-severity-low: #6b7280;
+
+  /* ── Typography ── */
+  --font-sans: "Inter", "Outfit", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
 }
 
 @layer base {
   * {
-    @apply border-gray-200 outline-gray-400/50;
+    @apply border-[var(--color-border-default)] outline-[var(--color-primary)]/50;
   }
   *:focus-visible {
-    outline: 2px solid #223971;
+    outline: 2px solid var(--color-primary);
     outline-offset: 2px;
   }
   body {
-    @apply bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100;
+    @apply bg-[var(--color-surface-base)] text-[var(--color-text-primary)];
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  ::selection {
+    background: var(--color-primary-muted);
+    color: var(--color-text-primary);
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-subtle);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+  }
+  .glass-card-elevated {
+    background: var(--color-surface-overlay);
+    border: 1px solid var(--color-border-default);
+    backdrop-filter: blur(16px);
+    border-radius: 12px;
+  }
+  .glow-blue {
+    box-shadow: 0 0 20px -5px var(--color-primary-muted);
+  }
+  .glow-green {
+    box-shadow: 0 0 20px -5px var(--color-score-good-muted);
+  }
+  .glow-amber {
+    box-shadow: 0 0 20px -5px var(--color-score-warning-muted);
+  }
+  .glow-red {
+    box-shadow: 0 0 20px -5px var(--color-score-critical-muted);
+  }
+  .gradient-text {
+    background: linear-gradient(135deg, var(--color-primary), #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .surface-interactive {
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+  .surface-interactive:hover {
+    background: var(--color-surface-hover);
+    border-color: var(--color-border-strong);
   }
 }
 
 @keyframes slideOutRight {
-  0% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
+  0% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes scoreRingFill {
+  from { stroke-dashoffset: var(--ring-circumference); }
+  to { stroke-dashoffset: var(--ring-offset); }
 }
 
 .slide-out-right {
@@ -54,3 +121,6 @@
   overflow-x: hidden !important;
 }
 
+.score-ring-animate {
+  animation: scoreRingFill 1s ease-out forwards;
+}

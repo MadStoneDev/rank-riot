@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { createRateLimiter, getClientIp } from "@/utils/rate-limit";
+import { validateOrigin } from "@/utils/csrf";
+
+const contactRateLimiter = createRateLimiter("contact", {
+  maxRequests: 5,
+  windowMs: 60_000,
+});
 
 // Lazily initialized Resend client
 let resend: Resend | null = null;
@@ -54,6 +61,20 @@ function getSubjectText(subject: string): string {
 
 export async function POST(request: NextRequest) {
   try {
+    // CSRF check
+    const csrfError = validateOrigin(request);
+    if (csrfError) return csrfError;
+
+    // Rate limit
+    const ip = getClientIp(request);
+    const rateLimitResult = contactRateLimiter.check(ip);
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil(rateLimitResult.retryAfterMs / 1000)) } },
+      );
+    }
+
     const body: ContactFormData = await request.json();
     const { firstName, lastName, email, subject, message } = body;
 

@@ -24,12 +24,12 @@ export default function ImageHeavyPagesCard({
 
   if (pages.length === 0) {
     return (
-      <div className="bg-white rounded-lg border border-neutral-200 p-4">
-        <div className="flex items-center gap-2 text-neutral-500">
+      <div className="glass-card p-4">
+        <div className="flex items-center gap-2 text-[var(--color-text-muted)]">
           <IconPhotoPlus className="h-5 w-5" />
           <span className="font-medium">No Images Found</span>
         </div>
-        <p className="mt-1 text-sm text-neutral-500">
+        <p className="mt-1 text-sm text-[var(--color-text-muted)]">
           No pages with images detected
         </p>
       </div>
@@ -39,53 +39,53 @@ export default function ImageHeavyPagesCard({
   const maxImages = pages[0]?.imageCount || 0;
 
   return (
-    <div className="bg-white rounded-lg border border-blue-200 overflow-hidden">
-      <div className="px-4 py-3 bg-blue-50 border-b border-blue-200">
+    <div className="glass-card overflow-hidden border-[var(--color-primary)]/20">
+      <div className="px-4 py-3 bg-[var(--color-primary-muted)] border-b border-[var(--color-primary)]/20">
         <div className="flex items-center gap-2">
-          <IconPhotoPlus className="h-5 w-5 text-blue-600" />
-          <span className="font-medium text-blue-900">
+          <IconPhotoPlus className="h-5 w-5 text-[var(--color-primary)]" />
+          <span className="font-medium text-[var(--color-primary)]">
             Image-Heavy Pages (Top {Math.min(10, pages.length)})
           </span>
         </div>
-        <p className="mt-1 text-sm text-blue-700">
+        <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
           Pages with the most images
         </p>
       </div>
 
-      <div className="divide-y divide-neutral-100">
+      <div className="divide-y divide-[var(--color-border-subtle)]">
         {displayPages.map((page, index) => (
           <Link
             key={page.id}
             href={`/projects/${projectId}/pages/${page.id}`}
-            className="block px-4 py-3 hover:bg-neutral-50 transition-colors"
+            className="block px-4 py-3 hover:bg-[var(--color-surface-hover)] transition-colors"
           >
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2 min-w-0 flex-1">
-                <span className="text-sm font-medium text-neutral-400">
+                <span className="text-sm font-medium text-[var(--color-text-muted)]">
                   #{index + 1}
                 </span>
-                <p className="text-sm font-medium text-neutral-900 truncate">
+                <p className="text-sm font-medium text-[var(--color-text-primary)] truncate">
                   {page.title || "Untitled"}
                 </p>
               </div>
               <div className="flex items-center gap-2 ml-2">
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[var(--color-primary-muted)] text-[var(--color-primary)]">
                   {page.imageCount} images
                 </span>
                 {page.missingAltCount > 0 && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-700">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[var(--color-score-warning-muted)] text-[var(--color-score-warning)]">
                     {page.missingAltCount} no alt
                   </span>
                 )}
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <p className="text-xs text-neutral-500 truncate flex-1">
+              <p className="text-xs text-[var(--color-text-muted)] truncate flex-1">
                 {truncateUrl(page.url)}
               </p>
-              <div className="w-20 h-1.5 bg-neutral-100 rounded-full overflow-hidden">
+              <div className="w-20 h-1.5 bg-[var(--color-surface-elevated)] rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-blue-500 rounded-full"
+                  className="h-full bg-[var(--color-primary)] rounded-full"
                   style={{
                     width: `${maxImages > 0 ? (page.imageCount / maxImages) * 100 : 0}%`,
                   }}
@@ -99,7 +99,7 @@ export default function ImageHeavyPagesCard({
       {pages.length > 5 && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 border-t border-neutral-100 flex items-center justify-center gap-1"
+          className="w-full px-4 py-2 text-sm text-[var(--color-primary)] hover:bg-[var(--color-surface-hover)] border-t border-[var(--color-border-subtle)] flex items-center justify-center gap-1"
         >
           {isExpanded ? (
             <>

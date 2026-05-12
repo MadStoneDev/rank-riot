@@ -4,8 +4,12 @@
  * Evaluates how well a page is optimized for AI-powered search engines and answer boxes.
  *
  * Scoring philosophy: a well-built page with solid fundamentals (structured data,
- * meta tags, good content) should score 60-70%. Specialized schemas like FAQ,
+ * meta tags, good content) should score ~70%. Specialized schemas like FAQ,
  * HowTo, and Speakable are bonuses that push toward 100%.
+ *
+ * Two scores are provided:
+ *   - Homepage score: the homepage is the most important page for entity establishment
+ *   - Site-wide average: how well the entire site is optimized
  */
 
 export interface AeoSignal {
@@ -25,6 +29,7 @@ export interface AeoResult {
 }
 
 export interface AeoPageInput {
+  url?: string;
   schema_types?: string[] | null;
   structured_data?: any;
   open_graph?: any;
@@ -33,6 +38,7 @@ export interface AeoPageInput {
   word_count?: number | null;
   title?: string | null;
   h1s?: string[] | null;
+  h2s?: string[] | null;
 }
 
 export function calculateAeoReadiness(page: AeoPageInput): AeoResult {
@@ -42,7 +48,7 @@ export function calculateAeoReadiness(page: AeoPageInput): AeoResult {
   const schemaTypes = Array.isArray(page.schema_types) ? page.schema_types : [];
   const schemaTypesLower = schemaTypes.map((s) => s.toLowerCase());
 
-  // ── FUNDAMENTALS (up to 65 points) ──────────────────────────────────
+  // ── FUNDAMENTALS (up to 70 points) ──────────────────────────────────
 
   // Structured data presence (+15) — any JSON-LD schema shows investment in machine-readability
   const hasAnySchema = schemaTypes.length > 0;
@@ -107,17 +113,29 @@ export function calculateAeoReadiness(page: AeoPageInput): AeoResult {
   });
   if (!hasTitle) recommendations.push("Add a descriptive page title");
 
-  // Heading structure (+5) — H1 present signals clear content hierarchy
+  // Heading structure (+10) — H1 present signals clear content hierarchy
   const h1s = Array.isArray(page.h1s) ? page.h1s : [];
   const hasH1 = h1s.length > 0;
   signals.push({
     name: "Heading Structure",
-    score: hasH1 ? 5 : 0,
-    maxScore: 5,
+    score: hasH1 ? 10 : 0,
+    maxScore: 10,
     present: hasH1,
     description: "Clear heading hierarchy helps AI engines parse and extract content sections",
   });
   if (!hasH1) recommendations.push("Add an H1 heading to establish clear content structure");
+
+  // Sub-headings (+5) — H2+ headers indicate well-structured content
+  const h2s = Array.isArray(page.h2s) ? page.h2s : [];
+  const hasH2 = h2s.length > 0;
+  signals.push({
+    name: "Sub-headings",
+    score: hasH2 ? 5 : 0,
+    maxScore: 5,
+    present: hasH2,
+    description: "H2+ sub-headings help AI engines understand content sections and extract answers",
+  });
+  if (!hasH2) recommendations.push("Add H2 sub-headings to structure your content into clear sections");
 
   // Twitter Card (+5)
   const hasTwitter =
@@ -131,64 +149,77 @@ export function calculateAeoReadiness(page: AeoPageInput): AeoResult {
   });
   if (!hasTwitter) recommendations.push("Add Twitter Card meta tags");
 
-  // ── SCHEMA BONUSES (up to 35 points) ───────────────────────────────
+  // ── SCHEMA BONUSES (up to 30 points) ───────────────────────────────
 
-  // Breadcrumb schema (+5)
-  const hasBreadcrumb = schemaTypesLower.some((t) => t.includes("breadcrumb"));
-  signals.push({
-    name: "Breadcrumb Schema",
-    score: hasBreadcrumb ? 5 : 0,
-    maxScore: 5,
-    present: hasBreadcrumb,
-    description: "BreadcrumbList schema aids site hierarchy understanding",
-  });
-  if (!hasBreadcrumb) recommendations.push("Add BreadcrumbList schema for site hierarchy");
-
-  // FAQ schema (+10)
+  // FAQ schema (+8)
   const hasFAQ = schemaTypesLower.some((t) => t.includes("faq"));
   signals.push({
     name: "FAQ Schema",
-    score: hasFAQ ? 10 : 0,
-    maxScore: 10,
+    score: hasFAQ ? 8 : 0,
+    maxScore: 8,
     present: hasFAQ,
     description: "FAQPage schema helps AI engines extract Q&A pairs for featured snippets",
   });
   if (!hasFAQ) recommendations.push("Add FAQPage schema to pages with question-answer content");
 
-  // Article schema (+5)
-  const hasArticle = schemaTypesLower.some(
-    (t) => t.includes("article") || t.includes("newsarticle") || t.includes("blogposting"),
-  );
-  signals.push({
-    name: "Article Schema",
-    score: hasArticle ? 5 : 0,
-    maxScore: 5,
-    present: hasArticle,
-    description: "Article schema helps AI engines understand content type and authorship",
-  });
-  if (!hasArticle) recommendations.push("Add Article or BlogPosting schema for editorial content");
-
-  // HowTo schema (+5)
+  // HowTo schema (+8)
   const hasHowTo = schemaTypesLower.some((t) => t.includes("howto"));
   signals.push({
     name: "HowTo Schema",
-    score: hasHowTo ? 5 : 0,
-    maxScore: 5,
+    score: hasHowTo ? 8 : 0,
+    maxScore: 8,
     present: hasHowTo,
     description: "HowTo schema enables step-by-step result extraction",
   });
   if (!hasHowTo) recommendations.push("Add HowTo schema for instructional or process content");
 
-  // Speakable (+5)
+  // Breadcrumb schema (+4)
+  const hasBreadcrumb = schemaTypesLower.some((t) => t.includes("breadcrumb"));
+  signals.push({
+    name: "Breadcrumb Schema",
+    score: hasBreadcrumb ? 4 : 0,
+    maxScore: 4,
+    present: hasBreadcrumb,
+    description: "BreadcrumbList schema aids site hierarchy understanding",
+  });
+  if (!hasBreadcrumb) recommendations.push("Add BreadcrumbList schema for site hierarchy");
+
+  // Article schema (+4)
+  const hasArticle = schemaTypesLower.some(
+    (t) => t.includes("article") || t.includes("newsarticle") || t.includes("blogposting"),
+  );
+  signals.push({
+    name: "Article Schema",
+    score: hasArticle ? 4 : 0,
+    maxScore: 4,
+    present: hasArticle,
+    description: "Article schema helps AI engines understand content type and authorship",
+  });
+  if (!hasArticle) recommendations.push("Add Article or BlogPosting schema for editorial content");
+
+  // Speakable (+3)
   const hasSpeakable = schemaTypesLower.some((t) => t.includes("speakable"));
   signals.push({
     name: "Speakable",
-    score: hasSpeakable ? 5 : 0,
-    maxScore: 5,
+    score: hasSpeakable ? 3 : 0,
+    maxScore: 3,
     present: hasSpeakable,
     description: "Speakable markup identifies content suitable for voice assistants",
   });
   if (!hasSpeakable) recommendations.push("Add Speakable schema for voice search optimization");
+
+  // LocalBusiness / Organization (+3)
+  const hasEntitySchema = schemaTypesLower.some(
+    (t) => t.includes("localbusiness") || t.includes("organization"),
+  );
+  signals.push({
+    name: "Entity Schema",
+    score: hasEntitySchema ? 3 : 0,
+    maxScore: 3,
+    present: hasEntitySchema,
+    description: "Organization or LocalBusiness schema establishes entity identity for AI engines",
+  });
+  if (!hasEntitySchema) recommendations.push("Add Organization or LocalBusiness schema to establish entity identity");
 
   const totalScore = signals.reduce((sum, s) => sum + s.score, 0);
   const maxPossible = signals.reduce((sum, s) => sum + s.maxScore, 0);
@@ -202,20 +233,54 @@ export function calculateAeoReadiness(page: AeoPageInput): AeoResult {
   };
 }
 
-/**
- * Calculate aggregate AEO readiness across all pages
- */
-export function calculateAggregateAeo(pages: AeoPageInput[]): {
+export interface AggregateAeoResult {
   averageScore: number;
   averagePercent: number;
+  homepagePercent: number | null;
+  homepageResult: AeoResult | null;
   signalCoverage: Record<string, number>;
   topRecommendations: string[];
-} {
+}
+
+/**
+ * Calculate aggregate AEO readiness across all pages.
+ * Returns both a homepage-specific score and a site-wide average.
+ */
+export function calculateAggregateAeo(pages: AeoPageInput[]): AggregateAeoResult {
   if (pages.length === 0) {
-    return { averageScore: 0, averagePercent: 0, signalCoverage: {}, topRecommendations: [] };
+    return {
+      averageScore: 0,
+      averagePercent: 0,
+      homepagePercent: null,
+      homepageResult: null,
+      signalCoverage: {},
+      topRecommendations: [],
+    };
   }
 
   const results = pages.map(calculateAeoReadiness);
+
+  // Identify homepage (URL ends with just the domain, e.g., "/" or no path)
+  let homepageIdx = -1;
+  for (let i = 0; i < pages.length; i++) {
+    const url = pages[i].url || "";
+    try {
+      const parsed = new URL(url);
+      if (parsed.pathname === "/" || parsed.pathname === "") {
+        homepageIdx = i;
+        break;
+      }
+    } catch {
+      if (url.endsWith("/") && url.split("/").length <= 4) {
+        homepageIdx = i;
+        break;
+      }
+    }
+  }
+
+  const homepageResult = homepageIdx >= 0 ? results[homepageIdx] : null;
+  const homepagePercent = homepageResult?.percent ?? null;
+
   const avgScore = Math.round(results.reduce((s, r) => s + r.totalScore, 0) / results.length);
   const avgPercent = Math.round(results.reduce((s, r) => s + r.percent, 0) / results.length);
 
@@ -240,5 +305,12 @@ export function calculateAggregateAeo(pages: AeoPageInput[]): {
     .slice(0, 5)
     .map(([rec, count]) => `${rec} (${count} pages)`);
 
-  return { averageScore: avgScore, averagePercent: avgPercent, signalCoverage, topRecommendations };
+  return {
+    averageScore: avgScore,
+    averagePercent: avgPercent,
+    homepagePercent,
+    homepageResult,
+    signalCoverage,
+    topRecommendations,
+  };
 }

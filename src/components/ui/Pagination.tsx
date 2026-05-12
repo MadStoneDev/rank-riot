@@ -57,12 +57,12 @@ export default function Pagination({
   if (totalPages <= 1 && !onPageSizeChange) return null;
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 border-t border-neutral-200">
+    <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 border-t border-[var(--color-border-subtle)]">
       <div className="flex items-center gap-2">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="p-1 rounded hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-1 rounded hover:bg-[var(--color-surface-hover)] disabled:opacity-50 disabled:cursor-not-allowed text-[var(--color-text-secondary)]"
           aria-label="Previous page"
         >
           <IconChevronLeft className="h-5 w-5" />
@@ -76,14 +76,14 @@ export default function Pagination({
                 onClick={() => onPageChange(page)}
                 className={`min-w-[32px] h-8 px-2 rounded text-sm font-medium transition-colors ${
                   currentPage === page
-                    ? "bg-primary text-white"
-                    : "hover:bg-neutral-100"
+                    ? "bg-[var(--color-primary)] text-white"
+                    : "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]"
                 }`}
               >
                 {page}
               </button>
             ) : (
-              <span key={index} className="px-2 text-neutral-400">
+              <span key={index} className="px-2 text-[var(--color-text-muted)]">
                 {page}
               </span>
             )
@@ -93,7 +93,7 @@ export default function Pagination({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="p-1 rounded hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-1 rounded hover:bg-[var(--color-surface-hover)] disabled:opacity-50 disabled:cursor-not-allowed text-[var(--color-text-secondary)]"
           aria-label="Next page"
         >
           <IconChevronRight className="h-5 w-5" />
@@ -101,7 +101,7 @@ export default function Pagination({
       </div>
 
       {onPageSizeChange && (
-        <div className="flex items-center gap-2 text-sm text-neutral-600">
+        <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
           <span>Show:</span>
           {pageSizeOptions.map((size) => (
             <button
@@ -109,8 +109,8 @@ export default function Pagination({
               onClick={() => onPageSizeChange(size)}
               className={`px-2 py-1 rounded ${
                 pageSize === size
-                  ? "bg-primary text-white"
-                  : "hover:bg-neutral-100"
+                  ? "bg-[var(--color-primary)] text-white"
+                  : "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]"
               }`}
             >
               {size}

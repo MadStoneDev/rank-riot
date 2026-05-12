@@ -198,8 +198,8 @@ export async function GET(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    // Try to get snapshots from scan_snapshots table
-    const { data: existingSnapshots, error: snapshotsError } = await supabase
+    // Fetch snapshots from scan_snapshots table, joined with scans to filter by project
+    const { data: snapshots, error: snapshotsError } = await supabase
       .from("scan_snapshots")
       .select(`
         id,
@@ -216,80 +216,12 @@ export async function GET(
       .order("created_at", { ascending: false })
       .limit(limit);
 
-    // If we have snapshots, return them
-    if (!snapshotsError && existingSnapshots && existingSnapshots.length > 0) {
-      return NextResponse.json({ snapshots: existingSnapshots });
-    }
-
-    // Fallback: Build snapshots from completed scans
-    console.log("Building snapshots from scan history for project:", projectId);
-
-    const { data: scans, error: scansError } = await supabase
-      .from("scans")
-      .select("id, project_id, started_at, completed_at, pages_scanned, issues_found")
-      .eq("project_id", projectId)
-      .eq("status", "completed")
-      .order("completed_at", { ascending: false })
-      .limit(limit);
-
-    if (scansError || !scans || scans.length === 0) {
+    if (snapshotsError) {
+      console.error("Error fetching snapshots:", snapshotsError);
       return NextResponse.json({ snapshots: [] });
     }
 
-    // Build snapshot data for each scan
-    const snapshots = await Promise.all(
-      scans.map(async (scan) => {
-        // Get issues for this scan
-        const { data: issues } = await supabase
-          .from("issues")
-          .select("severity")
-          .eq("project_id", projectId)
-          .eq("scan_id", scan.id);
-
-        const issueCounts = {
-          total: issues?.length || 0,
-          critical: issues?.filter((i) => i.severity === "critical").length || 0,
-          high: issues?.filter((i) => i.severity === "high").length || 0,
-          medium: issues?.filter((i) => i.severity === "medium").length || 0,
-          low: issues?.filter((i) => i.severity === "low").length || 0,
-        };
-
-        // Get broken links count (project-wide, not scan-scoped — see NOTE above)
-        const { count: brokenLinksCount } = await supabase
-          .from("page_links")
-          .select("*", { count: "exact", head: true })
-          .eq("project_id", projectId)
-          .eq("is_broken", true);
-
-        // Calculate average SEO score (basic calculation)
-        const avgScore = Math.max(0, 100 - issueCounts.total * 2);
-
-        const snapshotData = {
-          timestamp: scan.completed_at || scan.started_at,
-          metrics: {
-            totalPages: scan.pages_scanned || 0,
-            indexablePages: scan.pages_scanned || 0,
-            brokenLinks: brokenLinksCount || 0,
-            avgSeoScore: avgScore,
-          },
-          issues: issueCounts,
-          scan: {
-            id: scan.id,
-            pagesScanned: scan.pages_scanned || 0,
-            issuesFound: scan.issues_found || issueCounts.total,
-          },
-        };
-
-        return {
-          id: scan.id,
-          scan_id: scan.id,
-          snapshot_data: snapshotData,
-          created_at: scan.completed_at || scan.started_at,
-        };
-      })
-    );
-
-    return NextResponse.json({ snapshots });
+    return NextResponse.json({ snapshots: snapshots || [] });
   } catch (error) {
     console.error("Snapshot API error:", error);
     return NextResponse.json(

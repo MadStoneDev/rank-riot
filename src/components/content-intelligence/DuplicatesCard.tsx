@@ -48,12 +48,12 @@ export default function DuplicatesCard({
 
   if (duplicateTitles.length === 0 && duplicateDescriptions.length === 0) {
     return (
-      <div className="bg-white rounded-lg border border-neutral-200 p-4">
-        <div className="flex items-center gap-2 text-green-600">
+      <div className="glass-card p-4">
+        <div className="flex items-center gap-2 text-[var(--color-score-good)]">
           <IconCopy className="h-5 w-5" />
           <span className="font-medium">No Duplicates Found</span>
         </div>
-        <p className="mt-1 text-sm text-neutral-500">
+        <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
           All titles and descriptions are unique
         </p>
       </div>
@@ -64,21 +64,21 @@ export default function DuplicatesCard({
     duplicateTitles.length > 0 && duplicateDescriptions.length > 0;
 
   return (
-    <div className="bg-white rounded-lg border border-orange-200 overflow-hidden">
-      <div className="px-4 py-3 bg-orange-50 border-b border-orange-200">
+    <div className="glass-card overflow-hidden border-[var(--color-severity-medium)]/20">
+      <div className="px-4 py-3 bg-[var(--color-score-warning-muted)] border-b border-[var(--color-severity-medium)]/20">
         <div className="flex items-center gap-2">
-          <IconCopy className="h-5 w-5 text-orange-600" />
-          <span className="font-medium text-orange-900">
+          <IconCopy className="h-5 w-5 text-[var(--color-severity-medium)]" />
+          <span className="font-medium text-[var(--color-score-warning)]">
             Duplicate Content ({totalDuplicates})
           </span>
         </div>
-        <p className="mt-1 text-sm text-orange-700">
+        <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
           Same titles or descriptions used on multiple pages
         </p>
       </div>
 
       {hasBothTypes && (
-        <div className="flex border-b border-neutral-200">
+        <div className="flex border-b border-[var(--color-border-subtle)]">
           <button
             onClick={() => {
               setActiveTab("titles");
@@ -86,8 +86,8 @@ export default function DuplicatesCard({
             }}
             className={`flex-1 px-4 py-2 text-sm font-medium ${
               activeTab === "titles"
-                ? "text-orange-600 border-b-2 border-orange-600 bg-orange-50"
-                : "text-neutral-500 hover:text-neutral-700"
+                ? "text-[var(--color-score-warning)] border-b-2 border-[var(--color-score-warning)] bg-[var(--color-score-warning-muted)]"
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
             }`}
           >
             Titles ({duplicateTitles.length} groups)
@@ -99,8 +99,8 @@ export default function DuplicatesCard({
             }}
             className={`flex-1 px-4 py-2 text-sm font-medium ${
               activeTab === "descriptions"
-                ? "text-orange-600 border-b-2 border-orange-600 bg-orange-50"
-                : "text-neutral-500 hover:text-neutral-700"
+                ? "text-[var(--color-score-warning)] border-b-2 border-[var(--color-score-warning)] bg-[var(--color-score-warning-muted)]"
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
             }`}
           >
             Descriptions ({duplicateDescriptions.length} groups)
@@ -108,7 +108,7 @@ export default function DuplicatesCard({
         </div>
       )}
 
-      <div className="divide-y divide-neutral-100">
+      <div className="divide-y divide-[var(--color-border-subtle)]">
         {displayGroups.map((group) => {
           const isGroupExpanded = expandedGroups.has(group.value);
           const displayValue =
@@ -123,27 +123,27 @@ export default function DuplicatesCard({
                 className="w-full flex items-center justify-between text-left"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-neutral-900 truncate">
-                    "{displayValue}"
+                  <p className="text-sm font-medium text-[var(--color-text-primary)] truncate">
+                    &quot;{displayValue}&quot;
                   </p>
-                  <p className="text-xs text-neutral-500">
+                  <p className="text-xs text-[var(--color-text-muted)]">
                     Used on {group.pages.length} pages
                   </p>
                 </div>
                 {isGroupExpanded ? (
-                  <IconChevronDown className="h-4 w-4 text-neutral-400 flex-shrink-0" />
+                  <IconChevronDown className="h-4 w-4 text-[var(--color-text-muted)] flex-shrink-0" />
                 ) : (
-                  <IconChevronRight className="h-4 w-4 text-neutral-400 flex-shrink-0" />
+                  <IconChevronRight className="h-4 w-4 text-[var(--color-text-muted)] flex-shrink-0" />
                 )}
               </button>
 
               {isGroupExpanded && (
-                <div className="mt-2 ml-2 space-y-1 border-l-2 border-orange-200 pl-3">
+                <div className="mt-2 ml-2 space-y-1 border-l-2 border-[var(--color-score-warning)]/30 pl-3">
                   {group.pages.map((page) => (
                     <Link
                       key={page.id}
                       href={`/projects/${projectId}/pages/${page.id}`}
-                      className="block py-1 text-sm text-primary hover:underline"
+                      className="block py-1 text-sm text-[var(--color-primary)] hover:underline"
                     >
                       {truncateUrl(page.url)}
                     </Link>
@@ -158,7 +158,7 @@ export default function DuplicatesCard({
       {currentGroups.length > 3 && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 border-t border-neutral-100 flex items-center justify-center gap-1"
+          className="w-full px-4 py-2 text-sm text-[var(--color-score-warning)] hover:bg-[var(--color-surface-hover)] border-t border-[var(--color-border-subtle)] flex items-center justify-center gap-1"
         >
           {isExpanded ? (
             <>

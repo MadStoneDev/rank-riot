@@ -23,23 +23,23 @@ export default function CollapsibleSection({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className={`bg-white rounded-lg shadow overflow-hidden ${className}`}>
+    <div className={`glass-card overflow-hidden ${className}`}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-6 py-4 flex items-center justify-between border-b border-neutral-200 hover:bg-neutral-50 transition-colors"
+        className="w-full px-6 py-4 flex items-center justify-between border-b border-[var(--color-border-subtle)] hover:bg-[var(--color-surface-hover)] transition-colors"
         aria-expanded={isOpen}
       >
         <div className="flex items-center gap-3">
-          <h3 className="text-lg font-medium text-neutral-900">{title}</h3>
+          <h3 className="text-lg font-medium text-[var(--color-text-primary)]">{title}</h3>
           {badge}
         </div>
         <div className="flex items-center gap-3">
           {headerContent}
           {isOpen ? (
-            <IconChevronUp className="h-5 w-5 text-neutral-500" />
+            <IconChevronUp className="h-5 w-5 text-[var(--color-text-muted)]" />
           ) : (
-            <IconChevronDown className="h-5 w-5 text-neutral-500" />
+            <IconChevronDown className="h-5 w-5 text-[var(--color-text-muted)]" />
           )}
         </div>
       </button>

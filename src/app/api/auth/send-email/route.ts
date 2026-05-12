@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { createRateLimiter, getClientIp } from "@/utils/rate-limit";
 
 let resend: Resend | null = null;
 
@@ -28,6 +29,11 @@ interface SendEmailHookPayload {
     token_hash_new?: string;
   };
 }
+
+const emailRateLimiter = createRateLimiter("send-email", {
+  maxRequests: 10,
+  windowMs: 60_000,
+});
 
 const FROM_ADDRESS = "RankRiot <noreply@rankriot.app>";
 const PRIMARY_COLOR = "#223971";
@@ -145,18 +151,32 @@ ${button("Confirm New Email", confirmUrl)}
 
 export async function POST(request: NextRequest) {
   try {
-    // Log authorization status for debugging (GoTrue hook authentication)
-    // GoTrue manages its own hook auth via GOTRUE_HOOK_SEND_EMAIL_SECRETS;
-    // we do not reject requests here since GoTrue may send a signed JWT
-    // rather than the raw secret, and blocking it breaks login.
+    // Rate limit
+    const ip = getClientIp(request);
+    const rateLimitResult = emailRateLimiter.check(ip);
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429, headers: { "Retry-After": String(Math.ceil(rateLimitResult.retryAfterMs / 1000)) } },
+      );
+    }
+
+    // Verify webhook authorization
     const hookSecret = process.env.AUTH_SEND_EMAIL_HOOK_SECRET;
     if (hookSecret) {
       const authHeader = request.headers.get("authorization") || "";
-      const providedSecret = authHeader.replace("Bearer ", "").trim();
       if (!authHeader) {
-        console.warn("Send-email hook: no authorization header present");
-      } else if (providedSecret !== hookSecret) {
-        console.log("Send-email hook: authorization via GoTrue signed token");
+        return NextResponse.json(
+          { error: "Missing authorization header" },
+          { status: 401 },
+        );
+      }
+      const providedSecret = authHeader.replace("Bearer ", "").trim();
+      if (providedSecret !== hookSecret) {
+        return NextResponse.json(
+          { error: "Invalid authorization" },
+          { status: 403 },
+        );
       }
     }
 

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconChevronRight, IconChartBar } from "@tabler/icons-react";
+import { IconChevronRight, IconBolt } from "@tabler/icons-react";
 
 import { createClient } from "@/utils/supabase/client";
 import { Database } from "../../../database.types";
@@ -16,11 +16,14 @@ function generateBreadcrumbs(pathname: string) {
   const breadcrumbs: { label: string; href: string }[] = [];
 
   let currentPath = "";
-  paths.forEach((segment, index) => {
+  paths.forEach((segment) => {
     currentPath += `/${segment}`;
 
     // Skip UUID-like segments but keep them in the path
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(segment);
+    const isUuid =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        segment,
+      );
 
     let label = segment.charAt(0).toUpperCase() + segment.slice(1);
 
@@ -69,12 +72,16 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="bg-white border-b border-neutral-200 h-16 flex items-center px-6">
+    <header className="bg-[var(--color-surface-base)]/80 backdrop-blur-xl border-b border-[var(--color-border-subtle)] h-14 flex items-center px-6 sticky top-0 z-40">
       {/* Mobile Logo */}
       <div className="md:hidden flex items-center gap-2 mr-4">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <IconChartBar className="w-6 h-6 text-secondary" />
-          <span className="text-lg font-bold text-neutral-900">RankRiot</span>
+          <div className="w-6 h-6 rounded-md bg-[var(--color-primary)] flex items-center justify-center">
+            <IconBolt className="w-3.5 h-3.5 text-white" />
+          </div>
+          <span className="text-base font-bold text-[var(--color-text-primary)] tracking-tight">
+            RankRiot
+          </span>
         </Link>
       </div>
 
@@ -83,14 +90,16 @@ export default function Header() {
         {breadcrumbs.map((crumb, index) => (
           <div key={crumb.href} className="flex items-center">
             {index > 0 && (
-              <IconChevronRight className="w-4 h-4 text-neutral-400 mx-1" />
+              <IconChevronRight className="w-3.5 h-3.5 text-[var(--color-text-muted)] mx-1" />
             )}
             {index === breadcrumbs.length - 1 ? (
-              <span className="text-neutral-900 font-medium">{crumb.label}</span>
+              <span className="text-[var(--color-text-primary)] font-medium text-[13px]">
+                {crumb.label}
+              </span>
             ) : (
               <Link
                 href={crumb.href}
-                className="text-neutral-500 hover:text-neutral-900 transition-colors"
+                className="text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] transition-colors text-[13px]"
               >
                 {crumb.label}
               </Link>
@@ -106,12 +115,14 @@ export default function Header() {
           className="flex items-center gap-3 hover:opacity-80 transition-opacity"
         >
           <div className="text-right hidden sm:block">
-            <p className="text-sm font-medium text-neutral-900">
+            <p className="text-[13px] font-medium text-[var(--color-text-primary)]">
               {user?.full_name || "User"}
             </p>
-            <p className="text-xs text-neutral-500">{user?.email}</p>
+            <p className="text-[11px] text-[var(--color-text-muted)]">
+              {user?.email}
+            </p>
           </div>
-          <div className="w-9 h-9 rounded-full bg-neutral-200 overflow-hidden ring-2 ring-neutral-100">
+          <div className="w-8 h-8 rounded-full overflow-hidden ring-1 ring-[var(--color-border-default)]">
             {user?.avatar_url ? (
               <img
                 src={user.avatar_url}
@@ -119,7 +130,7 @@ export default function Header() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-secondary text-white text-sm font-semibold">
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[var(--color-primary)] to-[#818cf8] text-white text-xs font-semibold">
                 {user?.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
               </div>
             )}

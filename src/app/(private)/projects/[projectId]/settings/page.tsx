@@ -52,21 +52,6 @@ export default async function ProjectSettingsPage({
     .eq("user_id", user.id)
     .single();
 
-  const handleDeleteProject = async () => {
-    if (confirm("Are you sure you want to delete this project?")) {
-      // Delete the project
-      const { error } = await supabase
-        .from("projects")
-        .delete()
-        .eq("id", projectId);
-
-      if (error) throw error;
-
-      // Redirect to dashboard
-      redirect("/projects");
-    }
-  };
-
   if (!project) {
     notFound();
   }

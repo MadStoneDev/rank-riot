@@ -32,19 +32,19 @@ export default function ContentIntelligence({
     data.similarContent.length > 0;
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
+    <div className="glass-card overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-neutral-200">
+      <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <IconBrain className="h-6 w-6 text-primary" />
+            <div className="p-2 bg-[var(--color-primary-muted)] rounded-lg">
+              <IconBrain className="h-6 w-6 text-[var(--color-primary)]" />
             </div>
             <div>
-              <h3 className="text-lg font-medium text-neutral-900">
+              <h3 className="text-lg font-medium text-[var(--color-text-primary)]">
                 Content Intelligence
               </h3>
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-[var(--color-text-secondary)]">
                 Analyze content quality across your site
               </p>
             </div>
@@ -53,19 +53,19 @@ export default function ContentIntelligence({
           {/* Summary badges */}
           <div className="flex items-center gap-3">
             {summary.critical > 0 && (
-              <div className="flex items-center gap-1 px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">
+              <div className="flex items-center gap-1 px-3 py-1 bg-[var(--color-score-critical-muted)] text-[var(--color-severity-critical)] rounded-full text-sm font-medium">
                 <IconAlertCircle className="h-4 w-4" />
                 <span>{summary.critical} Critical</span>
               </div>
             )}
             {summary.warnings > 0 && (
-              <div className="flex items-center gap-1 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium">
+              <div className="flex items-center gap-1 px-3 py-1 bg-[#f9731620] text-[var(--color-severity-high)] rounded-full text-sm font-medium">
                 <IconAlertTriangle className="h-4 w-4" />
                 <span>{summary.warnings} Warnings</span>
               </div>
             )}
             {!hasAnyIssues && (
-              <div className="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+              <div className="flex items-center gap-1 px-3 py-1 bg-[var(--color-score-good-muted)] text-[var(--color-score-good)] rounded-full text-sm font-medium">
                 <IconCircleCheck className="h-4 w-4" />
                 <span>All Clear</span>
               </div>
@@ -100,11 +100,11 @@ export default function ContentIntelligence({
           </div>
         ) : (
           <div className="text-center py-8">
-            <IconCircleCheck className="h-12 w-12 mx-auto text-green-500 mb-3" />
-            <h4 className="text-lg font-medium text-neutral-900 mb-1">
+            <IconCircleCheck className="h-12 w-12 mx-auto text-[var(--color-score-good)] mb-3" />
+            <h4 className="text-lg font-medium text-[var(--color-text-primary)] mb-1">
               Content Quality Looks Good!
             </h4>
-            <p className="text-neutral-500">
+            <p className="text-[var(--color-text-secondary)]">
               No content issues detected. All pages have sufficient content, unique
               titles, and meta descriptions.
             </p>

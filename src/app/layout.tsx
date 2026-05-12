@@ -1,9 +1,29 @@
 import "./globals.css";
+import { Metadata } from "next";
 import Script from "next/script";
 import { Outfit, Playfair_Display } from "next/font/google";
 import { ThemeProvider } from "@/providers/ThemeProvider";
-import Link from "next/link";
-import DarkModeToggle from "@/components/ui/DarkModeToggle";
+
+export const metadata: Metadata = {
+  title: {
+    default: "RankRiot - SEO Intelligence Platform",
+    template: "%s | RankRiot",
+  },
+  description:
+    "Professional SEO analysis and site auditing tools. Scan your website, identify issues, and improve your search rankings with RankRiot.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://rankriot.app"),
+  openGraph: {
+    type: "website",
+    siteName: "RankRiot",
+    title: "RankRiot - SEO Intelligence Platform",
+    description:
+      "Professional SEO analysis and site auditing tools for developers and marketing teams.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -30,10 +50,10 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           {children}
         </ThemeProvider>
-        {/* Paddle.js for payment processing */}
+        {/* Paddle.js for payment processing — lazy loaded */}
         <Script
           src="https://cdn.paddle.com/paddle/v2/paddle.js"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
       </body>
     </html>

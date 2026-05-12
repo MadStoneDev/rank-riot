@@ -67,36 +67,10 @@ export default async function SettingsPage() {
         </div>
 
         <div className="p-6">
-          <div className="space-y-4">
-            <label className="flex items-start gap-3 cursor-pointer group">
-              <div className="flex items-center h-5 mt-0.5">
-                <input
-                  id="scan_completed"
-                  name="scan_completed"
-                  type="checkbox"
-                  defaultChecked
-                  className="h-4 w-4 text-primary border-neutral-300 rounded focus:ring-primary focus:ring-offset-0"
-                />
-              </div>
-              <div className="text-sm">
-                <span className="font-medium text-neutral-900 group-hover:text-neutral-700">
-                  Scan completed
-                </span>
-                <p className="text-neutral-500 mt-0.5">
-                  Receive notifications when a website scan is completed.
-                </p>
-              </div>
-            </label>
-          </div>
-
-          <div className="mt-6">
-            <button
-              type="submit"
-              className="inline-flex items-center px-4 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white text-sm font-medium rounded-lg transition-colors"
-            >
-              Save Preferences
-            </button>
-          </div>
+          <p className="text-sm text-neutral-500">
+            Email notification preferences are coming soon. You will be able to
+            configure scan completion alerts and other notifications here.
+          </p>
         </div>
       </div>
 

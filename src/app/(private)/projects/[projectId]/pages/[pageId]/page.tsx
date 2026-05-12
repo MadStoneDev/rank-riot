@@ -14,6 +14,10 @@ import HeadingHierarchy from "@/components/page-detail/HeadingHierarchy";
 import EnhancedLinkList from "@/components/page-detail/EnhancedLinkList";
 import EnhancedImageList from "@/components/page-detail/EnhancedImageList";
 import KeywordListClient from "@/components/projects/KeywordListClient";
+import ScoreRing from "@/components/ui/ScoreRing";
+import Badge from "@/components/ui/Badge";
+import { getPageScore } from "@/utils/page-score";
+import IssueAdvicePanel from "@/components/issues/IssueAdvicePanel";
 
 type PageLink = Database["public"]["Tables"]["page_links"]["Row"] & {
   pages?: {
@@ -122,6 +126,14 @@ export default async function PageDetailPage({
       return normalizeUrl(link.destination_url) === normalizedPageUrl;
     }) || [];
 
+  // Get issues for this page
+  const { data: pageIssues } = await supabase
+    .from("issues")
+    .select("*")
+    .eq("page_id", pageId)
+    .eq("is_fixed", false)
+    .order("created_at", { ascending: false });
+
   // Extract data from page
   const {
     keywords = [],
@@ -134,44 +146,61 @@ export default async function PageDetailPage({
     images = [],
   } = page;
 
-  // HTTP Status badge color
-  const getHttpStatusBadge = () => {
+  // Calculate page score for header display
+  const pageScore = getPageScore({
+    title: page.title,
+    meta_description: page.meta_description,
+    h1s: h1s as string[],
+    h2s: h2s as string[],
+    canonical_url: page.canonical_url,
+    url: page.url,
+    has_robots_noindex: page.has_robots_noindex,
+    is_indexable: page.is_indexable,
+    http_status: page.http_status,
+    images: images as { src: string; alt: string }[],
+    open_graph: page.open_graph as Record<string, any> | null,
+  });
+
+  // HTTP Status badge variant
+  const getHttpStatusVariant = (): "good" | "warning" | "critical" => {
     const status = page.http_status;
-    if (!status) return null;
-
-    let colorClass = "bg-green-100 text-green-700";
-    if (status >= 300 && status < 400) colorClass = "bg-orange-100 text-orange-700";
-    if (status >= 400) colorClass = "bg-red-100 text-red-700";
-
-    return (
-      <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-sm font-medium ${colorClass}`}>
-        HTTP {status}
-      </span>
-    );
+    if (!status) return "critical";
+    if (status >= 200 && status < 300) return "good";
+    if (status >= 300 && status < 400) return "warning";
+    return "critical";
   };
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-bold text-neutral-900 truncate">
-            {page.title || "Untitled Page"}
-          </h1>
-          <p className="mt-1 flex items-center gap-2 text-neutral-500">
-            <a
-              href={page.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 hover:text-neutral-700 hover:underline"
-            >
-              {page.url}
-              <IconExternalLink className="h-4 w-4" />
-            </a>
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {getHttpStatusBadge()}
+      <div className="glass-card p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-5 min-w-0">
+            <ScoreRing score={pageScore} size="lg" label="SEO Score" />
+            <div className="min-w-0">
+              <h1 className="text-2xl font-bold text-[var(--color-text-primary)] truncate">
+                {page.title || "Untitled Page"}
+              </h1>
+              <p className="mt-1 flex items-center gap-2 text-[var(--color-text-secondary)]">
+                <a
+                  href={page.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 hover:text-[var(--color-primary)] hover:underline transition-colors"
+                >
+                  {page.url}
+                  <IconExternalLink className="h-4 w-4" />
+                </a>
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 sm:flex-shrink-0">
+            {page.http_status && (
+              <Badge variant={getHttpStatusVariant()} size="md">
+                HTTP {page.http_status}
+              </Badge>
+            )}
+          </div>
         </div>
       </div>
 
@@ -193,6 +222,22 @@ export default async function PageDetailPage({
           structured_data: page.structured_data,
         }}
       />
+
+      {/* Issue Advice Panel */}
+      {pageIssues && pageIssues.length > 0 && (
+        <IssueAdvicePanel
+          issues={pageIssues.map(issue => ({
+            id: issue.id,
+            issue_type: issue.issue_type,
+            severity: issue.severity,
+            description: issue.description,
+            details: issue.details,
+          }))}
+          title="Issues on This Page"
+          showPageLink={false}
+          projectId={projectId}
+        />
+      )}
 
       {/* Indexability & Technical Metrics Row */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">

@@ -18,15 +18,23 @@ export default function DeleteAccountSection() {
     setError(null);
 
     try {
-      const supabase = createClient();
+      // Call the account deletion API to remove all user data server-side
+      const response = await fetch("/api/account", { method: "DELETE" });
+      const data = await response.json();
 
-      // Sign out and let the user know — actual account deletion
-      // should be handled server-side via a Supabase Edge Function
-      // or admin API to properly cascade-delete all user data.
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to delete account");
+      }
+
+      // Sign out after successful deletion
+      const supabase = createClient();
       await supabase.auth.signOut();
-      router.push("/?account_deleted=pending");
-    } catch {
-      setError("Failed to process account deletion. Please contact support.");
+      router.push("/?account_deleted=true");
+    } catch (err: any) {
+      setError(
+        err?.message ||
+          "Failed to process account deletion. Please contact support.",
+      );
       setIsDeleting(false);
     }
   };

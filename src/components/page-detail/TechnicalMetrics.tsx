@@ -30,17 +30,17 @@ function formatTime(ms: number): string {
 
 export default function TechnicalMetrics({ page }: TechnicalMetricsProps) {
   const getHttpStatusColor = (status?: number | null) => {
-    if (!status) return "bg-neutral-100 text-neutral-600";
-    if (status >= 200 && status < 300) return "bg-green-100 text-green-700";
-    if (status >= 300 && status < 400) return "bg-orange-100 text-orange-700";
-    return "bg-red-100 text-red-700";
+    if (!status) return "bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)]";
+    if (status >= 200 && status < 300) return "bg-[var(--color-score-good-muted)] text-[var(--color-score-good)]";
+    if (status >= 300 && status < 400) return "bg-[var(--color-score-warning-muted)] text-[var(--color-score-warning)]";
+    return "bg-[var(--color-score-critical-muted)] text-[var(--color-score-critical)]";
   };
 
   const getLoadTimeColor = (ms?: number | null) => {
-    if (!ms) return "text-neutral-600";
-    if (ms < 1000) return "text-green-600";
-    if (ms < 3000) return "text-orange-500";
-    return "text-red-600";
+    if (!ms) return "text-[var(--color-text-secondary)]";
+    if (ms < 1000) return "text-[var(--color-score-good)]";
+    if (ms < 3000) return "text-[var(--color-score-warning)]";
+    return "text-[var(--color-score-critical)]";
   };
 
   const MetricItem = ({
@@ -54,27 +54,27 @@ export default function TechnicalMetrics({ page }: TechnicalMetricsProps) {
     value: string;
     valueClass?: string;
   }) => (
-    <div className="flex items-center justify-between py-3 border-b border-neutral-100 last:border-0">
-      <div className="flex items-center gap-2 text-neutral-600">
+    <div className="flex items-center justify-between py-3 border-b border-[var(--color-border-subtle)] last:border-0">
+      <div className="flex items-center gap-2 text-[var(--color-text-secondary)]">
         {icon}
         <span className="text-sm">{label}</span>
       </div>
-      <span className={`text-sm font-medium ${valueClass || "text-neutral-900"}`}>
+      <span className={`text-sm font-medium ${valueClass || "text-[var(--color-text-primary)]"}`}>
         {value}
       </span>
     </div>
   );
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
-      <div className="px-6 py-4 border-b border-neutral-200">
-        <h3 className="text-lg font-medium text-neutral-900">
+    <div className="glass-card overflow-hidden">
+      <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
+        <h3 className="text-lg font-medium text-[var(--color-text-primary)]">
           Technical Metrics
         </h3>
       </div>
       <div className="px-6 py-2">
-        <div className="flex items-center justify-between py-3 border-b border-neutral-100">
-          <div className="flex items-center gap-2 text-neutral-600">
+        <div className="flex items-center justify-between py-3 border-b border-[var(--color-border-subtle)]">
+          <div className="flex items-center gap-2 text-[var(--color-text-secondary)]">
             <IconServer className="h-4 w-4" />
             <span className="text-sm">HTTP Status</span>
           </div>

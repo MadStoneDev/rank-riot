@@ -25,12 +25,12 @@ export default function OrphanPagesCard({
 
   if (pages.length === 0) {
     return (
-      <div className="bg-white rounded-lg border border-neutral-200 p-4">
-        <div className="flex items-center gap-2 text-green-600">
+      <div className="glass-card p-4">
+        <div className="flex items-center gap-2 text-[var(--color-score-good)]">
           <IconCircleCheck className="h-5 w-5" />
           <span className="font-medium">No Orphan Pages</span>
         </div>
-        <p className="mt-1 text-sm text-neutral-500">
+        <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
           All pages have internal links pointing to them
         </p>
       </div>
@@ -38,30 +38,30 @@ export default function OrphanPagesCard({
   }
 
   return (
-    <div className="bg-white rounded-lg border border-red-200 overflow-hidden">
-      <div className="px-4 py-3 bg-red-50 border-b border-red-200">
+    <div className="glass-card overflow-hidden border-[var(--color-severity-critical)]/20">
+      <div className="px-4 py-3 bg-[var(--color-score-critical-muted)] border-b border-[var(--color-severity-critical)]/20">
         <div className="flex items-center gap-2">
-          <IconUnlink className="h-5 w-5 text-red-600" />
-          <span className="font-medium text-red-900">
+          <IconUnlink className="h-5 w-5 text-[var(--color-severity-critical)]" />
+          <span className="font-medium text-[var(--color-severity-critical)]">
             Orphan Pages ({pages.length})
           </span>
         </div>
-        <p className="mt-1 text-sm text-red-700">
+        <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
           Pages with no internal links pointing to them
         </p>
       </div>
 
-      <div className="divide-y divide-neutral-100">
+      <div className="divide-y divide-[var(--color-border-subtle)]">
         {displayPages.map((page) => (
           <Link
             key={page.id}
             href={`/projects/${projectId}/pages/${page.id}`}
-            className="block px-4 py-3 hover:bg-neutral-50 transition-colors"
+            className="block px-4 py-3 hover:bg-[var(--color-surface-hover)] transition-colors"
           >
-            <p className="text-sm font-medium text-neutral-900 truncate">
+            <p className="text-sm font-medium text-[var(--color-text-primary)] truncate">
               {page.title || "Untitled Page"}
             </p>
-            <p className="text-xs text-neutral-500 truncate">
+            <p className="text-xs text-[var(--color-text-muted)] truncate">
               {truncateUrl(page.url)}
             </p>
           </Link>
@@ -71,7 +71,7 @@ export default function OrphanPagesCard({
       {pages.length > 5 && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 border-t border-neutral-100 flex items-center justify-center gap-1"
+          className="w-full px-4 py-2 text-sm text-[var(--color-severity-critical)] hover:bg-[var(--color-surface-hover)] border-t border-[var(--color-border-subtle)] flex items-center justify-center gap-1"
         >
           {isExpanded ? (
             <>

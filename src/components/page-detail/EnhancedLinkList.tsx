@@ -13,6 +13,7 @@ import { decode } from "html-entities";
 import { safeHref } from "@/utils/safe-url";
 import CollapsibleSection from "@/components/ui/CollapsibleSection";
 import Pagination from "@/components/ui/Pagination";
+import Badge from "@/components/ui/Badge";
 
 interface PageLink {
   id: string;
@@ -63,6 +64,12 @@ export default function EnhancedLinkList({
         result = result.filter((link) => link.link_type === "internal");
         break;
     }
+    // Sort broken links to the top
+    result.sort((a, b) => {
+      if (a.is_broken && !b.is_broken) return -1;
+      if (!a.is_broken && b.is_broken) return 1;
+      return 0;
+    });
     return result;
   }, [links, filter]);
 
@@ -97,8 +104,8 @@ export default function EnhancedLinkList({
       onClick={() => handleTabChange(tab)}
       className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
         activeTab === tab
-          ? "border-primary text-primary"
-          : "border-transparent text-neutral-500 hover:text-neutral-700"
+          ? "border-[var(--color-primary)] text-[var(--color-primary)]"
+          : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
       }`}
     >
       {label} ({count})
@@ -116,8 +123,8 @@ export default function EnhancedLinkList({
       onClick={() => handleFilterChange(filterValue)}
       className={`px-3 py-1 text-xs rounded-full transition-colors ${
         filter === filterValue
-          ? "bg-primary text-white"
-          : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+          ? "bg-[var(--color-primary)] text-white"
+          : "bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]"
       }`}
     >
       {label}
@@ -129,21 +136,21 @@ export default function EnhancedLinkList({
       title="Links"
       badge={
         brokenCount > 0 ? (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-600">
+          <Badge variant="critical">
             {brokenCount} broken
-          </span>
+          </Badge>
         ) : null
       }
     >
       {/* Tabs */}
-      <div className="flex border-b border-neutral-200">
+      <div className="flex border-b border-[var(--color-border-subtle)]">
         <TabButton tab="outbound" label="Outbound" count={outboundLinks.length} />
         <TabButton tab="inbound" label="Inbound" count={inboundLinks.length} />
       </div>
 
       {/* Filters */}
-      <div className="px-4 py-3 flex items-center gap-2 bg-neutral-50 border-b border-neutral-200">
-        <IconFilter className="h-4 w-4 text-neutral-400" />
+      <div className="px-4 py-3 flex items-center gap-2 bg-[var(--color-surface-overlay)] border-b border-[var(--color-border-subtle)]">
+        <IconFilter className="h-4 w-4 text-[var(--color-text-muted)]" />
         <FilterButton filterValue="all" label="All" />
         <FilterButton filterValue="broken" label="Broken" />
         <FilterButton filterValue="external" label="External" />
@@ -154,26 +161,26 @@ export default function EnhancedLinkList({
       {filteredLinks.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-neutral-50 border-b border-neutral-200">
+            <thead className="bg-[var(--color-surface-overlay)] border-b border-[var(--color-border-subtle)]">
               <tr>
-                <th className="px-4 py-2 text-left text-xs font-medium text-neutral-500 uppercase">
+                <th className="px-4 py-2 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase">
                   Status
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-neutral-500 uppercase">
+                <th className="px-4 py-2 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase">
                   URL
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-neutral-500 uppercase">
+                <th className="px-4 py-2 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase">
                   Anchor
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-neutral-500 uppercase">
+                <th className="px-4 py-2 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase">
                   Follow
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-neutral-500 uppercase">
+                <th className="px-4 py-2 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase">
                   Type
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-100">
+            <tbody className="divide-y divide-[var(--color-border-subtle)]">
               {paginatedLinks.map((link) => {
                 const url =
                   activeTab === "outbound"
@@ -185,27 +192,32 @@ export default function EnhancedLinkList({
                     : link.source_page_id;
 
                 return (
-                  <tr key={link.id} className="hover:bg-neutral-50">
+                  <tr
+                    key={link.id}
+                    className={`hover:bg-[var(--color-surface-hover)] transition-colors ${
+                      link.is_broken ? "bg-[var(--color-score-critical-muted)]" : ""
+                    }`}
+                  >
                     <td className="px-4 py-3">
                       {link.is_broken ? (
-                        <span className="inline-flex items-center gap-1 text-red-600">
+                        <span className="inline-flex items-center gap-1 text-[var(--color-score-critical)]">
                           <IconX className="h-4 w-4" />
-                          <span className="text-xs">Broken</span>
+                          <span className="text-xs font-medium">Broken</span>
                         </span>
                       ) : link.http_status ? (
                         <span
                           className={`inline-flex items-center gap-1 ${
                             link.http_status >= 200 && link.http_status < 300
-                              ? "text-green-600"
+                              ? "text-[var(--color-score-good)]"
                               : link.http_status >= 300 && link.http_status < 400
-                                ? "text-orange-500"
-                                : "text-red-600"
+                                ? "text-[var(--color-score-warning)]"
+                                : "text-[var(--color-score-critical)]"
                           }`}
                         >
                           <span className="text-xs">{link.http_status}</span>
                         </span>
                       ) : (
-                        <span className="text-xs text-neutral-400">-</span>
+                        <span className="text-xs text-[var(--color-text-muted)]">-</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
@@ -213,51 +225,41 @@ export default function EnhancedLinkList({
                         {linkedPageId ? (
                           <Link
                             href={`/projects/${projectId}/pages/${linkedPageId}`}
-                            className="text-primary hover:underline truncate"
+                            className="text-[var(--color-primary)] hover:underline truncate"
                           >
                             {url}
                           </Link>
                         ) : (
-                          <span className="text-neutral-600 truncate">{url}</span>
+                          <span className="text-[var(--color-text-secondary)] truncate">{url}</span>
                         )}
                         <a
                           href={safeHref(url)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex-shrink-0 text-neutral-400 hover:text-primary"
+                          className="flex-shrink-0 text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
                         >
                           <IconExternalLink className="h-4 w-4" />
                         </a>
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-neutral-600 max-w-[150px] truncate block">
+                      <span className="text-[var(--color-text-secondary)] max-w-[150px] truncate block">
                         {link.anchor_text
                           ? decode(link.anchor_text)
-                          : <span className="text-red-500 text-xs">No anchor</span>}
+                          : <span className="text-[var(--color-score-critical)] text-xs">No anchor</span>}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       {link.is_followed === false ? (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-orange-100 text-orange-600">
-                          nofollow
-                        </span>
+                        <Badge variant="warning">nofollow</Badge>
                       ) : (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-green-100 text-green-600">
-                          follow
-                        </span>
+                        <Badge variant="good">follow</Badge>
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs ${
-                          link.link_type === "internal"
-                            ? "bg-blue-100 text-blue-600"
-                            : "bg-purple-100 text-purple-600"
-                        }`}
-                      >
+                      <Badge variant={link.link_type === "internal" ? "info" : "neutral"}>
                         {link.link_type}
-                      </span>
+                      </Badge>
                     </td>
                   </tr>
                 );
@@ -266,7 +268,7 @@ export default function EnhancedLinkList({
           </table>
         </div>
       ) : (
-        <div className="p-8 text-center text-neutral-500">
+        <div className="p-8 text-center text-[var(--color-text-muted)]">
           No {filter !== "all" ? filter : ""} links found
         </div>
       )}

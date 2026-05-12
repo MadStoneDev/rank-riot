@@ -17,6 +17,9 @@ import {
 import Pagination from "@/components/ui/Pagination";
 import ExportTriggerButton from "@/components/export/ExportTriggerButton";
 import { sanitizeFilename } from "@/utils/export";
+import { getPageScore } from "@/utils/page-score";
+import ScoreRing from "@/components/ui/ScoreRing";
+import Badge from "@/components/ui/Badge";
 
 interface Page {
   id: string;
@@ -55,61 +58,8 @@ type SortField = "url" | "title" | "score" | "issues" | "links";
 type SortDirection = "asc" | "desc";
 type FilterType = "all" | "with-issues" | "indexable" | "non-indexable";
 
-function calculatePageScore(page: Page): number {
-  let score = 100;
-
-  // Title check (20 points)
-  if (!page.title) score -= 20;
-  else {
-    const titleLength = page.title.length;
-    if (titleLength < 30) score -= 15;
-    else if (titleLength > 70) score -= 5;
-  }
-
-  // Meta description check (15 points)
-  if (!page.meta_description) score -= 15;
-  else {
-    const descLength = page.meta_description.length;
-    if (descLength < 70) score -= 10;
-    else if (descLength > 165) score -= 5;
-  }
-
-  // H1 check (15 points)
-  const h1Count = Array.isArray(page.h1s) ? page.h1s.length : 0;
-  if (h1Count === 0) score -= 15;
-  else if (h1Count > 1) score -= 5;
-
-  // H2 check (5 points)
-  const h2Count = Array.isArray(page.h2s) ? page.h2s.length : 0;
-  if (h2Count === 0) score -= 5;
-
-  // Indexability (10 points)
-  if (page.has_robots_noindex) score -= 10;
-  else if (page.is_indexable === false) score -= 10;
-
-  // Canonical URL check (5 points)
-  if (page.canonical_url) {
-    const normalizeUrl = (url: string) => url.replace(/^https?:\/\//, "").replace(/\/$/, "");
-    if (normalizeUrl(page.canonical_url) !== normalizeUrl(page.url)) {
-      score -= 5;
-    }
-  }
-
-  // HTTP status (10 points)
-  if (page.http_status && page.http_status >= 400) score -= 10;
-  else if (page.http_status && page.http_status >= 300) score -= 5;
-
-  // Images alt text (5 points)
-  const images = Array.isArray(page.images) ? page.images : [];
-  const missingAlt = images.filter((img) => !img.alt || img.alt.trim() === "").length;
-  if (images.length > 0 && missingAlt > 0) score -= Math.min(5, missingAlt);
-
-  // Open Graph check (3 points)
-  if (!page.open_graph || Object.keys(page.open_graph).length === 0) {
-    score -= 3;
-  }
-
-  return Math.max(0, score);
+function calculatePageScoreLocal(page: Page): number {
+  return getPageScore(page);
 }
 
 export default function PagesListClient({
@@ -130,7 +80,7 @@ export default function PagesListClient({
   const pagesWithScores = useMemo(() => {
     return pages.map((page) => ({
       ...page,
-      score: calculatePageScore(page),
+      score: calculatePageScoreLocal(page),
       issueCount: issueCounts[page.id] || 0,
       linkCount: linkCounts[page.id] || 0,
     }));
@@ -216,12 +166,6 @@ export default function PagesListClient({
     setCurrentPage(1);
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return "bg-green-100 text-green-700";
-    if (score >= 60) return "bg-orange-100 text-orange-700";
-    return "bg-red-100 text-red-700";
-  };
-
   const SortButton = ({
     field,
     label,
@@ -233,8 +177,8 @@ export default function PagesListClient({
       onClick={() => handleSort(field)}
       className={`px-3 py-1.5 text-xs rounded-md flex items-center gap-1 transition-colors ${
         sortField === field
-          ? "bg-primary text-white"
-          : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+          ? "bg-[var(--color-primary)] text-white"
+          : "bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]"
       }`}
     >
       {label}
@@ -261,8 +205,8 @@ export default function PagesListClient({
       }}
       className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
         filter === filterValue
-          ? "bg-primary text-white"
-          : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+          ? "bg-[var(--color-primary)] text-white"
+          : "bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]"
       }`}
     >
       {label}
@@ -270,14 +214,14 @@ export default function PagesListClient({
   );
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
+    <div className="glass-card overflow-hidden">
       {/* Header with count */}
-      <div className="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
+      <div className="px-6 py-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-medium text-neutral-900">
+          <h3 className="text-lg font-medium text-[var(--color-text-primary)]">
             {pages.length} Pages Crawled
           </h3>
-          <p className="text-sm text-neutral-500 mt-1">
+          <p className="text-sm text-[var(--color-text-muted)] mt-1">
             Showing {filteredPages.length} of {pages.length} pages
           </p>
         </div>
@@ -291,10 +235,10 @@ export default function PagesListClient({
       </div>
 
       {/* Search & Filters */}
-      <div className="px-6 py-4 bg-neutral-50 border-b border-neutral-200 space-y-3">
+      <div className="px-6 py-4 bg-[var(--color-surface-overlay)] border-b border-[var(--color-border-subtle)] space-y-3">
         {/* Search */}
         <div className="relative">
-          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-text-muted)]" />
           <input
             type="text"
             placeholder="Search by URL or title..."
@@ -303,15 +247,15 @@ export default function PagesListClient({
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-[var(--color-border-default)] rounded-md text-sm bg-[var(--color-surface-raised)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
           />
         </div>
 
         {/* Filter & Sort */}
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
-            <IconFilter className="h-4 w-4 text-neutral-400" />
-            <span className="text-xs text-neutral-500">Filter:</span>
+            <IconFilter className="h-4 w-4 text-[var(--color-text-muted)]" />
+            <span className="text-xs text-[var(--color-text-muted)]">Filter:</span>
             <FilterButton filterValue="all" label="All" />
             <FilterButton filterValue="with-issues" label="With Issues" />
             <FilterButton filterValue="indexable" label="Indexable" />
@@ -319,7 +263,7 @@ export default function PagesListClient({
           </div>
 
           <div className="flex items-center gap-2 sm:ml-auto">
-            <span className="text-xs text-neutral-500">Sort:</span>
+            <span className="text-xs text-[var(--color-text-muted)]">Sort:</span>
             <SortButton field="url" label="URL" />
             <SortButton field="score" label="Score" />
             <SortButton field="issues" label="Issues" />
@@ -329,29 +273,27 @@ export default function PagesListClient({
 
       {/* Pages List */}
       {paginatedPages.length > 0 ? (
-        <div className="divide-y divide-neutral-200">
+        <div className="divide-y divide-[var(--color-border-subtle)]">
           {paginatedPages.map((page) => (
             <Link
               key={page.id}
               href={`/projects/${projectId}/pages/${page.id}`}
-              className="block p-4 hover:bg-neutral-50 transition-colors"
+              className="block p-4 hover:bg-[var(--color-surface-hover)] transition-colors"
             >
               <div className="flex items-start gap-4">
-                {/* Score Badge */}
-                <div
-                  className={`flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center font-bold text-lg ${getScoreColor(page.score)}`}
-                >
-                  {page.score}
+                {/* Score Ring */}
+                <div className="flex-shrink-0">
+                  <ScoreRing score={page.score} size="sm" showLabel={false} />
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
                     <div className="min-w-0">
-                      <h4 className="text-sm font-medium text-neutral-900 truncate">
+                      <h4 className="text-sm font-medium text-[var(--color-text-primary)] truncate">
                         {page.title ? decode(page.title) : "Untitled Page"}
                       </h4>
-                      <p className="text-xs text-neutral-500 truncate mt-0.5">
+                      <p className="text-xs text-[var(--color-text-muted)] truncate mt-0.5">
                         {page.url}
                       </p>
                     </div>
@@ -359,38 +301,38 @@ export default function PagesListClient({
                     {/* Status badges */}
                     <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 sm:flex-shrink-0">
                       {page.issueCount > 0 && (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded text-xs">
+                        <Badge variant="critical">
                           <IconAlertCircle className="h-3 w-3" />
                           {page.issueCount}
-                        </span>
+                        </Badge>
                       )}
-                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-neutral-100 text-neutral-600 rounded text-xs">
+                      <Badge variant="neutral">
                         <IconLink className="h-3 w-3" />
                         {page.linkCount}
-                      </span>
+                      </Badge>
                       {page.http_status && (
-                        <span
-                          className={`px-2 py-1 rounded text-xs font-medium ${
+                        <Badge
+                          variant={
                             page.http_status >= 200 && page.http_status < 300
-                              ? "bg-green-100 text-green-700"
+                              ? "good"
                               : page.http_status >= 300 && page.http_status < 400
-                                ? "bg-orange-100 text-orange-700"
-                                : "bg-red-100 text-red-700"
-                          }`}
+                                ? "warning"
+                                : "critical"
+                          }
                         >
                           {page.http_status}
-                        </span>
+                        </Badge>
                       )}
                       {page.is_indexable !== false && !page.has_robots_noindex ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded text-xs">
+                        <Badge variant="good">
                           <IconCheck className="h-3 w-3" />
                           Index
-                        </span>
+                        </Badge>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs">
+                        <Badge variant="warning">
                           <IconX className="h-3 w-3" />
                           NoIndex
-                        </span>
+                        </Badge>
                       )}
                     </div>
                   </div>
@@ -400,7 +342,7 @@ export default function PagesListClient({
           ))}
         </div>
       ) : (
-        <div className="p-8 text-center text-neutral-500">
+        <div className="p-8 text-center text-[var(--color-text-muted)]">
           {searchQuery || filter !== "all"
             ? "No pages match your search or filter criteria"
             : "No pages found"}

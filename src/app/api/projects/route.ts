@@ -2,9 +2,30 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { PlanId } from "@/types/subscription";
 import { canCreateProject, PLAN_LIMITS, PLAN_INFO } from "@/lib/subscription-limits";
+import { createRateLimiter, getClientIp } from "@/utils/rate-limit";
+import { validateOrigin } from "@/utils/csrf";
+
+const projectsRateLimiter = createRateLimiter("projects", {
+  maxRequests: 10,
+  windowMs: 60_000,
+});
 
 export async function POST(request: NextRequest) {
   try {
+    // CSRF check
+    const csrfError = validateOrigin(request);
+    if (csrfError) return csrfError;
+
+    // Rate limit
+    const ip = getClientIp(request);
+    const rateLimitResult = projectsRateLimiter.check(ip);
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429, headers: { "Retry-After": String(Math.ceil(rateLimitResult.retryAfterMs / 1000)) } },
+      );
+    }
+
     const supabase = await createClient();
 
     // Get authenticated user
@@ -149,7 +170,7 @@ export async function POST(request: NextRequest) {
     const endpoint = project_type === "audit" ? "/api/scan/audit" : "/api/scan";
     const fullUrl = `${crawlerApiUrl}${endpoint}`;
 
-    // Get access token for backend auth
+    // Get access token to forward to the crawler backend
     const { data: sessionData } = await supabase.auth.getSession();
     const accessToken = sessionData?.session?.access_token;
 

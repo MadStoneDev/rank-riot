@@ -27,21 +27,30 @@ export default async function DashboardLayout({
 
   return (
     <SubscriptionProviderWrapper userId={user.id} userEmail={user.email || ""}>
-      <div className="min-h-screen bg-neutral-50">
+      <div className="min-h-screen bg-[var(--color-surface-base)]">
         <SkipLink />
         <Sidebar />
 
         {/* Main content area - offset by sidebar on desktop */}
-        <div className="md:pl-64 flex flex-col min-h-screen">
+        <div className="md:pl-[220px] flex flex-col min-h-screen">
           <Header />
 
-          <main id="main-content" className="flex-1 p-6 pb-24 md:pb-6">
+          <main id="main-content" className="flex-1 p-5 pb-24 md:pb-6">
             <div className="max-w-7xl mx-auto">
               <ErrorBoundary>
                 {children}
               </ErrorBoundary>
             </div>
-            <Toaster />
+            <Toaster
+              theme="dark"
+              toastOptions={{
+                style: {
+                  background: "var(--color-surface-overlay)",
+                  border: "1px solid var(--color-border-default)",
+                  color: "var(--color-text-primary)",
+                },
+              }}
+            />
           </main>
         </div>
       </div>

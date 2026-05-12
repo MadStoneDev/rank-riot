@@ -114,21 +114,24 @@ export default function ContactForm() {
     }
   };
 
+  const inputBaseClasses =
+    "w-full px-4 py-3 bg-[var(--color-surface-overlay)] border rounded-lg text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:ring-2 focus:ring-[var(--color-primary)]/30 focus:border-[var(--color-primary)] transition-colors";
+
   if (status === "success") {
     return (
       <div className="text-center py-12">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-6">
-          <IconCheck className="w-8 h-8 text-green-600" />
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-[var(--color-score-good)]/10 rounded-full mb-6">
+          <IconCheck className="w-8 h-8 text-[var(--color-score-good)]" />
         </div>
-        <h3 className="text-xl font-semibold text-neutral-900 mb-2">
+        <h3 className="text-xl font-semibold text-[var(--color-text-primary)] mb-2">
           Message sent!
         </h3>
-        <p className="text-neutral-600 mb-6">
+        <p className="text-[var(--color-text-secondary)] mb-6">
           Thanks for reaching out. We&apos;ll get back to you within 24 hours.
         </p>
         <button
           onClick={() => setStatus("idle")}
-          className="text-primary hover:underline font-medium"
+          className="text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] hover:underline font-medium"
         >
           Send another message
         </button>
@@ -139,13 +142,13 @@ export default function ContactForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {status === "error" && (
-        <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <IconAlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-3 p-4 bg-[var(--color-score-critical)]/10 border border-[var(--color-score-critical)]/20 rounded-lg">
+          <IconAlertCircle className="w-5 h-5 text-[var(--color-score-critical)] flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-red-800">
+            <p className="text-sm font-medium text-[var(--color-score-critical)]">
               Failed to send message
             </p>
-            <p className="text-sm text-red-700 mt-1">{errorMessage}</p>
+            <p className="text-sm text-[var(--color-score-critical)]/80 mt-1">{errorMessage}</p>
           </div>
         </div>
       )}
@@ -154,7 +157,7 @@ export default function ContactForm() {
         <div>
           <label
             htmlFor="firstName"
-            className="block text-sm font-medium text-neutral-700 mb-2"
+            className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2"
           >
             First name
           </label>
@@ -164,19 +167,19 @@ export default function ContactForm() {
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-              errors.firstName ? "border-red-500" : "border-neutral-300"
+            className={`${inputBaseClasses} ${
+              errors.firstName ? "border-[var(--color-score-critical)]" : "border-[var(--color-border-default)]"
             }`}
             placeholder="John"
           />
           {errors.firstName && (
-            <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>
+            <p className="mt-1 text-sm text-[var(--color-score-critical)]">{errors.firstName}</p>
           )}
         </div>
         <div>
           <label
             htmlFor="lastName"
-            className="block text-sm font-medium text-neutral-700 mb-2"
+            className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2"
           >
             Last name
           </label>
@@ -186,13 +189,13 @@ export default function ContactForm() {
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-              errors.lastName ? "border-red-500" : "border-neutral-300"
+            className={`${inputBaseClasses} ${
+              errors.lastName ? "border-[var(--color-score-critical)]" : "border-[var(--color-border-default)]"
             }`}
             placeholder="Doe"
           />
           {errors.lastName && (
-            <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>
+            <p className="mt-1 text-sm text-[var(--color-score-critical)]">{errors.lastName}</p>
           )}
         </div>
       </div>
@@ -200,7 +203,7 @@ export default function ContactForm() {
       <div>
         <label
           htmlFor="email"
-          className="block text-sm font-medium text-neutral-700 mb-2"
+          className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2"
         >
           Email
         </label>
@@ -210,20 +213,20 @@ export default function ContactForm() {
           name="email"
           value={formData.email}
           onChange={handleChange}
-          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${
-            errors.email ? "border-red-500" : "border-neutral-300"
+          className={`${inputBaseClasses} ${
+            errors.email ? "border-[var(--color-score-critical)]" : "border-[var(--color-border-default)]"
           }`}
           placeholder="john@example.com"
         />
         {errors.email && (
-          <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+          <p className="mt-1 text-sm text-[var(--color-score-critical)]">{errors.email}</p>
         )}
       </div>
 
       <div>
         <label
           htmlFor="subject"
-          className="block text-sm font-medium text-neutral-700 mb-2"
+          className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2"
         >
           Subject
         </label>
@@ -232,8 +235,8 @@ export default function ContactForm() {
           name="subject"
           value={formData.subject}
           onChange={handleChange}
-          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors bg-white ${
-            errors.subject ? "border-red-500" : "border-neutral-300"
+          className={`${inputBaseClasses} ${
+            errors.subject ? "border-[var(--color-score-critical)]" : "border-[var(--color-border-default)]"
           }`}
         >
           <option value="">Select a topic</option>
@@ -244,14 +247,14 @@ export default function ContactForm() {
           <option value="other">Other</option>
         </select>
         {errors.subject && (
-          <p className="mt-1 text-sm text-red-600">{errors.subject}</p>
+          <p className="mt-1 text-sm text-[var(--color-score-critical)]">{errors.subject}</p>
         )}
       </div>
 
       <div>
         <label
           htmlFor="message"
-          className="block text-sm font-medium text-neutral-700 mb-2"
+          className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2"
         >
           Message
         </label>
@@ -261,20 +264,20 @@ export default function ContactForm() {
           rows={5}
           value={formData.message}
           onChange={handleChange}
-          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors resize-none ${
-            errors.message ? "border-red-500" : "border-neutral-300"
+          className={`${inputBaseClasses} resize-none ${
+            errors.message ? "border-[var(--color-score-critical)]" : "border-[var(--color-border-default)]"
           }`}
           placeholder="How can we help?"
         />
         {errors.message && (
-          <p className="mt-1 text-sm text-red-600">{errors.message}</p>
+          <p className="mt-1 text-sm text-[var(--color-score-critical)]">{errors.message}</p>
         )}
       </div>
 
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="w-full sm:w-auto px-8 py-3 bg-neutral-900 text-white font-medium rounded-lg hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center"
+        className="w-full sm:w-auto px-8 py-3 bg-[var(--color-primary)] text-white font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center glow-blue"
       >
         {status === "submitting" ? (
           <>

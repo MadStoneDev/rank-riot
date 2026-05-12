@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import {
   IconExternalLink,
   IconAlertTriangle,
@@ -11,6 +10,7 @@ import {
 import CollapsibleSection from "@/components/ui/CollapsibleSection";
 import { safeHref } from "@/utils/safe-url";
 import Pagination from "@/components/ui/Pagination";
+import Badge from "@/components/ui/Badge";
 
 interface ImageData {
   src: string;
@@ -53,9 +53,9 @@ export default function EnhancedImageList({
     const hasAlt = image.alt && image.alt.trim() !== "";
 
     return (
-      <div className="group relative bg-neutral-50 rounded-lg overflow-hidden border border-neutral-200 hover:border-primary transition-colors">
+      <div className="group relative bg-[var(--color-surface-overlay)] rounded-lg overflow-hidden border border-[var(--color-border-subtle)] hover:border-[var(--color-primary)] transition-colors">
         {/* Thumbnail */}
-        <div className="aspect-video relative bg-neutral-100 overflow-hidden">
+        <div className="aspect-video relative bg-[var(--color-surface-elevated)] overflow-hidden">
           {!imgError ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -66,7 +66,7 @@ export default function EnhancedImageList({
               loading="lazy"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-neutral-400">
+            <div className="w-full h-full flex items-center justify-center text-[var(--color-text-muted)]">
               <IconPhoto className="h-8 w-8" />
             </div>
           )}
@@ -74,12 +74,12 @@ export default function EnhancedImageList({
           {/* Alt text status badge */}
           <div className="absolute top-2 right-2">
             {hasAlt ? (
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-green-500/90 text-white text-xs">
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-[var(--color-score-good)] text-white text-xs font-medium">
                 <IconCheck className="h-3 w-3" />
                 Alt
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-red-500/90 text-white text-xs">
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-[var(--color-score-critical)] text-white text-xs font-medium">
                 <IconAlertTriangle className="h-3 w-3" />
                 No Alt
               </span>
@@ -87,12 +87,12 @@ export default function EnhancedImageList({
           </div>
 
           {/* Hover overlay with actions */}
-          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <a
               href={safeHref(image.src)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 px-3 py-2 bg-white rounded text-sm font-medium text-neutral-900 hover:bg-neutral-100"
+              className="inline-flex items-center gap-1 px-3 py-2 bg-[var(--color-surface-raised)] rounded text-sm font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-surface-overlay)]"
             >
               <IconExternalLink className="h-4 w-4" />
               View Full
@@ -102,15 +102,15 @@ export default function EnhancedImageList({
 
         {/* Image info */}
         <div className="p-3">
-          <p className="text-xs text-neutral-500 truncate mb-1" title={image.src}>
+          <p className="text-xs text-[var(--color-text-muted)] truncate mb-1" title={image.src}>
             {image.src.split("/").pop() || image.src}
           </p>
           {hasAlt ? (
-            <p className="text-sm text-neutral-700 line-clamp-2" title={image.alt}>
+            <p className="text-sm text-[var(--color-text-secondary)] line-clamp-2" title={image.alt}>
               {image.alt}
             </p>
           ) : (
-            <p className="text-sm text-red-500 italic">Missing alt text</p>
+            <p className="text-sm text-[var(--color-score-critical)] italic">Missing alt text</p>
           )}
         </div>
       </div>
@@ -122,13 +122,13 @@ export default function EnhancedImageList({
       title="Images"
       badge={
         <div className="flex items-center gap-2">
-          <span className="text-sm text-neutral-500">
+          <span className="text-sm text-[var(--color-text-muted)]">
             {images.length} image{images.length !== 1 ? "s" : ""}
           </span>
           {missingAltCount > 0 && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-600">
+            <Badge variant="critical">
               {missingAltCount} missing alt
-            </span>
+            </Badge>
           )}
         </div>
       }
@@ -137,7 +137,7 @@ export default function EnhancedImageList({
         <>
           {/* Filter toggle */}
           {missingAltCount > 0 && (
-            <div className="px-4 py-3 bg-neutral-50 border-b border-neutral-200">
+            <div className="px-4 py-3 bg-[var(--color-surface-overlay)] border-b border-[var(--color-border-subtle)]">
               <label className="inline-flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -146,9 +146,9 @@ export default function EnhancedImageList({
                     setShowOnlyMissingAlt(e.target.checked);
                     setCurrentPage(1);
                   }}
-                  className="rounded border-neutral-300 text-primary focus:ring-primary"
+                  className="rounded border-[var(--color-border-default)] bg-[var(--color-surface-elevated)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
                 />
-                <span className="text-sm text-neutral-600">
+                <span className="text-sm text-[var(--color-text-secondary)]">
                   Show only images missing alt text ({missingAltCount})
                 </span>
               </label>
@@ -180,7 +180,7 @@ export default function EnhancedImageList({
           )}
         </>
       ) : (
-        <div className="p-8 text-center text-neutral-500">
+        <div className="p-8 text-center text-[var(--color-text-muted)]">
           No images found on this page
         </div>
       )}

@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
   useCallback,
+  useRef,
   ReactNode,
 } from "react";
 import { createClient } from "@/utils/supabase/client";
@@ -72,7 +73,8 @@ export function SubscriptionProvider({
   const [error, setError] = useState<string | null>(null);
   const [paddleInitialized, setPaddleInitialized] = useState(false);
 
-  const supabase = createClient();
+  const supabaseRef = useRef(createClient());
+  const supabase = supabaseRef.current;
 
   // Fetch subscription and usage data
   const fetchSubscriptionData = useCallback(async () => {

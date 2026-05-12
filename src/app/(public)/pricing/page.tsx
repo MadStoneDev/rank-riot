@@ -99,15 +99,15 @@ export default function PricingPage() {
     <>
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 to-white" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-primary/5 to-secondary/5 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-surface-raised)] to-[var(--color-surface-base)]" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[var(--color-primary)]/5 rounded-full blur-3xl" />
 
         <div className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16">
           <div className="max-w-2xl mx-auto text-center">
-            <h1 className="text-4xl sm:text-5xl font-bold text-neutral-900 tracking-tight">
+            <h1 className="text-4xl sm:text-5xl font-bold text-[var(--color-text-primary)] tracking-tight">
               Simple, transparent pricing
             </h1>
-            <p className="mt-6 text-lg text-neutral-600 leading-relaxed">
+            <p className="mt-6 text-lg text-[var(--color-text-secondary)] leading-relaxed">
               Start free and scale as you grow. No hidden fees, no surprises.
               Cancel anytime.
             </p>
@@ -126,15 +126,15 @@ export default function PricingPage() {
             return (
               <div
                 key={planId}
-                className={`relative flex flex-col rounded-2xl border bg-white transition-all duration-300 ${
+                className={`relative flex flex-col rounded-2xl transition-all duration-300 ${
                   isPopular
-                    ? "border-neutral-900 shadow-xl shadow-neutral-900/10 lg:scale-105 lg:z-10"
-                    : "border-neutral-200 hover:border-neutral-300 hover:shadow-lg"
+                    ? "glass-card-elevated border-[var(--color-primary)]/40 shadow-xl shadow-[var(--color-primary)]/10 lg:scale-105 lg:z-10 glow-blue"
+                    : "glass-card surface-interactive"
                 }`}
               >
                 {isPopular && (
                   <div className="absolute -top-4 left-0 right-0 flex justify-center">
-                    <span className="inline-flex items-center px-4 py-1 rounded-full bg-neutral-900 text-white text-xs font-medium">
+                    <span className="inline-flex items-center px-4 py-1 rounded-full bg-[var(--color-primary)] text-white text-xs font-medium">
                       Most Popular
                     </span>
                   </div>
@@ -143,10 +143,10 @@ export default function PricingPage() {
                 <div className="p-6 lg:p-8 flex-1 flex flex-col">
                   {/* Plan name and description */}
                   <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-neutral-900">
+                    <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">
                       {info.name}
                     </h3>
-                    <p className="mt-1 text-sm text-neutral-500">
+                    <p className="mt-1 text-sm text-[var(--color-text-muted)]">
                       {info.description}
                     </p>
                   </div>
@@ -154,23 +154,23 @@ export default function PricingPage() {
                   {/* Price */}
                   <div className="mb-6">
                     <div className="flex items-baseline">
-                      <span className="text-4xl font-bold text-neutral-900">
+                      <span className="text-4xl font-bold text-[var(--color-text-primary)]">
                         ${info.priceMonthly}
                       </span>
                       {info.priceMonthly > 0 && (
-                        <span className="ml-1 text-neutral-500 text-sm">
+                        <span className="ml-1 text-[var(--color-text-muted)] text-sm">
                           /month
                         </span>
                       )}
                     </div>
                     {info.priceYearly > 0 && (
-                      <p className="mt-1 text-xs text-neutral-500">
+                      <p className="mt-1 text-xs text-[var(--color-text-muted)]">
                         or ${Math.round(info.priceYearly / 12)}/mo billed
                         annually
                       </p>
                     )}
                     {planId === "free" && (
-                      <p className="mt-1 text-xs text-neutral-500">
+                      <p className="mt-1 text-xs text-[var(--color-text-muted)]">
                         Free forever
                       </p>
                     )}
@@ -179,35 +179,35 @@ export default function PricingPage() {
                   {/* Features list */}
                   <ul className="mb-8 flex-1 space-y-3">
                     <li className="flex items-start gap-3 text-sm">
-                      <IconCheck className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-neutral-700">
+                      <IconCheck className="w-5 h-5 text-[var(--color-score-good)] flex-shrink-0" />
+                      <span className="text-[var(--color-text-secondary)]">
                         {limits.maxProjects === -1
                           ? "Unlimited projects"
                           : `${limits.maxProjects} projects`}
                       </span>
                     </li>
                     <li className="flex items-start gap-3 text-sm">
-                      <IconCheck className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-neutral-700">
+                      <IconCheck className="w-5 h-5 text-[var(--color-score-good)] flex-shrink-0" />
+                      <span className="text-[var(--color-text-secondary)]">
                         {limits.maxPagesPerScan.toLocaleString()} pages per scan
                       </span>
                     </li>
                     <li className="flex items-start gap-3 text-sm">
-                      <IconCheck className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-neutral-700">
+                      <IconCheck className="w-5 h-5 text-[var(--color-score-good)] flex-shrink-0" />
+                      <span className="text-[var(--color-text-secondary)]">
                         {limits.scanFrequency === "daily" ? "Daily" : "Weekly"}{" "}
                         automated scans
                       </span>
                     </li>
                     <li className="flex items-start gap-3 text-sm">
-                      <IconCheck className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-neutral-700">
+                      <IconCheck className="w-5 h-5 text-[var(--color-score-good)] flex-shrink-0" />
+                      <span className="text-[var(--color-text-secondary)]">
                         {limits.maxKeywords} keywords tracked
                       </span>
                     </li>
                     <li className="flex items-start gap-3 text-sm">
-                      <IconCheck className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-neutral-700">
+                      <IconCheck className="w-5 h-5 text-[var(--color-score-good)] flex-shrink-0" />
+                      <span className="text-[var(--color-text-secondary)]">
                         {limits.historyDays >= 365
                           ? `${Math.round(limits.historyDays / 365)} year${limits.historyDays >= 730 ? "s" : ""}`
                           : `${Math.round(limits.historyDays / 30)} months`}{" "}
@@ -216,14 +216,14 @@ export default function PricingPage() {
                     </li>
                     {limits.features.pdfReports && (
                       <li className="flex items-start gap-3 text-sm">
-                        <IconCheck className="w-5 h-5 text-green-500 flex-shrink-0" />
-                        <span className="text-neutral-700">PDF reports</span>
+                        <IconCheck className="w-5 h-5 text-[var(--color-score-good)] flex-shrink-0" />
+                        <span className="text-[var(--color-text-secondary)]">PDF reports</span>
                       </li>
                     )}
                     {limits.features.onDemandScans && (
                       <li className="flex items-start gap-3 text-sm">
-                        <IconCheck className="w-5 h-5 text-green-500 flex-shrink-0" />
-                        <span className="text-neutral-700">On-demand scans</span>
+                        <IconCheck className="w-5 h-5 text-[var(--color-score-good)] flex-shrink-0" />
+                        <span className="text-[var(--color-text-secondary)]">On-demand scans</span>
                       </li>
                     )}
                   </ul>
@@ -233,10 +233,10 @@ export default function PricingPage() {
                     href={planId === "free" ? "/auth" : "/auth?plan=" + planId}
                     className={`block w-full py-3 px-4 text-center text-sm font-medium rounded-lg transition-colors ${
                       isPopular
-                        ? "bg-neutral-900 text-white hover:bg-neutral-800"
+                        ? "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] glow-blue"
                         : planId === "free"
-                          ? "bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
-                          : "bg-white text-neutral-900 border border-neutral-300 hover:bg-neutral-50"
+                          ? "bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)]"
+                          : "bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] border border-[var(--color-border-default)] hover:bg-[var(--color-surface-hover)] hover:border-[var(--color-border-strong)]"
                     }`}
                   >
                     {planId === "free" ? "Start for Free" : "Get Started"}
@@ -247,19 +247,19 @@ export default function PricingPage() {
           })}
         </div>
 
-        <p className="text-center text-sm text-neutral-500 mt-8">
+        <p className="text-center text-sm text-[var(--color-text-muted)] mt-8">
           All plans include CSV export, email support, and 99.9% uptime SLA.
         </p>
       </section>
 
       {/* Feature Comparison */}
-      <section className="py-24 bg-neutral-50 border-y border-neutral-200">
+      <section className="py-24 border-y border-[var(--color-border-subtle)] bg-[var(--color-surface-raised)]">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-neutral-900">
+            <h2 className="text-3xl font-bold text-[var(--color-text-primary)]">
               Compare plans in detail
             </h2>
-            <p className="mt-4 text-lg text-neutral-600">
+            <p className="mt-4 text-lg text-[var(--color-text-secondary)]">
               Find the perfect plan for your needs
             </p>
           </div>
@@ -267,8 +267,8 @@ export default function PricingPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[800px]">
               <thead>
-                <tr className="border-b border-neutral-200">
-                  <th className="py-4 px-6 text-left text-sm font-semibold text-neutral-900 w-1/4">
+                <tr className="border-b border-[var(--color-border-default)]">
+                  <th className="py-4 px-6 text-left text-sm font-semibold text-[var(--color-text-primary)] w-1/4">
                     Feature
                   </th>
                   {PLAN_ORDER.map((planId) => (
@@ -276,8 +276,8 @@ export default function PricingPage() {
                       key={planId}
                       className={`py-4 px-6 text-center text-sm font-semibold ${
                         PLAN_INFO[planId].popular
-                          ? "text-neutral-900 bg-neutral-100"
-                          : "text-neutral-900"
+                          ? "text-[var(--color-primary)]"
+                          : "text-[var(--color-text-primary)]"
                       }`}
                     >
                       {PLAN_INFO[planId].name}
@@ -289,9 +289,9 @@ export default function PricingPage() {
                 {FEATURES.map((feature, idx) => (
                   <tr
                     key={feature.key}
-                    className={idx % 2 === 0 ? "bg-white" : "bg-neutral-50/50"}
+                    className={idx % 2 === 0 ? "bg-[var(--color-surface-overlay)]/30" : ""}
                   >
-                    <td className="py-4 px-6 text-sm text-neutral-700">
+                    <td className="py-4 px-6 text-sm text-[var(--color-text-secondary)]">
                       {feature.label}
                     </td>
                     {PLAN_ORDER.map((planId) => {
@@ -299,8 +299,8 @@ export default function PricingPage() {
                       return (
                         <td
                           key={planId}
-                          className={`py-4 px-6 text-center text-sm font-medium text-neutral-900 ${
-                            PLAN_INFO[planId].popular ? "bg-neutral-100/50" : ""
+                          className={`py-4 px-6 text-center text-sm font-medium text-[var(--color-text-primary)] ${
+                            PLAN_INFO[planId].popular ? "bg-[var(--color-primary)]/5" : ""
                           }`}
                         >
                           {feature.format(value as number | string)}
@@ -314,11 +314,11 @@ export default function PricingPage() {
                     key={feature.key}
                     className={
                       (FEATURES.length + idx) % 2 === 0
-                        ? "bg-white"
-                        : "bg-neutral-50/50"
+                        ? "bg-[var(--color-surface-overlay)]/30"
+                        : ""
                     }
                   >
-                    <td className="py-4 px-6 text-sm text-neutral-700">
+                    <td className="py-4 px-6 text-sm text-[var(--color-text-secondary)]">
                       {feature.label}
                     </td>
                     {PLAN_ORDER.map((planId) => {
@@ -327,13 +327,13 @@ export default function PricingPage() {
                         <td
                           key={planId}
                           className={`py-4 px-6 text-center ${
-                            PLAN_INFO[planId].popular ? "bg-neutral-100/50" : ""
+                            PLAN_INFO[planId].popular ? "bg-[var(--color-primary)]/5" : ""
                           }`}
                         >
                           {value ? (
-                            <IconCheck className="mx-auto h-5 w-5 text-green-500" />
+                            <IconCheck className="mx-auto h-5 w-5 text-[var(--color-score-good)]" />
                           ) : (
-                            <IconX className="mx-auto h-5 w-5 text-neutral-300" />
+                            <IconX className="mx-auto h-5 w-5 text-[var(--color-text-muted)]/40" />
                           )}
                         </td>
                       );
@@ -350,10 +350,10 @@ export default function PricingPage() {
       <section className="py-24">
         <div className="max-w-3xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-neutral-900">
+            <h2 className="text-3xl font-bold text-[var(--color-text-primary)]">
               Frequently asked questions
             </h2>
-            <p className="mt-4 text-lg text-neutral-600">
+            <p className="mt-4 text-lg text-[var(--color-text-secondary)]">
               Everything you need to know about our pricing
             </p>
           </div>
@@ -387,12 +387,12 @@ export default function PricingPage() {
             ].map((faq, i) => (
               <div
                 key={i}
-                className="border-b border-neutral-200 pb-8 last:border-0"
+                className="border-b border-[var(--color-border-subtle)] pb-8 last:border-0"
               >
-                <dt className="text-lg font-semibold text-neutral-900">
+                <dt className="text-lg font-semibold text-[var(--color-text-primary)]">
                   {faq.q}
                 </dt>
-                <dd className="mt-3 text-neutral-600 leading-relaxed">
+                <dd className="mt-3 text-[var(--color-text-secondary)] leading-relaxed">
                   {faq.a}
                 </dd>
               </div>
@@ -402,29 +402,36 @@ export default function PricingPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 bg-neutral-950">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            Ready to get started?
-          </h2>
-          <p className="text-lg text-neutral-400 mb-8 max-w-xl mx-auto">
-            Start with our free plan and upgrade when you need more power. No
-            credit card required.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/auth"
-              className="w-full sm:w-auto px-8 py-3.5 text-base font-medium text-neutral-900 bg-white hover:bg-neutral-100 rounded-lg transition-colors inline-flex items-center justify-center gap-2"
-            >
-              Start Free
-              <IconArrowRight className="w-4 h-4" />
-            </Link>
-            <Link
-              href="/contact"
-              className="w-full sm:w-auto px-8 py-3.5 text-base font-medium text-white border border-neutral-700 hover:border-neutral-600 hover:bg-neutral-800 rounded-lg transition-colors"
-            >
-              Contact Sales
-            </Link>
+      <section className="py-24">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="relative overflow-hidden rounded-3xl glass-card-elevated px-8 py-16 sm:px-16 sm:py-24">
+            {/* Glow line */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-[var(--color-primary)]/50 to-transparent" />
+
+            <div className="relative text-center">
+              <h2 className="text-3xl sm:text-4xl font-bold text-[var(--color-text-primary)] mb-4">
+                Ready to get started?
+              </h2>
+              <p className="text-lg text-[var(--color-text-secondary)] mb-8 max-w-xl mx-auto">
+                Start with our free plan and upgrade when you need more power. No
+                credit card required.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Link
+                  href="/auth"
+                  className="w-full sm:w-auto px-8 py-3.5 text-base font-medium text-white bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] rounded-lg transition-colors inline-flex items-center justify-center gap-2 glow-blue"
+                >
+                  Start Free
+                  <IconArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/contact"
+                  className="w-full sm:w-auto px-8 py-3.5 text-base font-medium text-[var(--color-text-secondary)] border border-[var(--color-border-default)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-hover)] rounded-lg transition-colors"
+                >
+                  Contact Sales
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>

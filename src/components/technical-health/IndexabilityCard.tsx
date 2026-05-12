@@ -39,24 +39,24 @@ export default function IndexabilityCard({
   const getReasonColor = (reason: NonIndexablePage["reason"]) => {
     switch (reason) {
       case "noindex":
-        return "bg-orange-100 text-orange-700";
+        return "bg-[var(--color-score-warning-muted)] text-[var(--color-score-warning)]";
       case "canonical_mismatch":
-        return "bg-blue-100 text-blue-700";
+        return "bg-[var(--color-primary-muted)] text-[var(--color-primary)]";
       case "not_indexable":
-        return "bg-red-100 text-red-700";
+        return "bg-[var(--color-score-critical-muted)] text-[var(--color-severity-critical)]";
       default:
-        return "bg-neutral-100 text-neutral-700";
+        return "bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)]";
     }
   };
 
   if (pages.length === 0) {
     return (
-      <div className="bg-white rounded-lg border border-neutral-200 p-4">
-        <div className="flex items-center gap-2 text-green-600">
+      <div className="glass-card p-4">
+        <div className="flex items-center gap-2 text-[var(--color-score-good)]">
           <IconCircleCheck className="h-5 w-5" />
           <span className="font-medium">All Pages Indexable</span>
         </div>
-        <p className="mt-1 text-sm text-neutral-500">
+        <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
           All pages can be indexed by search engines
         </p>
       </div>
@@ -67,45 +67,43 @@ export default function IndexabilityCard({
 
   return (
     <div
-      className={`bg-white rounded-lg border ${
-        hasCritical ? "border-red-200" : "border-orange-200"
-      } overflow-hidden`}
+      className={`glass-card overflow-hidden ${
+        hasCritical ? "border-[var(--color-severity-critical)]/20" : "border-[var(--color-severity-medium)]/20"
+      }`}
     >
       <div
-        className={`px-4 py-3 ${
-          hasCritical ? "bg-red-50 border-b border-red-200" : "bg-orange-50 border-b border-orange-200"
+        className={`px-4 py-3 border-b ${
+          hasCritical
+            ? "bg-[var(--color-score-critical-muted)] border-[var(--color-severity-critical)]/20"
+            : "bg-[var(--color-score-warning-muted)] border-[var(--color-severity-medium)]/20"
         }`}
       >
         <div className="flex items-center gap-2">
           <IconEyeOff
-            className={`h-5 w-5 ${hasCritical ? "text-red-600" : "text-orange-600"}`}
+            className={`h-5 w-5 ${hasCritical ? "text-[var(--color-severity-critical)]" : "text-[var(--color-severity-medium)]"}`}
           />
           <span
             className={`font-medium ${
-              hasCritical ? "text-red-900" : "text-orange-900"
+              hasCritical ? "text-[var(--color-severity-critical)]" : "text-[var(--color-score-warning)]"
             }`}
           >
             Non-Indexable Pages ({pages.length})
           </span>
         </div>
-        <p
-          className={`mt-1 text-sm ${
-            hasCritical ? "text-red-700" : "text-orange-700"
-          }`}
-        >
+        <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
           Pages that won&apos;t appear in search results
         </p>
       </div>
 
-      <div className="divide-y divide-neutral-100">
+      <div className="divide-y divide-[var(--color-border-subtle)]">
         {displayPages.map((page) => (
           <Link
             key={page.id}
             href={`/projects/${projectId}/pages/${page.id}`}
-            className="block px-4 py-3 hover:bg-neutral-50 transition-colors"
+            className="block px-4 py-3 hover:bg-[var(--color-surface-hover)] transition-colors"
           >
             <div className="flex items-center justify-between mb-1">
-              <p className="text-sm font-medium text-neutral-900 truncate flex-1">
+              <p className="text-sm font-medium text-[var(--color-text-primary)] truncate flex-1">
                 {page.title || "Untitled"}
               </p>
               <span
@@ -116,11 +114,11 @@ export default function IndexabilityCard({
                 {getReasonLabel(page.reason)}
               </span>
             </div>
-            <p className="text-xs text-neutral-500 truncate">
+            <p className="text-xs text-[var(--color-text-muted)] truncate">
               {truncateUrl(page.url)}
             </p>
             {page.reason === "canonical_mismatch" && page.canonical_url && (
-              <p className="text-xs text-blue-600 mt-1 truncate">
+              <p className="text-xs text-[var(--color-primary)] mt-1 truncate">
                 Canonical: {truncateUrl(page.canonical_url, 40)}
               </p>
             )}
@@ -132,8 +130,8 @@ export default function IndexabilityCard({
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className={`w-full px-4 py-2 text-sm ${
-            hasCritical ? "text-red-600 hover:bg-red-50" : "text-orange-600 hover:bg-orange-50"
-          } border-t border-neutral-100 flex items-center justify-center gap-1`}
+            hasCritical ? "text-[var(--color-severity-critical)]" : "text-[var(--color-score-warning)]"
+          } hover:bg-[var(--color-surface-hover)] border-t border-[var(--color-border-subtle)] flex items-center justify-center gap-1`}
         >
           {isExpanded ? (
             <>

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -32,10 +32,10 @@ const ScanHistoryItem = ({ scan, onDelete }: ScanHistoryItemProps) => {
   return (
     <article
       className={`
-        group/scan 
-        hover:bg-neutral-100/80 
-        transition 
-        duration-300 
+        group/scan
+        hover:bg-[var(--color-surface-hover)]
+        transition
+        duration-300
         ease-in-out
         ${isDeleting ? "slide-out-right" : ""}
       `}
@@ -44,35 +44,35 @@ const ScanHistoryItem = ({ scan, onDelete }: ScanHistoryItemProps) => {
         className={`flex items-center lg:items-stretch justify-between overflow-hidden`}
       >
         <div
-          className={`flex-grow p-4 flex items-stretch justify-between gap-1 shadow-none lg:group-hover/scan:shadow-2xl z-10 transition duration-300 ease-in-out`}
+          className={`flex-grow p-4 flex items-stretch justify-between gap-1 z-10 transition duration-300 ease-in-out`}
         >
           <div className={`flex-grow`}>
             <div className="flex items-center">
               <span
                 className={`inline-block h-2 w-2 rounded-full mr-2 ${
                   scan.status === "completed"
-                    ? "bg-green-500"
+                    ? "bg-[var(--color-score-good)]"
                     : scan.status === "in_progress"
-                      ? "bg-yellow-500"
-                      : "bg-red-500"
+                      ? "bg-[var(--color-score-warning)]"
+                      : "bg-[var(--color-score-critical)]"
                 }`}
               />
-              <span className="text-sm font-medium text-neutral-900 capitalize">
+              <span className="text-sm font-medium text-[var(--color-text-primary)] capitalize">
                 {scan.status}
               </span>
               {scan.status === "failed" && (
-                <span className="ml-2 text-xs text-red-600 bg-red-50 px-2 py-1 rounded">
+                <span className="ml-2 text-xs text-[var(--color-severity-critical)] bg-[var(--color-score-critical-muted)] px-2 py-1 rounded">
                   Error
                 </span>
               )}
             </div>
-            <p className="mt-1 text-xs text-neutral-500">
+            <p className="mt-1 text-xs text-[var(--color-text-muted)]">
               Started:{" "}
               {format(parseISO(scan.started_at as string), "d MMM, yyyy")} at{" "}
               {format(parseISO(scan.started_at as string), "hh:mm a")}
             </p>
             {scan.completed_at && (
-              <p className="mt-1 text-xs text-neutral-500">
+              <p className="mt-1 text-xs text-[var(--color-text-muted)]">
                 {scan.status === "completed" ? "Completed" : "Failed"}:{" "}
                 {format(parseISO(scan.completed_at as string), "MMM d, yyyy")}{" "}
                 at {format(parseISO(scan.completed_at as string), "hh:mm a")}
@@ -83,21 +83,21 @@ const ScanHistoryItem = ({ scan, onDelete }: ScanHistoryItemProps) => {
               typeof scan.summary_stats === "object" &&
               scan.summary_stats !== null &&
               "error_message" in scan.summary_stats && (
-                <p className="mt-1 text-xs text-red-600 truncate max-w-xs">
+                <p className="mt-1 text-xs text-[var(--color-severity-critical)] truncate max-w-xs">
                   Error: {String(scan.summary_stats.error_message)}
                 </p>
               )}
           </div>
 
           <div className={`text-right`}>
-            <p className="text-sm text-neutral-900">
+            <p className="text-sm text-[var(--color-text-primary)]">
               {scan.pages_scanned || 0} pages
             </p>
-            <p className="mt-1 text-xs text-neutral-500">
+            <p className="mt-1 text-xs text-[var(--color-text-muted)]">
               {scan.issues_found || 0} issues
             </p>
             {scan.status === "failed" && (
-              <p className="mt-1 text-xs text-red-500">Scan failed</p>
+              <p className="mt-1 text-xs text-[var(--color-severity-critical)]">Scan failed</p>
             )}
           </div>
         </div>
@@ -248,14 +248,14 @@ export default function ScanHistory({
   const completedScans = scans.filter((s) => s.status === "completed");
 
   return (
-    <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-      <div className="px-6 py-4 border-b border-neutral-100 flex flex-wrap justify-between items-center gap-2">
-        <h3 className="text-lg font-semibold text-neutral-900">Scan History</h3>
+    <div className="glass-card overflow-hidden">
+      <div className="px-6 py-4 border-b border-[var(--color-border-subtle)] flex flex-wrap justify-between items-center gap-2">
+        <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">Scan History</h3>
         <div className="flex items-center gap-3">
           {completedScans.length >= 2 && (
             <Link
               href={`/projects/${projectId}/compare`}
-              className="text-sm text-neutral-600 hover:text-neutral-900 flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-neutral-100 transition-colors"
+              className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-[var(--color-surface-hover)] transition-colors"
             >
               <IconArrowsExchange className="h-4 w-4" />
               Compare
@@ -264,7 +264,7 @@ export default function ScanHistory({
           <button
             onClick={refreshScanHistory}
             disabled={isRefreshing}
-            className="text-sm text-neutral-600 hover:text-neutral-900 flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-neutral-100 transition-colors"
+            className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-[var(--color-surface-hover)] transition-colors"
           >
             <svg
               className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
@@ -286,7 +286,7 @@ export default function ScanHistory({
       </div>
 
       {scans && scans.length > 0 ? (
-        <section className="divide-y divide-neutral-100">
+        <section className="divide-y divide-[var(--color-border-subtle)]">
           {scans.map((scan) => (
             <ScanHistoryItem
               key={scan.id}
@@ -297,8 +297,8 @@ export default function ScanHistory({
         </section>
       ) : (
         <div className="p-6 text-center py-12">
-          <p className="text-neutral-500 font-medium">No scans have been run yet.</p>
-          <p className="text-sm text-neutral-400 mt-1 mb-4">
+          <p className="text-[var(--color-text-secondary)] font-medium">No scans have been run yet.</p>
+          <p className="text-sm text-[var(--color-text-muted)] mt-1 mb-4">
             Start your first scan to analyze the website.
           </p>
           <StartScanButton projectId={projectId} />

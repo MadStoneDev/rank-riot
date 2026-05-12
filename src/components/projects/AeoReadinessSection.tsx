@@ -11,34 +11,38 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 interface AeoReadinessSectionProps {
   averagePercent: number;
+  homepagePercent: number | null;
   signalCoverage: Record<string, number>;
   totalPages: number;
   topRecommendations: string[];
 }
 
 const SCORE_COLORS = {
-  good: "#16a34a",
-  moderate: "#ca8a04",
-  poor: "#dc2626",
-  remaining: "#e5e5e5",
+  good: "var(--color-score-good)",
+  moderate: "var(--color-score-warning)",
+  poor: "var(--color-score-critical)",
+  remaining: "var(--color-surface-elevated)",
 };
+
+function getScoreColor(percent: number) {
+  if (percent >= 60) return SCORE_COLORS.good;
+  if (percent >= 30) return SCORE_COLORS.moderate;
+  return SCORE_COLORS.poor;
+}
 
 export default function AeoReadinessSection({
   averagePercent,
+  homepagePercent,
   signalCoverage,
   totalPages,
   topRecommendations,
 }: AeoReadinessSectionProps) {
-  const scoreColor =
-    averagePercent >= 60
-      ? SCORE_COLORS.good
-      : averagePercent >= 30
-        ? SCORE_COLORS.moderate
-        : SCORE_COLORS.poor;
+  const primaryPercent = homepagePercent ?? averagePercent;
+  const scoreColor = getScoreColor(primaryPercent);
 
   const donutData = [
-    { name: "Score", value: averagePercent },
-    { name: "Remaining", value: 100 - averagePercent },
+    { name: "Score", value: primaryPercent },
+    { name: "Remaining", value: 100 - primaryPercent },
   ];
 
   const signalEntries = Object.entries(signalCoverage).map(([name, count]) => ({
@@ -48,39 +52,39 @@ export default function AeoReadinessSection({
   }));
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
+    <div className="glass-card overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-neutral-200">
+      <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <IconBrain className="h-6 w-6 text-primary" />
+            <div className="p-2 bg-[var(--color-primary-muted)] rounded-lg">
+              <IconBrain className="h-6 w-6 text-[var(--color-primary)]" />
             </div>
             <div>
-              <h3 className="text-lg font-medium text-neutral-900">
+              <h3 className="text-lg font-medium text-[var(--color-text-primary)]">
                 AEO / GEO Readiness
               </h3>
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-[var(--color-text-secondary)]">
                 Answer Engine & Generative Engine Optimization
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            {averagePercent >= 60 && (
-              <div className="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+            {primaryPercent >= 60 && (
+              <div className="flex items-center gap-1 px-3 py-1 bg-[var(--color-score-good-muted)] text-[var(--color-score-good)] rounded-full text-sm font-medium">
                 <IconCircleCheck className="h-4 w-4" />
                 <span>Good</span>
               </div>
             )}
-            {averagePercent >= 30 && averagePercent < 60 && (
-              <div className="flex items-center gap-1 px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">
+            {primaryPercent >= 30 && primaryPercent < 60 && (
+              <div className="flex items-center gap-1 px-3 py-1 bg-[var(--color-score-warning-muted)] text-[var(--color-score-warning)] rounded-full text-sm font-medium">
                 <IconAlertTriangle className="h-4 w-4" />
                 <span>Needs Work</span>
               </div>
             )}
-            {averagePercent < 30 && (
-              <div className="flex items-center gap-1 px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">
+            {primaryPercent < 30 && (
+              <div className="flex items-center gap-1 px-3 py-1 bg-[var(--color-score-critical-muted)] text-[var(--color-severity-critical)] rounded-full text-sm font-medium">
                 <IconAlertCircle className="h-4 w-4" />
                 <span>Low</span>
               </div>
@@ -93,8 +97,10 @@ export default function AeoReadinessSection({
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Donut Chart */}
-          <div className="bg-neutral-50 rounded-xl p-5 flex flex-col items-center">
-            <h4 className="text-sm font-medium text-neutral-700 mb-3">Readiness Overview</h4>
+          <div className="bg-[var(--color-surface-overlay)] rounded-xl p-5 flex flex-col items-center">
+            <h4 className="text-sm font-medium text-[var(--color-text-secondary)] mb-3">
+              {homepagePercent !== null ? "Homepage Score" : "Readiness Overview"}
+            </h4>
             <div className="w-32 h-32 relative">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -116,22 +122,35 @@ export default function AeoReadinessSection({
               </ResponsiveContainer>
               <div className="absolute inset-0 flex items-center justify-center">
                 <span className="text-2xl font-bold" style={{ color: scoreColor }}>
-                  {averagePercent}%
+                  {primaryPercent}%
                 </span>
               </div>
             </div>
-            <p className="text-xs text-neutral-500 mt-2">Average across {totalPages} pages</p>
+            {homepagePercent !== null ? (
+              <div className="text-center mt-2">
+                <p className="text-xs text-[var(--color-text-muted)]">Homepage AEO/GEO readiness</p>
+                <p className="text-xs mt-1">
+                  <span className="text-[var(--color-text-muted)]">Site-wide avg: </span>
+                  <span className="font-medium" style={{ color: getScoreColor(averagePercent) }}>
+                    {averagePercent}%
+                  </span>
+                  <span className="text-[var(--color-text-muted)]"> across {totalPages} pages</span>
+                </p>
+              </div>
+            ) : (
+              <p className="text-xs text-[var(--color-text-muted)] mt-2">Average across {totalPages} pages</p>
+            )}
           </div>
 
           {/* Schema Signals */}
-          <div className="bg-neutral-50 rounded-xl p-5">
-            <h4 className="text-sm font-medium text-neutral-700 mb-3">Schema Signals</h4>
+          <div className="bg-[var(--color-surface-overlay)] rounded-xl p-5">
+            <h4 className="text-sm font-medium text-[var(--color-text-secondary)] mb-3">Schema Signals</h4>
             <div className="space-y-2.5">
               {signalEntries.map((entry) => (
                 <div key={entry.name} className="flex items-center justify-between">
-                  <span className="text-xs text-neutral-600">{entry.name}</span>
+                  <span className="text-xs text-[var(--color-text-secondary)]">{entry.name}</span>
                   <div className="flex items-center gap-2">
-                    <div className="w-20 h-1.5 bg-neutral-200 rounded-full overflow-hidden">
+                    <div className="w-20 h-1.5 bg-[var(--color-surface-elevated)] rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all"
                         style={{
@@ -145,7 +164,7 @@ export default function AeoReadinessSection({
                         }}
                       />
                     </div>
-                    <span className="text-[10px] text-neutral-400 w-8 text-right">
+                    <span className="text-[10px] text-[var(--color-text-muted)] w-8 text-right">
                       {entry.percent}%
                     </span>
                   </div>
@@ -155,22 +174,22 @@ export default function AeoReadinessSection({
           </div>
 
           {/* Recommendations */}
-          <div className="bg-neutral-50 rounded-xl p-5">
-            <h4 className="text-sm font-medium text-neutral-700 mb-3 flex items-center gap-1.5">
-              <IconBulb className="w-4 h-4 text-yellow-500" />
+          <div className="bg-[var(--color-surface-overlay)] rounded-xl p-5">
+            <h4 className="text-sm font-medium text-[var(--color-text-secondary)] mb-3 flex items-center gap-1.5">
+              <IconBulb className="w-4 h-4 text-[var(--color-score-warning)]" />
               Top Recommendations
             </h4>
             {topRecommendations.length > 0 ? (
               <ul className="space-y-2">
                 {topRecommendations.map((rec, i) => (
-                  <li key={i} className="text-xs text-neutral-600 flex gap-2">
-                    <span className="text-primary font-bold">{i + 1}.</span>
+                  <li key={i} className="text-xs text-[var(--color-text-secondary)] flex gap-2">
+                    <span className="text-[var(--color-primary)] font-bold">{i + 1}.</span>
                     {rec}
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-[var(--color-text-muted)]">
                 All AEO signals are covered. Great work!
               </p>
             )}

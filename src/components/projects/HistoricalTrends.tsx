@@ -96,14 +96,14 @@ export default function HistoricalTrends({ projectId }: HistoricalTrendsProps) {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-neutral-100">
-          <h2 className="text-lg font-semibold text-neutral-900">
+      <div className="glass-card overflow-hidden">
+        <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
+          <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
             Historical Trends
           </h2>
         </div>
         <div className="p-6 flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-900"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
         </div>
       </div>
     );
@@ -111,16 +111,16 @@ export default function HistoricalTrends({ projectId }: HistoricalTrendsProps) {
 
   if (error || snapshots.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-neutral-100">
-          <h2 className="text-lg font-semibold text-neutral-900">
+      <div className="glass-card overflow-hidden">
+        <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
+          <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
             Historical Trends
           </h2>
         </div>
         <div className="p-6 text-center py-12">
-          <IconChartLine className="w-12 h-12 mx-auto text-neutral-300 mb-3" />
-          <p className="text-neutral-500 font-medium">No historical data yet</p>
-          <p className="text-sm text-neutral-400 mt-1">
+          <IconChartLine className="w-12 h-12 mx-auto text-[var(--color-text-muted)] mb-3" />
+          <p className="text-[var(--color-text-secondary)] font-medium">No historical data yet</p>
+          <p className="text-sm text-[var(--color-text-muted)] mt-1">
             Historical trends will appear after multiple scans are completed.
           </p>
         </div>
@@ -129,19 +129,19 @@ export default function HistoricalTrends({ projectId }: HistoricalTrendsProps) {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-      <div className="px-6 py-4 border-b border-neutral-100 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-neutral-900">
+    <div className="glass-card overflow-hidden">
+      <div className="px-6 py-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
           Historical Trends
         </h2>
         <div className="flex items-center gap-2">
-          <div className="flex bg-neutral-100 rounded-lg p-1">
+          <div className="flex bg-[var(--color-surface-overlay)] rounded-lg p-1">
             <button
               onClick={() => setActiveTab("issues")}
               className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                 activeTab === "issues"
-                  ? "bg-white text-neutral-900 shadow-sm"
-                  : "text-neutral-600 hover:text-neutral-900"
+                  ? "bg-[var(--color-surface-elevated)] text-[var(--color-text-primary)] shadow-sm"
+                  : "text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
               }`}
             >
               <IconChartBar className="w-4 h-4 inline-block mr-1" />
@@ -151,8 +151,8 @@ export default function HistoricalTrends({ projectId }: HistoricalTrendsProps) {
               onClick={() => setActiveTab("metrics")}
               className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                 activeTab === "metrics"
-                  ? "bg-white text-neutral-900 shadow-sm"
-                  : "text-neutral-600 hover:text-neutral-900"
+                  ? "bg-[var(--color-surface-elevated)] text-[var(--color-text-primary)] shadow-sm"
+                  : "text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
               }`}
             >
               <IconChartLine className="w-4 h-4 inline-block mr-1" />
@@ -161,7 +161,7 @@ export default function HistoricalTrends({ projectId }: HistoricalTrendsProps) {
           </div>
           <button
             onClick={fetchSnapshots}
-            className="p-2 text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+            className="p-2 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)] rounded-lg transition-colors"
             title="Refresh data"
           >
             <IconRefresh className="w-4 h-4" />
@@ -172,36 +172,36 @@ export default function HistoricalTrends({ projectId }: HistoricalTrendsProps) {
       <div className="p-6">
         {activeTab === "issues" ? (
           <div>
-            <p className="text-sm text-neutral-500 mb-4">
+            <p className="text-sm text-[var(--color-text-muted)] mb-4">
               Issue count by severity over time
             </p>
             <StackedBarChart data={issueChartData} height={280} />
             <div className="flex items-center justify-center gap-6 mt-4 text-sm">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded bg-red-500"></div>
-                <span className="text-neutral-600">Critical</span>
+                <div className="w-3 h-3 rounded" style={{ backgroundColor: "var(--color-severity-critical)" }}></div>
+                <span className="text-[var(--color-text-secondary)]">Critical</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded bg-orange-500"></div>
-                <span className="text-neutral-600">Warning</span>
+                <div className="w-3 h-3 rounded" style={{ backgroundColor: "var(--color-severity-high)" }}></div>
+                <span className="text-[var(--color-text-secondary)]">Warning</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded bg-blue-500"></div>
-                <span className="text-neutral-600">Info</span>
+                <div className="w-3 h-3 rounded" style={{ backgroundColor: "var(--color-primary)" }}></div>
+                <span className="text-[var(--color-text-secondary)]">Info</span>
               </div>
             </div>
           </div>
         ) : (
           <div>
-            <p className="text-sm text-neutral-500 mb-4">
+            <p className="text-sm text-[var(--color-text-muted)] mb-4">
               Key metrics progression over time
             </p>
             <TrendLineChart
               data={metricsChartData}
               lines={[
-                { dataKey: "score", name: "Avg SEO Score", color: "#22c55e" },
+                { dataKey: "score", name: "Avg SEO Score", color: "#10b981" },
                 { dataKey: "pages", name: "Total Pages", color: "#3b82f6" },
-                { dataKey: "issues", name: "Total Issues", color: "#ef4444" },
+                { dataKey: "issues", name: "Total Issues", color: "#f43f5e" },
               ]}
               height={280}
             />
@@ -210,8 +210,8 @@ export default function HistoricalTrends({ projectId }: HistoricalTrendsProps) {
 
         {/* Summary stats */}
         {snapshots.length >= 2 && (
-          <div className="mt-6 pt-6 border-t border-neutral-100">
-            <h3 className="text-sm font-medium text-neutral-900 mb-3">
+          <div className="mt-6 pt-6 border-t border-[var(--color-border-subtle)]">
+            <h3 className="text-sm font-medium text-[var(--color-text-primary)] mb-3">
               Change since first scan
             </h3>
             <div className="grid grid-cols-3 gap-4">
@@ -229,41 +229,41 @@ export default function HistoricalTrends({ projectId }: HistoricalTrendsProps) {
                 return (
                   <>
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-neutral-900">
+                      <p className="text-2xl font-bold text-[var(--color-text-primary)]">
                         {pageChange > 0 ? "+" : ""}
                         {pageChange}
                       </p>
-                      <p className="text-sm text-neutral-500">Pages</p>
+                      <p className="text-sm text-[var(--color-text-muted)]">Pages</p>
                     </div>
                     <div className="text-center">
                       <p
                         className={`text-2xl font-bold ${
                           issueChange < 0
-                            ? "text-green-600"
+                            ? "text-[var(--color-score-good)]"
                             : issueChange > 0
-                            ? "text-red-600"
-                            : "text-neutral-900"
+                            ? "text-[var(--color-score-critical)]"
+                            : "text-[var(--color-text-primary)]"
                         }`}
                       >
                         {issueChange > 0 ? "+" : ""}
                         {issueChange}
                       </p>
-                      <p className="text-sm text-neutral-500">Issues</p>
+                      <p className="text-sm text-[var(--color-text-muted)]">Issues</p>
                     </div>
                     <div className="text-center">
                       <p
                         className={`text-2xl font-bold ${
                           scoreChange > 0
-                            ? "text-green-600"
+                            ? "text-[var(--color-score-good)]"
                             : scoreChange < 0
-                            ? "text-red-600"
-                            : "text-neutral-900"
+                            ? "text-[var(--color-score-critical)]"
+                            : "text-[var(--color-text-primary)]"
                         }`}
                       >
                         {scoreChange > 0 ? "+" : ""}
                         {scoreChange}
                       </p>
-                      <p className="text-sm text-neutral-500">Avg Score</p>
+                      <p className="text-sm text-[var(--color-text-muted)]">Avg Score</p>
                     </div>
                   </>
                 );

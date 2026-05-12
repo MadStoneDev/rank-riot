@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { calculateLinkStats } from "@/utils/site-architecture";
-import SiteMapView from "@/components/projects/SiteMapView";
+import SiteMapView from "@/components/projects/SiteMapViewLazy";
 
 const PAGE_LIMIT = 200;
 

@@ -22,7 +22,6 @@ export default function HttpStatusCard({
 }: HttpStatusCardProps) {
   const [activeTab, setActiveTab] = useState<"2xx" | "3xx" | "4xx" | "5xx">(
     () => {
-      // Default to first problematic category, or 2xx if all good
       const problematic = distribution.find(
         (d) => d.category === "4xx" || d.category === "5xx"
       );
@@ -47,12 +46,12 @@ export default function HttpStatusCard({
 
   if (distribution.length === 0 || totalPages === 0) {
     return (
-      <div className="bg-white rounded-lg border border-neutral-200 p-4">
-        <div className="flex items-center gap-2 text-neutral-500">
+      <div className="glass-card p-4">
+        <div className="flex items-center gap-2 text-[var(--color-text-muted)]">
           <IconServer className="h-5 w-5" />
           <span className="font-medium">No HTTP Data</span>
         </div>
-        <p className="mt-1 text-sm text-neutral-500">
+        <p className="mt-1 text-sm text-[var(--color-text-muted)]">
           Run a crawl to analyze HTTP status codes
         </p>
       </div>
@@ -61,12 +60,12 @@ export default function HttpStatusCard({
 
   if (!hasIssues) {
     return (
-      <div className="bg-white rounded-lg border border-neutral-200 p-4">
-        <div className="flex items-center gap-2 text-green-600">
+      <div className="glass-card p-4">
+        <div className="flex items-center gap-2 text-[var(--color-score-good)]">
           <IconCircleCheck className="h-5 w-5" />
           <span className="font-medium">All Pages Healthy</span>
         </div>
-        <p className="mt-1 text-sm text-neutral-500">
+        <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
           {totalPages} pages returning 2xx/3xx status codes
         </p>
       </div>
@@ -74,44 +73,36 @@ export default function HttpStatusCard({
   }
 
   const getTabColor = (category: string, isActive: boolean) => {
-    if (!isActive) return "text-neutral-500 hover:text-neutral-700";
+    if (!isActive) return "text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]";
     switch (category) {
       case "2xx":
-        return "text-green-600 border-b-2 border-green-600 bg-green-50";
+        return "text-[var(--color-score-good)] border-b-2 border-[var(--color-score-good)] bg-[var(--color-score-good-muted)]";
       case "3xx":
-        return "text-blue-600 border-b-2 border-blue-600 bg-blue-50";
+        return "text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] bg-[var(--color-primary-muted)]";
       case "4xx":
-        return "text-orange-600 border-b-2 border-orange-600 bg-orange-50";
+        return "text-[var(--color-severity-high)] border-b-2 border-[var(--color-severity-high)] bg-[#f9731620]";
       case "5xx":
-        return "text-red-600 border-b-2 border-red-600 bg-red-50";
+        return "text-[var(--color-severity-critical)] border-b-2 border-[var(--color-severity-critical)] bg-[var(--color-score-critical-muted)]";
       default:
         return "";
     }
   };
 
-  const getBorderColor = () => {
-    const has5xx = distribution.some((d) => d.category === "5xx" && d.count > 0);
-    const has4xx = distribution.some((d) => d.category === "4xx" && d.count > 0);
-    if (has5xx) return "border-red-200";
-    if (has4xx) return "border-orange-200";
-    return "border-neutral-200";
-  };
-
   return (
-    <div className={`bg-white rounded-lg border ${getBorderColor()} overflow-hidden`}>
-      <div className="px-4 py-3 bg-neutral-50 border-b border-neutral-200">
+    <div className="glass-card overflow-hidden">
+      <div className="px-4 py-3 bg-[var(--color-surface-overlay)] border-b border-[var(--color-border-subtle)]">
         <div className="flex items-center gap-2">
-          <IconServer className="h-5 w-5 text-neutral-600" />
-          <span className="font-medium text-neutral-900">
+          <IconServer className="h-5 w-5 text-[var(--color-text-secondary)]" />
+          <span className="font-medium text-[var(--color-text-primary)]">
             HTTP Status Codes
           </span>
         </div>
-        <p className="mt-1 text-sm text-neutral-600">
+        <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
           {totalPages} pages analyzed
         </p>
       </div>
 
-      <div className="flex border-b border-neutral-200 overflow-x-auto">
+      <div className="flex border-b border-[var(--color-border-subtle)] overflow-x-auto">
         {(["2xx", "3xx", "4xx", "5xx"] as const).map((category) => {
           const dist = distribution.find((d) => d.category === category);
           const count = dist?.count || 0;
@@ -136,31 +127,31 @@ export default function HttpStatusCard({
 
       {currentDist && currentDist.pages.length > 0 && (
         <>
-          <div className="divide-y divide-neutral-100">
+          <div className="divide-y divide-[var(--color-border-subtle)]">
             {displayPages.map((page) => (
               <Link
                 key={page.id}
                 href={`/projects/${projectId}/pages/${page.id}`}
-                className="block px-4 py-3 hover:bg-neutral-50 transition-colors"
+                className="block px-4 py-3 hover:bg-[var(--color-surface-hover)] transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-neutral-900 truncate">
+                    <p className="text-sm font-medium text-[var(--color-text-primary)] truncate">
                       {page.title || "Untitled"}
                     </p>
-                    <p className="text-xs text-neutral-500 truncate">
+                    <p className="text-xs text-[var(--color-text-muted)] truncate">
                       {truncateUrl(page.url)}
                     </p>
                   </div>
                   <span
                     className={`ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                       (page.http_status ?? 0) >= 500
-                        ? "bg-red-100 text-red-700"
+                        ? "bg-[var(--color-score-critical-muted)] text-[var(--color-severity-critical)]"
                         : (page.http_status ?? 0) >= 400
-                          ? "bg-orange-100 text-orange-700"
+                          ? "bg-[#f9731620] text-[var(--color-severity-high)]"
                           : (page.http_status ?? 0) >= 300
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-green-100 text-green-700"
+                            ? "bg-[var(--color-primary-muted)] text-[var(--color-primary)]"
+                            : "bg-[var(--color-score-good-muted)] text-[var(--color-score-good)]"
                     }`}
                   >
                     {page.http_status}
@@ -173,7 +164,7 @@ export default function HttpStatusCard({
           {(currentDist?.pages.length || 0) > 5 && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="w-full px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-50 border-t border-neutral-100 flex items-center justify-center gap-1"
+              className="w-full px-4 py-2 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] border-t border-[var(--color-border-subtle)] flex items-center justify-center gap-1"
             >
               {isExpanded ? (
                 <>
