@@ -14,6 +14,7 @@ import {
   IconTrash,
   IconLoader2,
   IconDotsVertical,
+  IconWorld,
 } from "@tabler/icons-react";
 import { deleteProject } from "@/app/(private)/projects/actions";
 import { toast } from "sonner";
@@ -48,7 +49,6 @@ export default function ProjectList({
     setProjects((prev) => prev.filter((p) => p.id !== id));
   };
 
-  // Filter projects by search query
   const filteredProjects = useMemo(() => {
     if (!searchQuery.trim()) return projects;
     const query = searchQuery.toLowerCase();
@@ -59,11 +59,9 @@ export default function ProjectList({
     );
   }, [projects, searchQuery]);
 
-  // Sort projects
   const sortedProjects = useMemo(() => {
     return [...filteredProjects].sort((a, b) => {
       let comparison = 0;
-
       switch (sortField) {
         case "name":
           comparison = a.name.localeCompare(b.name);
@@ -79,7 +77,6 @@ export default function ProjectList({
           comparison = aCreated - bCreated;
           break;
       }
-
       return sortDirection === "asc" ? comparison : -comparison;
     });
   }, [filteredProjects, sortField, sortDirection]);
@@ -93,19 +90,13 @@ export default function ProjectList({
     }
   };
 
-  const SortButton = ({
-    field,
-    label,
-  }: {
-    field: SortField;
-    label: string;
-  }) => (
+  const SortButton = ({ field, label }: { field: SortField; label: string }) => (
     <button
       onClick={() => handleSort(field)}
       className={`px-3 py-1.5 text-xs rounded-md flex items-center gap-1 transition-colors ${
         sortField === field
-          ? "bg-primary text-white"
-          : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+          ? "bg-[var(--color-primary)] text-white"
+          : "bg-[var(--color-surface-overlay)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-hover)]"
       }`}
     >
       {label}
@@ -120,21 +111,21 @@ export default function ProjectList({
 
   if (!projects || projects.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-8 text-center">
+      <div className="glass-card p-12 text-center">
         <div className="mb-4">
           {projectType === "seo" ? (
-            <IconFileSearch className="w-16 h-16 mx-auto text-neutral-300" />
+            <IconFileSearch className="w-16 h-16 mx-auto text-[var(--color-text-muted)]" />
           ) : (
-            <IconChartBar className="w-16 h-16 mx-auto text-neutral-300" />
+            <IconChartBar className="w-16 h-16 mx-auto text-[var(--color-text-muted)]" />
           )}
         </div>
-        <h2 className="text-xl font-semibold mb-2">
+        <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-2">
           No {projectType === "seo" ? "SEO" : "Audit"} Projects Yet
         </h2>
-        <p className="text-neutral-600 mb-6">{emptyMessage}</p>
+        <p className="text-[var(--color-text-secondary)] mb-6">{emptyMessage}</p>
         <Link
           href="/projects/new"
-          className="px-4 py-2 bg-secondary text-white rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors"
         >
           Create Your First {projectType === "seo" ? "SEO" : "Audit"} Project
         </Link>
@@ -145,54 +136,49 @@ export default function ProjectList({
   return (
     <div className="space-y-4">
       {/* Search and Sort Controls */}
-      <div className="flex flex-wrap items-center gap-4 bg-white p-4 rounded-lg shadow-sm">
-        {/* Search */}
+      <div className="flex flex-wrap items-center gap-4 glass-card p-4">
         <div className="relative flex-1 min-w-[200px]">
-          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-text-muted)]" />
           <input
             type="text"
             placeholder="Search projects..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-[var(--color-border-default)] rounded-lg text-sm bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
           />
         </div>
 
-        {/* Sort */}
         <div className="flex items-center gap-2">
-          <span className="text-xs text-neutral-500">Sort:</span>
+          <span className="text-xs text-[var(--color-text-muted)]">Sort:</span>
           <SortButton field="name" label="Name" />
           <SortButton field="last_scan" label="Last Scan" />
           <SortButton field="created" label="Created" />
         </div>
       </div>
 
-      {/* Results count */}
       {searchQuery && (
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-[var(--color-text-muted)]">
           Found {sortedProjects.length} of {projects.length} projects
         </p>
       )}
 
       {/* Project List */}
       {sortedProjects.length > 0 ? (
-        <div className="bg-white shadow overflow-hidden rounded-md">
-          <ul className="divide-y divide-neutral-200">
-            {sortedProjects.map((project) => (
-              <ProjectListItem
-                key={project.id}
-                project={project}
-                projectType={projectType}
-                pageCount={pageCount[project.id]}
-                issueCount={issueCount[project.id]}
-                onDelete={handleDeleteProject}
-              />
-            ))}
-          </ul>
+        <div className="space-y-3">
+          {sortedProjects.map((project) => (
+            <ProjectListItem
+              key={project.id}
+              project={project}
+              projectType={projectType}
+              pageCount={pageCount[project.id]}
+              issueCount={issueCount[project.id]}
+              onDelete={handleDeleteProject}
+            />
+          ))}
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-md p-8 text-center">
-          <p className="text-neutral-500">No projects match your search</p>
+        <div className="glass-card p-8 text-center">
+          <p className="text-[var(--color-text-muted)]">No projects match your search</p>
         </div>
       )}
     </div>
@@ -232,101 +218,101 @@ function ProjectListItem({
       setIsDeleting(false);
       setConfirmDelete(false);
     } else {
-      toast.success("Project deleted");
+      toast.success("Project removed");
       onDelete(project.id);
     }
   };
 
+  const faviconUrl = (() => {
+    try {
+      const domain = new URL(project.url).hostname;
+      return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+    } catch {
+      return null;
+    }
+  })();
+
   return (
-    <li className="group/project relative flex items-stretch">
+    <div className="glass-card group/project relative flex items-stretch overflow-hidden">
       {/* Main content */}
       <Link
         href={`/projects/${project.id}`}
-        className="block flex-1 min-w-0 hover:bg-neutral-50 transition-colors"
+        className="block flex-1 min-w-0 hover:bg-[var(--color-surface-hover)] transition-colors"
       >
-        <div className="px-4 py-4 sm:px-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center flex-1 min-w-0">
-              <div className="flex-shrink-0">
-                <div className="h-10 w-10 rounded-md bg-primary/10 flex items-center justify-center">
-                  <span className="text-secondary font-medium">
-                    {project.name.substring(0, 2).toUpperCase()}
-                  </span>
-                </div>
-              </div>
-              <div className="ml-4 flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-base font-medium text-neutral-900 truncate">
-                    {project.name}
-                  </h2>
-                  <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                      projectType === "seo"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-blue-100 text-blue-800"
-                    }`}
-                  >
-                    {projectType === "seo" ? "SEO" : "Audit"}
-                  </span>
-                </div>
-                <div className="mt-1 flex items-center text-sm text-neutral-500">
-                  <span className="truncate">{project.url}</span>
-                </div>
+        <div className="px-5 py-5 sm:px-6">
+          <div className="flex items-center gap-4">
+            {/* Site favicon/thumbnail */}
+            <div className="flex-shrink-0">
+              <div className="h-12 w-12 rounded-lg bg-[var(--color-surface-overlay)] border border-[var(--color-border-subtle)] flex items-center justify-center overflow-hidden">
+                {faviconUrl ? (
+                  <img
+                    src={faviconUrl}
+                    alt=""
+                    className="h-7 w-7"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = "none";
+                      (e.target as HTMLImageElement).nextElementSibling?.classList.remove("hidden");
+                    }}
+                  />
+                ) : null}
+                <IconWorld className={`h-6 w-6 text-[var(--color-text-muted)] ${faviconUrl ? "hidden" : ""}`} />
               </div>
             </div>
-            <div className="ml-2 flex-shrink-0 flex items-center space-x-4">
-              {/* Stats badges */}
+
+            {/* Project info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-3">
+                <h2 className="text-lg font-bold text-[var(--color-text-primary)] truncate">
+                  {project.name}
+                </h2>
+                <span
+                  className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                    projectType === "seo"
+                      ? "bg-emerald-500/15 text-emerald-400"
+                      : "bg-blue-500/15 text-blue-400"
+                  }`}
+                >
+                  {projectType === "seo" ? "SEO" : "Audit"}
+                </span>
+                <span
+                  className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                    project.last_scan_at
+                      ? "bg-emerald-500/15 text-emerald-400"
+                      : "bg-amber-500/15 text-amber-400"
+                  }`}
+                >
+                  {project.last_scan_at ? "Scanned" : "Pending"}
+                </span>
+              </div>
+              <p className="mt-1 text-sm text-[var(--color-text-muted)] truncate">
+                {project.url}
+              </p>
+            </div>
+
+            {/* Stats + meta */}
+            <div className="ml-auto flex-shrink-0 flex items-center gap-4">
               <div className="hidden sm:flex items-center gap-2">
                 {pageCount !== undefined && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-neutral-100 text-neutral-600">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-[var(--color-surface-overlay)] text-[var(--color-text-secondary)]">
                     {pageCount} pages
                   </span>
                 )}
                 {issueCount !== undefined && issueCount > 0 && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-600">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-red-500/15 text-red-400">
                     {issueCount} issues
                   </span>
                 )}
               </div>
-              <div className="hidden sm:block text-sm text-neutral-500 text-right">
+              <div className="hidden md:block text-sm text-[var(--color-text-muted)] text-right min-w-[100px]">
                 <p>
-                  Last scan:{" "}
                   {project.last_scan_at
                     ? format(new Date(project.last_scan_at), "MMM d, yyyy")
-                    : "Never"}
+                    : "Never scanned"}
                 </p>
               </div>
               <div className="hidden lg:block">
-                <IconChevronRight className="h-5 w-5 text-neutral-400" />
+                <IconChevronRight className="h-5 w-5 text-[var(--color-text-muted)]" />
               </div>
-            </div>
-          </div>
-          <div className="mt-2 sm:flex sm:justify-between">
-            <div className="sm:flex sm:space-x-4">
-              <div className="flex items-center text-sm text-neutral-500">
-                <span>
-                  Created:{" "}
-                  {format(new Date(project.created_at!), "MMM d, yyyy")}
-                </span>
-              </div>
-              {projectType === "seo" && project.scan_frequency && (
-                <div className="mt-2 flex items-center text-sm text-neutral-500 sm:mt-0">
-                  <span className="capitalize">
-                    Scan frequency: {project.scan_frequency}
-                  </span>
-                </div>
-              )}
-            </div>
-            <div className="mt-2 flex items-center text-sm text-neutral-500 sm:mt-0">
-              <span
-                className={`px-2 py-1 text-xs font-medium rounded-full ${
-                  project.last_scan_at
-                    ? "bg-green-100 text-green-800"
-                    : "bg-yellow-100 text-yellow-800"
-                }`}
-              >
-                {project.last_scan_at ? "Scanned" : "Pending scan"}
-              </span>
             </div>
           </div>
         </div>
@@ -339,7 +325,7 @@ function ProjectListItem({
           setShowActions(!showActions);
           setConfirmDelete(false);
         }}
-        className="lg:hidden flex-shrink-0 grid place-content-center w-10 text-neutral-400 hover:text-neutral-600"
+        className="lg:hidden flex-shrink-0 grid place-content-center w-10 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
         aria-label="Toggle actions"
       >
         <IconDotsVertical className="h-5 w-5" />
@@ -354,27 +340,25 @@ function ProjectListItem({
         `}
         onMouseLeave={() => setConfirmDelete(false)}
       >
-        <div className="flex items-stretch bg-neutral-800 w-[120px]">
-          {/* Settings */}
+        <div className="flex items-stretch bg-[var(--color-surface-overlay)] w-[120px] border-l border-[var(--color-border-subtle)]">
           <Link
             href={`/projects/${project.id}/settings`}
-            className="flex-1 grid place-content-center text-neutral-300 hover:text-white hover:bg-neutral-700 transition-colors"
+            className="flex-1 grid place-content-center text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)] transition-colors"
             title="Settings"
             onClick={(e) => e.stopPropagation()}
           >
             <IconSettings className="h-5 w-5" />
           </Link>
 
-          {/* Delete */}
           <button
             onClick={handleDelete}
             disabled={isDeleting}
             className={`flex-1 grid place-content-center transition-colors ${
               confirmDelete
                 ? "bg-red-600 text-white hover:bg-red-700"
-                : "text-neutral-300 hover:text-red-400 hover:bg-neutral-700"
+                : "text-[var(--color-text-muted)] hover:text-red-400 hover:bg-[var(--color-surface-hover)]"
             }`}
-            title={confirmDelete ? "Click again to confirm" : "Delete project"}
+            title={confirmDelete ? "Click again to confirm" : "Remove project"}
           >
             {isDeleting ? (
               <IconLoader2 className="h-5 w-5 animate-spin" />
@@ -384,9 +368,8 @@ function ProjectListItem({
           </button>
         </div>
       </div>
-    </li>
+    </div>
   );
 }
 
-// Re-export icons for use in parent component
 export { IconFileSearch, IconChartBar };
