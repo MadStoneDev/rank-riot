@@ -33,19 +33,19 @@ export default async function SettingsPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Settings</h1>
-        <p className="text-neutral-500 mt-1">
+        <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Settings</h1>
+        <p className="text-[var(--color-text-muted)] mt-1">
           Manage your account and preferences
         </p>
       </div>
 
       {/* Profile Information */}
-      <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-neutral-100">
-          <h2 className="text-lg font-semibold text-neutral-900">
+      <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
+        <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
+          <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
             Profile Information
           </h2>
-          <p className="text-sm text-neutral-500 mt-1">
+          <p className="text-sm text-[var(--color-text-muted)] mt-1">
             Update your account details
           </p>
         </div>
@@ -56,18 +56,18 @@ export default async function SettingsPage() {
       </div>
 
       {/* Email Notifications */}
-      <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-neutral-100">
-          <h2 className="text-lg font-semibold text-neutral-900">
+      <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
+        <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
+          <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
             Email Notifications
           </h2>
-          <p className="text-sm text-neutral-500 mt-1">
+          <p className="text-sm text-[var(--color-text-muted)] mt-1">
             Choose what updates you receive
           </p>
         </div>
 
         <div className="p-6">
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-[var(--color-text-muted)]">
             Email notification preferences are coming soon. You will be able to
             configure scan completion alerts and other notifications here.
           </p>

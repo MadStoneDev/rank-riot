@@ -60,16 +60,16 @@ export default async function ProjectSettingsPage({
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Project Settings</h1>
-        <p className="text-neutral-500 mt-1">
+        <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Project Settings</h1>
+        <p className="text-[var(--color-text-muted)] mt-1">
           Manage settings for {project.name}
         </p>
       </div>
 
       {/* General Settings Card */}
-      <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-neutral-100">
-          <h2 className="text-lg font-semibold text-neutral-900">
+      <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
+        <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
+          <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
             General Settings
           </h2>
         </div>

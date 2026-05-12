@@ -40,8 +40,8 @@ export default function DeleteAccountSection() {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-red-200 overflow-hidden">
-      <div className="px-6 py-4 border-b border-red-100 bg-red-50">
+    <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-red-200 overflow-hidden">
+      <div className="px-6 py-4 border-b border-red-100 bg-red-500/10">
         <h2 className="text-lg font-semibold text-red-700">Danger Zone</h2>
       </div>
 
@@ -49,10 +49,10 @@ export default function DeleteAccountSection() {
         {!showConfirm ? (
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="text-base font-medium text-neutral-900">
+              <h3 className="text-base font-medium text-[var(--color-text-primary)]">
                 Delete Account
               </h3>
-              <p className="text-sm text-neutral-500 mt-1">
+              <p className="text-sm text-[var(--color-text-muted)] mt-1">
                 Permanently delete your account and all associated data. This
                 action cannot be undone.
               </p>
@@ -67,7 +67,7 @@ export default function DeleteAccountSection() {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="p-4 bg-red-500/10 border border-red-200 rounded-lg">
               <p className="text-sm text-red-800 font-medium">
                 Are you sure? This will permanently delete:
               </p>
@@ -81,7 +81,7 @@ export default function DeleteAccountSection() {
             <div>
               <label
                 htmlFor="confirm-delete"
-                className="block text-sm font-medium text-neutral-700 mb-1"
+                className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1"
               >
                 Type <span className="font-bold">DELETE</span> to confirm
               </label>
@@ -91,7 +91,7 @@ export default function DeleteAccountSection() {
                 value={confirmText}
                 onChange={(e) => setConfirmText(e.target.value)}
                 placeholder="DELETE"
-                className="p-2 w-full sm:w-64 border border-neutral-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500"
+                className="p-2 w-full sm:w-64 border border-[var(--color-border-default)] rounded-lg text-sm focus:ring-red-500 focus:border-red-500"
                 disabled={isDeleting}
               />
             </div>
@@ -108,7 +108,7 @@ export default function DeleteAccountSection() {
                   setConfirmText("");
                   setError(null);
                 }}
-                className="px-4 py-2 text-sm font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium text-[var(--color-text-secondary)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-surface-hover)] rounded-lg transition-colors"
                 disabled={isDeleting}
               >
                 Cancel

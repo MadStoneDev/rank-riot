@@ -54,8 +54,8 @@ export default async function ComparePage({
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Compare Scans</h1>
-        <p className="text-neutral-500 mt-1">
+        <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Compare Scans</h1>
+        <p className="text-[var(--color-text-muted)] mt-1">
           Compare two scans of {project.name} to see what changed
         </p>
       </div>

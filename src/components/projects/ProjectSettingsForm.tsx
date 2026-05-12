@@ -50,12 +50,12 @@ export default function ProjectSettingsForm({
       <div className="px-6 py-6">
         <form ref={formRef} onSubmit={handleSubmit}>
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md">
+            <div className="mb-6 p-4 bg-red-500/10 border-l-4 border-red-500 text-red-700 rounded-md">
               <p className="text-sm font-medium">{error}</p>
             </div>
           )}
           {success && (
-            <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-md">
+            <div className="mb-6 p-4 bg-green-500/10 border-l-4 border-green-500 text-green-700 rounded-md">
               <p className="text-sm font-medium">{success}</p>
             </div>
           )}
@@ -63,7 +63,7 @@ export default function ProjectSettingsForm({
             <div className="sm:col-span-4">
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-neutral-700"
+                className="block text-sm font-medium text-[var(--color-text-secondary)]"
               >
                 Project Name *
               </label>
@@ -74,7 +74,7 @@ export default function ProjectSettingsForm({
                   type="text"
                   required
                   defaultValue={project.name}
-                  className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-neutral-300 rounded-md`}
+                  className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] rounded-md`}
                   disabled={isLoading}
                 />
               </div>
@@ -82,7 +82,7 @@ export default function ProjectSettingsForm({
             <div className="sm:col-span-6">
               <label
                 htmlFor="url"
-                className="block text-sm font-medium text-neutral-700"
+                className="block text-sm font-medium text-[var(--color-text-secondary)]"
               >
                 Website URL *
               </label>
@@ -93,7 +93,7 @@ export default function ProjectSettingsForm({
                   type="text"
                   required
                   defaultValue={project.url}
-                  className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-neutral-300 rounded-md`}
+                  className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] rounded-md`}
                   disabled={isLoading}
                 />
               </div>
@@ -101,7 +101,7 @@ export default function ProjectSettingsForm({
             <div className="sm:col-span-6">
               <label
                 htmlFor="description"
-                className="block text-sm font-medium text-neutral-700"
+                className="block text-sm font-medium text-[var(--color-text-secondary)]"
               >
                 Project Description
               </label>
@@ -111,7 +111,7 @@ export default function ProjectSettingsForm({
                   name="description"
                   rows={3}
                   defaultValue={project.description || ""}
-                  className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-neutral-300 rounded-md`}
+                  className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] rounded-md`}
                   disabled={isLoading}
                 />
               </div>
@@ -119,7 +119,7 @@ export default function ProjectSettingsForm({
             <div className="sm:col-span-3">
               <label
                 htmlFor="scan_frequency"
-                className="block text-sm font-medium text-neutral-700"
+                className="block text-sm font-medium text-[var(--color-text-secondary)]"
               >
                 Scan Frequency
               </label>
@@ -127,7 +127,7 @@ export default function ProjectSettingsForm({
                 <select
                   id="scan_frequency"
                   name="scan_frequency"
-                  className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-neutral-300 rounded-md`}
+                  className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] rounded-md`}
                   defaultValue={project.scan_frequency || ""}
                   disabled={isLoading}
                 >
@@ -139,7 +139,7 @@ export default function ProjectSettingsForm({
               </div>
             </div>
           </div>
-          <div className="mt-8 pt-5 border-t border-neutral-200">
+          <div className="mt-8 pt-5 border-t border-[var(--color-border-default)]">
             <button
               type="submit"
               className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-secondary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
@@ -151,19 +151,19 @@ export default function ProjectSettingsForm({
         </form>
       </div>
 
-      <div className="mt-8 bg-white rounded-lg shadow overflow-hidden">
-        <div className="px-6 py-5 border-b border-neutral-200 bg-neutral-50">
-          <h3 className="text-lg font-medium leading-6 text-neutral-900 text-red-600">
+      <div className="mt-8 bg-[var(--color-surface-raised)] rounded-lg shadow overflow-hidden">
+        <div className="px-6 py-5 border-b border-[var(--color-border-default)] bg-[var(--color-surface-elevated)]">
+          <h3 className="text-lg font-medium leading-6 text-[var(--color-text-primary)] text-red-600">
             Danger Zone
           </h3>
         </div>
 
         <div className="px-6 py-6">
           <div className="border border-red-200 rounded-md p-4">
-            <h3 className="text-base font-medium text-neutral-900">
+            <h3 className="text-base font-medium text-[var(--color-text-primary)]">
               Delete Project
             </h3>
-            <p className="mt-1 text-sm text-neutral-500">
+            <p className="mt-1 text-sm text-[var(--color-text-muted)]">
               Once you delete a project, there is no going back. Please be
               certain.
             </p>

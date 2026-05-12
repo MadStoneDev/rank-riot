@@ -97,18 +97,18 @@ export default async function ProjectsPage({
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Projects</h1>
-          <p className="text-neutral-500 mt-1">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Projects</h1>
+          <p className="text-[var(--color-text-muted)] mt-1">
             {totalProjectCount} of{" "}
             {limits.maxProjects === -1 ? "unlimited" : limits.maxProjects} projects
-            <span className="text-neutral-400 ml-1">({planInfo.name})</span>
+            <span className="text-[var(--color-text-muted)] ml-1">({planInfo.name})</span>
           </p>
         </div>
         <div className="flex items-center gap-3">
           {canCreate ? (
             <Link
               href="/projects/new"
-              className="inline-flex items-center gap-2 bg-neutral-900 hover:bg-neutral-800 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors"
             >
               <IconPlus className="w-4 h-4" />
               New Project
@@ -116,7 +116,7 @@ export default async function ProjectsPage({
           ) : (
             <Link
               href="/dashboard/billing"
-              className="inline-flex items-center gap-2 bg-neutral-900 hover:bg-neutral-800 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors"
             >
               Upgrade Plan
             </Link>
@@ -126,15 +126,15 @@ export default async function ProjectsPage({
 
       {/* Upgrade prompt banner when at limit */}
       {!canCreate && (
-        <div className="bg-gradient-to-r from-neutral-900 to-neutral-800 text-white rounded-2xl p-6">
+        <div className="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-hover)] text-white rounded-2xl p-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-start gap-4">
-              <div className="p-2 bg-white/10 rounded-xl">
+              <div className="p-2 bg-[var(--color-surface-raised)]/10 rounded-xl">
                 <IconInfoCircle className="w-6 h-6" />
               </div>
               <div>
                 <h4 className="font-semibold text-lg">Project limit reached</h4>
-                <p className="text-neutral-300 mt-1">
+                <p className="text-[var(--color-text-muted)] mt-1">
                   Upgrade to{" "}
                   {userPlan === "free"
                     ? "Starter"
@@ -147,7 +147,7 @@ export default async function ProjectsPage({
             </div>
             <Link
               href="/dashboard/billing"
-              className="inline-flex items-center gap-2 bg-white text-neutral-900 px-5 py-2.5 rounded-lg font-medium hover:bg-neutral-100 transition-colors whitespace-nowrap"
+              className="inline-flex items-center gap-2 bg-[var(--color-surface-raised)] text-[var(--color-text-primary)] px-5 py-2.5 rounded-lg font-medium hover:bg-[var(--color-surface-hover)] transition-colors whitespace-nowrap"
             >
               View Plans
             </Link>
@@ -156,15 +156,15 @@ export default async function ProjectsPage({
       )}
 
       {/* Tabs */}
-      <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-        <div className="border-b border-neutral-200">
+      <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
+        <div className="border-b border-[var(--color-border-default)]">
           <nav className="flex">
             <Link
               href="/projects?tab=seo"
               className={`flex-1 sm:flex-none px-6 py-4 text-sm font-medium border-b-2 transition-colors flex items-center justify-center gap-2 ${
                 activeTab === "seo"
-                  ? "border-neutral-900 text-neutral-900"
-                  : "border-transparent text-neutral-500 hover:text-neutral-700"
+                  ? "border-[var(--color-primary)] text-[var(--color-text-primary)]"
+                  : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
               }`}
             >
               <IconFileSearch className="w-4 h-4" />
@@ -172,8 +172,8 @@ export default async function ProjectsPage({
               <span
                 className={`py-0.5 px-2 rounded-full text-xs ${
                   activeTab === "seo"
-                    ? "bg-neutral-900 text-white"
-                    : "bg-neutral-100 text-neutral-600"
+                    ? "bg-[var(--color-primary)] text-white"
+                    : "bg-[var(--color-surface-overlay)] text-[var(--color-text-secondary)]"
                 }`}
               >
                 {seoProjects?.length || 0}
@@ -184,8 +184,8 @@ export default async function ProjectsPage({
               href="/projects?tab=audit"
               className={`flex-1 sm:flex-none px-6 py-4 text-sm font-medium border-b-2 transition-colors flex items-center justify-center gap-2 ${
                 activeTab === "audit"
-                  ? "border-neutral-900 text-neutral-900"
-                  : "border-transparent text-neutral-500 hover:text-neutral-700"
+                  ? "border-[var(--color-primary)] text-[var(--color-text-primary)]"
+                  : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
               }`}
             >
               <IconChartBar className="w-4 h-4" />
@@ -193,8 +193,8 @@ export default async function ProjectsPage({
               <span
                 className={`py-0.5 px-2 rounded-full text-xs ${
                   activeTab === "audit"
-                    ? "bg-neutral-900 text-white"
-                    : "bg-neutral-100 text-neutral-600"
+                    ? "bg-[var(--color-primary)] text-white"
+                    : "bg-[var(--color-surface-overlay)] text-[var(--color-text-secondary)]"
                 }`}
               >
                 {auditProjects?.length || 0}

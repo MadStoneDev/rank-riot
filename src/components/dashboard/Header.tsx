@@ -52,18 +52,25 @@ export default function Header() {
   useEffect(() => {
     const fetchUser = async () => {
       const {
-        data: { user },
+        data: { user: authUser },
       } = await supabase.auth.getUser();
 
-      if (user) {
+      if (authUser) {
         const { data } = await supabase
           .from("profiles")
           .select("*")
-          .eq("id", user.id)
+          .eq("id", authUser.id)
           .single();
 
         if (data) {
-          setUser(data as Profile);
+          const profile = data as Profile;
+          if (!profile.full_name && authUser.user_metadata?.full_name) {
+            profile.full_name = authUser.user_metadata.full_name;
+          }
+          if (!profile.email && authUser.email) {
+            profile.email = authUser.email;
+          }
+          setUser(profile);
         }
       }
     };

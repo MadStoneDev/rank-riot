@@ -55,8 +55,8 @@ export default function BillingPageClient({
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Billing</h1>
-        <p className="text-neutral-500 mt-1">
+        <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Billing</h1>
+        <p className="text-[var(--color-text-muted)] mt-1">
           Manage your subscription and view usage
         </p>
       </div>
@@ -65,9 +65,9 @@ export default function BillingPageClient({
       <CurrentPlanCard plan={plan} status={status} periodEnd={periodEnd} />
 
       {/* Usage Overview */}
-      <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-neutral-100">
-          <h2 className="text-lg font-semibold text-neutral-900">
+      <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
+        <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
+          <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
             Current Usage
           </h2>
         </div>
@@ -92,30 +92,30 @@ export default function BillingPageClient({
           />
         </div>
 
-        <div className="px-6 py-4 border-t border-neutral-100 bg-neutral-50">
-          <h3 className="text-sm font-medium text-neutral-700 mb-3">
+        <div className="px-6 py-4 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-elevated)]">
+          <h3 className="text-sm font-medium text-[var(--color-text-secondary)] mb-3">
             Plan Limits
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
             <div>
-              <p className="text-neutral-500">Pages per scan</p>
-              <p className="font-semibold text-neutral-900">
+              <p className="text-[var(--color-text-muted)]">Pages per scan</p>
+              <p className="font-semibold text-[var(--color-text-primary)]">
                 {limits.maxPagesPerScan.toLocaleString()}
               </p>
             </div>
             <div>
-              <p className="text-neutral-500">Scan frequency</p>
-              <p className="font-semibold text-neutral-900 capitalize">
+              <p className="text-[var(--color-text-muted)]">Scan frequency</p>
+              <p className="font-semibold text-[var(--color-text-primary)] capitalize">
                 {limits.scanFrequency}
               </p>
             </div>
             <div>
-              <p className="text-neutral-500">Keywords</p>
-              <p className="font-semibold text-neutral-900">{limits.maxKeywords}</p>
+              <p className="text-[var(--color-text-muted)]">Keywords</p>
+              <p className="font-semibold text-[var(--color-text-primary)]">{limits.maxKeywords}</p>
             </div>
             <div>
-              <p className="text-neutral-500">Data history</p>
-              <p className="font-semibold text-neutral-900">
+              <p className="text-[var(--color-text-muted)]">Data history</p>
+              <p className="font-semibold text-[var(--color-text-primary)]">
                 {limits.historyDays >= 365
                   ? `${Math.round(limits.historyDays / 365)} year${limits.historyDays >= 730 ? "s" : ""}`
                   : `${Math.round(limits.historyDays / 30)} months`}
@@ -126,9 +126,9 @@ export default function BillingPageClient({
       </div>
 
       {/* Plan Comparison */}
-      <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-neutral-100">
-          <h2 className="text-lg font-semibold text-neutral-900">
+      <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
+        <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
+          <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
             {plan === "business" ? "Your Plan" : "Upgrade Your Plan"}
           </h2>
         </div>
@@ -146,10 +146,10 @@ export default function BillingPageClient({
                   key={planId}
                   className={`relative rounded-xl border-2 p-5 transition-all ${
                     isCurrentPlan
-                      ? "border-neutral-900 bg-neutral-50"
+                      ? "border-[var(--color-primary)] bg-[var(--color-surface-elevated)]"
                       : isPopular
                         ? "border-primary"
-                        : "border-neutral-200 hover:border-neutral-300"
+                        : "border-[var(--color-border-default)] hover:border-[var(--color-border-default)]"
                   }`}
                 >
                   {isPopular && !isCurrentPlan && (
@@ -158,34 +158,34 @@ export default function BillingPageClient({
                     </span>
                   )}
                   {isCurrentPlan && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-neutral-900 text-white text-xs font-medium px-3 py-1 rounded-full">
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[var(--color-primary)] text-white text-xs font-medium px-3 py-1 rounded-full">
                       Current
                     </span>
                   )}
 
-                  <h3 className="font-semibold text-neutral-900 mt-1">{info.name}</h3>
+                  <h3 className="font-semibold text-[var(--color-text-primary)] mt-1">{info.name}</h3>
                   <div className="mt-3">
-                    <span className="text-3xl font-bold text-neutral-900">
+                    <span className="text-3xl font-bold text-[var(--color-text-primary)]">
                       ${info.priceMonthly}
                     </span>
                     {info.priceMonthly > 0 && (
-                      <span className="text-sm text-neutral-500">/mo</span>
+                      <span className="text-sm text-[var(--color-text-muted)]">/mo</span>
                     )}
                   </div>
 
                   <ul className="mt-5 space-y-2.5">
-                    <li className="flex items-center gap-2 text-sm text-neutral-600">
+                    <li className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
                       <IconCheck className="h-4 w-4 text-green-500 flex-shrink-0" />
                       {planLimits.maxProjects === -1
                         ? "Unlimited"
                         : planLimits.maxProjects}{" "}
                       projects
                     </li>
-                    <li className="flex items-center gap-2 text-sm text-neutral-600">
+                    <li className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
                       <IconCheck className="h-4 w-4 text-green-500 flex-shrink-0" />
                       {planLimits.maxPagesPerScan.toLocaleString()} pages/scan
                     </li>
-                    <li className="flex items-center gap-2 text-sm text-neutral-600">
+                    <li className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
                       <IconCheck className="h-4 w-4 text-green-500 flex-shrink-0" />
                       {planLimits.scanFrequency === "daily" ? "Daily" : "Weekly"}{" "}
                       scans
@@ -205,13 +205,13 @@ export default function BillingPageClient({
                   <div className="mt-5">
                     {planId === "free" ? (
                       isCurrentPlan ? (
-                        <span className="block text-center text-sm text-neutral-500 py-2.5">
+                        <span className="block text-center text-sm text-[var(--color-text-muted)] py-2.5">
                           Current Plan
                         </span>
                       ) : (
                         <Link
                           href="/dashboard/billing/cancel"
-                          className="block text-center text-sm text-neutral-500 hover:text-neutral-700 py-2.5 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
+                          className="block text-center text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] py-2.5 border border-[var(--color-border-default)] rounded-lg hover:bg-[var(--color-surface-hover)] transition-colors"
                         >
                           Downgrade to Free
                         </Link>
@@ -236,24 +236,24 @@ export default function BillingPageClient({
       </div>
 
       {/* FAQ / Help */}
-      <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-neutral-100">
-          <h2 className="text-lg font-semibold text-neutral-900">
+      <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
+        <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
+          <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
             Need Help?
           </h2>
         </div>
 
-        <div className="p-6 space-y-4 text-sm text-neutral-600">
+        <div className="p-6 space-y-4 text-sm text-[var(--color-text-secondary)]">
           <p>
-            <strong className="text-neutral-900">Changing plans:</strong> You can upgrade or downgrade at any
+            <strong className="text-[var(--color-text-primary)]">Changing plans:</strong> You can upgrade or downgrade at any
             time. Changes take effect immediately.
           </p>
           <p>
-            <strong className="text-neutral-900">Canceling:</strong> You can cancel your subscription anytime.
+            <strong className="text-[var(--color-text-primary)]">Canceling:</strong> You can cancel your subscription anytime.
             You&apos;ll retain access until the end of your billing period.
           </p>
           <p>
-            <strong className="text-neutral-900">Questions?</strong>{" "}
+            <strong className="text-[var(--color-text-primary)]">Questions?</strong>{" "}
             <Link href="/contact" className="text-primary hover:underline">
               Contact our support team
             </Link>

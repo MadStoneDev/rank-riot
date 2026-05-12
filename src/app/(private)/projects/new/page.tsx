@@ -46,31 +46,31 @@ export default async function NewProjectPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">
+        <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
           Create New Project
         </h1>
-        <p className="text-neutral-500 mt-1">
+        <p className="text-[var(--color-text-muted)] mt-1">
           Set up a new project to start monitoring your website's SEO
           performance
         </p>
       </div>
 
       {/* Project limit info */}
-      <div className="bg-white rounded-2xl border border-neutral-200 p-4">
-        <p className="text-sm text-neutral-600">
+      <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] p-4">
+        <p className="text-sm text-[var(--color-text-secondary)]">
           <span className="font-medium">Project usage:</span>{" "}
           {currentProjectCount} of {limits.maxProjects === -1 ? "unlimited" : limits.maxProjects} projects
-          <span className="text-neutral-400 ml-1">({planInfo.name} plan)</span>
+          <span className="text-[var(--color-text-muted)] ml-1">({planInfo.name} plan)</span>
         </p>
       </div>
 
       {canCreate ? (
-        <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-neutral-100">
-            <h2 className="text-lg font-semibold text-neutral-900">
+        <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
+          <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
+            <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
               Project Details
             </h2>
-            <p className="text-sm text-neutral-500 mt-1">
+            <p className="text-sm text-[var(--color-text-muted)] mt-1">
               Fill in the information below to create your new project.
             </p>
           </div>
@@ -84,7 +84,7 @@ export default async function NewProjectPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+        <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
           <div className="text-center py-12 px-6">
             <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
               <svg
@@ -101,23 +101,23 @@ export default async function NewProjectPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-neutral-900 mb-2">
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-2">
               Project Limit Reached
             </h2>
-            <p className="text-neutral-600 mb-6 max-w-md mx-auto">
+            <p className="text-[var(--color-text-secondary)] mb-6 max-w-md mx-auto">
               You've used all {limits.maxProjects} projects available on your {planInfo.name} plan.
               Upgrade to create more projects and unlock additional features.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href="/dashboard/billing"
-                className="inline-flex items-center justify-center px-6 py-3 bg-neutral-900 text-white rounded-lg font-medium hover:bg-neutral-800 transition-colors"
+                className="inline-flex items-center justify-center px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg font-medium hover:bg-[var(--color-primary-hover)] transition-colors"
               >
                 Upgrade Your Plan
               </Link>
               <Link
                 href="/projects"
-                className="inline-flex items-center justify-center px-6 py-3 border border-neutral-200 text-neutral-700 rounded-lg font-medium hover:bg-neutral-50 transition-colors"
+                className="inline-flex items-center justify-center px-6 py-3 border border-[var(--color-border-default)] text-[var(--color-text-secondary)] rounded-lg font-medium hover:bg-[var(--color-surface-hover)] transition-colors"
               >
                 View Existing Projects
               </Link>

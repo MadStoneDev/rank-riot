@@ -107,13 +107,13 @@ export default async function ProjectPagesPage({
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900">{project.name}</h1>
-          <p className="text-neutral-500 mt-1">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">{project.name}</h1>
+          <p className="text-[var(--color-text-muted)] mt-1">
             <a
               href={project.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:underline hover:text-neutral-700"
+              className="hover:underline hover:text-[var(--color-text-primary)]"
             >
               {project.url}
             </a>
@@ -123,7 +123,7 @@ export default async function ProjectPagesPage({
         <div className="flex items-center gap-3">
           <Link
             href={`/projects/${projectId}/settings`}
-            className="inline-flex items-center gap-2 px-4 py-2.5 border border-neutral-200 text-sm font-medium rounded-lg text-neutral-700 bg-white hover:bg-neutral-50 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 border border-[var(--color-border-default)] text-sm font-medium rounded-lg text-[var(--color-text-secondary)] bg-[var(--color-surface-raised)] hover:bg-[var(--color-surface-hover)] transition-colors"
           >
             <IconSettings className="h-4 w-4" />
             Settings
@@ -132,7 +132,7 @@ export default async function ProjectPagesPage({
       </div>
 
       {/* Pages List */}
-      <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+      <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
         <PagesListClient
           pages={pages}
           projectId={projectId}

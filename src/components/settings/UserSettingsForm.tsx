@@ -45,13 +45,13 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
   return (
     <form ref={formRef} onSubmit={handleSubmit}>
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md">
+        <div className="mb-6 p-4 bg-red-500/10 border-l-4 border-red-500 text-red-700 rounded-md">
           <p className="text-sm font-medium">{error}</p>
         </div>
       )}
 
       {success && (
-        <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-md">
+        <div className="mb-6 p-4 bg-green-500/10 border-l-4 border-green-500 text-green-700 rounded-md">
           <p className="text-sm font-medium">{success}</p>
         </div>
       )}
@@ -60,7 +60,7 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
         <div className="sm:col-span-6">
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-neutral-700"
+            className="block text-sm font-medium text-[var(--color-text-secondary)]"
           >
             Email
           </label>
@@ -71,10 +71,10 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
               type="email"
               defaultValue={profile.email || ""}
               disabled
-              className={`p-2 shadow-sm bg-neutral-50 block w-full sm:text-sm border-neutral-300 rounded-md`}
+              className={`p-2 shadow-sm bg-[var(--color-surface-elevated)] block w-full sm:text-sm border-[var(--color-border-default)] rounded-md`}
             />
           </div>
-          <p className="mt-1 text-xs text-neutral-500">
+          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
             Email cannot be changed. Contact support if you need to update your
             email.
           </p>
@@ -83,7 +83,7 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
         <div className="sm:col-span-3">
           <label
             htmlFor="full_name"
-            className="block text-sm font-medium text-neutral-700"
+            className="block text-sm font-medium text-[var(--color-text-secondary)]"
           >
             Full Name
           </label>
@@ -93,18 +93,18 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
               name="full_name"
               type="text"
               defaultValue={profile.full_name || ""}
-              className={`p-2 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-neutral-300 rounded-md`}
+              className={`p-2 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] rounded-md`}
               disabled={isLoading}
             />
           </div>
         </div>
 
         <div className="sm:col-span-6">
-          <label className="block text-sm font-medium text-neutral-700">
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)]">
             Profile Picture
           </label>
           <div className="mt-1 flex items-center">
-            <div className="h-12 w-12 rounded-full overflow-hidden bg-neutral-100">
+            <div className="h-12 w-12 rounded-full overflow-hidden bg-[var(--color-surface-overlay)]">
               {profile.avatar_url ? (
                 <img
                   src={profile.avatar_url}
@@ -113,7 +113,7 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
                 />
               ) : (
                 <svg
-                  className="h-full w-full text-neutral-300"
+                  className="h-full w-full text-[var(--color-text-muted)]"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -123,7 +123,7 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
             </div>
             <button
               type="button"
-              className="ml-5 bg-white py-2 px-3 border border-neutral-300 rounded-md shadow-sm text-sm leading-4 font-medium text-neutral-700 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              className="ml-5 bg-[var(--color-surface-raised)] py-2 px-3 border border-[var(--color-border-default)] rounded-md shadow-sm text-sm leading-4 font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-elevated)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
             >
               Change
             </button>
@@ -131,7 +131,7 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
         </div>
       </div>
 
-      <div className="mt-8 pt-5 border-t border-neutral-200">
+      <div className="mt-8 pt-5 border-t border-[var(--color-border-default)]">
         <button
           type="submit"
           className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-secondary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"

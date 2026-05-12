@@ -110,21 +110,21 @@ export default async function SiteMapPage({
       <div className="flex items-center gap-4">
         <Link
           href={`/projects/${projectId}`}
-          className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-700 transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
         >
           <IconArrowLeft className="h-4 w-4" />
           Back to Project
         </Link>
         <div>
-          <h1 className="text-xl font-bold text-neutral-900">Site Map</h1>
-          <p className="text-sm text-neutral-500">
+          <h1 className="text-xl font-bold text-[var(--color-text-primary)]">Site Map</h1>
+          <p className="text-sm text-[var(--color-text-muted)]">
             {project.name} &mdash; Interactive link graph
           </p>
         </div>
       </div>
 
       {/* Map */}
-      <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
+      <div className="bg-[var(--color-surface-raised)] rounded-xl border border-[var(--color-border-default)] overflow-hidden">
         <SiteMapView
           pages={pageNodes}
           links={linkEdges}

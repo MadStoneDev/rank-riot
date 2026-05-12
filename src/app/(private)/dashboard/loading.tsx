@@ -22,11 +22,11 @@ export default function DashboardLoading() {
 
       {/* Two column grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-neutral-100">
+        <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
+          <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
             <Skeleton className="h-5 w-36" />
           </div>
-          <div className="divide-y divide-neutral-100">
+          <div className="divide-y divide-[var(--color-border-subtle)]">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="px-6 py-4 space-y-2">
                 <Skeleton className="h-4 w-48" />
@@ -35,11 +35,11 @@ export default function DashboardLoading() {
             ))}
           </div>
         </div>
-        <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-neutral-100">
+        <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
+          <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
             <Skeleton className="h-5 w-36" />
           </div>
-          <div className="divide-y divide-neutral-100">
+          <div className="divide-y divide-[var(--color-border-subtle)]">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="px-6 py-4 space-y-2">
                 <Skeleton className="h-4 w-48" />

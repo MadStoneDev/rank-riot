@@ -226,10 +226,10 @@ export async function deleteProject(projectId: string) {
     };
   }
 
-  // Delete project from database
+  // Soft-delete: remove user's ownership instead of deleting data
   const { error } = await supabase
     .from("projects")
-    .delete()
+    .update({ user_id: null })
     .eq("id", projectId)
     .eq("user_id", user.id);
 
