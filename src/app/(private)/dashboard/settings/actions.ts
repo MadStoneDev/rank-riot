@@ -2,6 +2,23 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+
+function getR2Client() {
+  const accountId = process.env.R2_ACCOUNT_ID;
+  const accessKeyId = process.env.R2_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
+
+  if (!accountId || !accessKeyId || !secretAccessKey) {
+    throw new Error("Missing R2 configuration (R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY)");
+  }
+
+  return new S3Client({
+    region: "auto",
+    endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+    credentials: { accessKeyId, secretAccessKey },
+  });
+}
 
 export async function updateProfile(formData: FormData) {
   const supabase = await createClient();
@@ -55,39 +72,47 @@ export async function uploadAvatar(formData: FormData) {
     return { error: "File must be a JPEG, PNG, WebP, or GIF image" };
   }
 
+  const bucket = process.env.R2_BUCKET_NAME || "rankriot-uploads";
+  const publicDomain = process.env.R2_PUBLIC_DOMAIN;
+  if (!publicDomain) {
+    return { error: "R2_PUBLIC_DOMAIN is not configured" };
+  }
+
   const ext = file.name.split(".").pop()?.toLowerCase() || "png";
-  const filePath = `${user.id}/avatar.${ext}`;
+  const key = `avatars/${user.id}.${ext}`;
 
-  const { error: uploadError } = await supabase.storage
-    .from("avatars")
-    .upload(filePath, file, {
-      upsert: true,
-      contentType: file.type,
-    });
+  try {
+    const r2 = getR2Client();
+    const buffer = Buffer.from(await file.arrayBuffer());
 
-  if (uploadError) {
-    return { error: `Upload failed: ${uploadError.message}` };
+    await r2.send(
+      new PutObjectCommand({
+        Bucket: bucket,
+        Key: key,
+        Body: buffer,
+        ContentType: file.type,
+      }),
+    );
+
+    const avatarUrl = `${publicDomain}/${key}?t=${Date.now()}`;
+
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({
+        avatar_url: avatarUrl,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", user.id);
+
+    if (updateError) {
+      return { error: `Failed to update profile: ${updateError.message}` };
+    }
+
+    revalidatePath("/dashboard/settings");
+    revalidatePath("/dashboard");
+    return { success: true, avatarUrl };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return { error: `Upload failed: ${message}` };
   }
-
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from("avatars").getPublicUrl(filePath);
-
-  const avatarUrl = `${publicUrl}?t=${Date.now()}`;
-
-  const { error: updateError } = await supabase
-    .from("profiles")
-    .update({
-      avatar_url: avatarUrl,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", user.id);
-
-  if (updateError) {
-    return { error: `Failed to update profile: ${updateError.message}` };
-  }
-
-  revalidatePath("/dashboard/settings");
-  revalidatePath("/dashboard");
-  return { success: true, avatarUrl };
 }
