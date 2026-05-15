@@ -3,7 +3,10 @@
 import { useState, useRef } from "react";
 import { Database } from "../../../database.types";
 
-import { updateProfile } from "@/app/(private)/dashboard/settings/actions";
+import {
+  updateProfile,
+  uploadAvatar,
+} from "@/app/(private)/dashboard/settings/actions";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
@@ -13,9 +16,12 @@ interface UserSettingsFormProps {
 
 export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url);
   const formRef = useRef<HTMLFormElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +45,33 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
       setError("An unexpected error occurred");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setError(null);
+    setSuccess(null);
+
+    const formData = new FormData();
+    formData.append("avatar", file);
+
+    try {
+      const result = await uploadAvatar(formData);
+      if (result?.error) {
+        setError(result.error);
+      } else {
+        setAvatarUrl(result.avatarUrl || avatarUrl);
+        setSuccess("Avatar updated successfully");
+      }
+    } catch (err) {
+      setError("Failed to upload avatar");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -105,9 +138,9 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
           </label>
           <div className="mt-1 flex items-center">
             <div className="h-12 w-12 rounded-full overflow-hidden bg-[var(--color-surface-overlay)]">
-              {profile.avatar_url ? (
+              {avatarUrl ? (
                 <img
-                  src={profile.avatar_url}
+                  src={avatarUrl}
                   alt="Profile"
                   className="h-full w-full object-cover"
                 />
@@ -121,13 +154,26 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
                 </svg>
               )}
             </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              className="hidden"
+              onChange={handleAvatarChange}
+              disabled={isUploading}
+            />
             <button
               type="button"
-              className="ml-5 bg-[var(--color-surface-raised)] py-2 px-3 border border-[var(--color-border-default)] rounded-md shadow-sm text-sm leading-4 font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-elevated)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              className="ml-5 bg-[var(--color-surface-raised)] py-2 px-3 border border-[var(--color-border-default)] rounded-md shadow-sm text-sm leading-4 font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-elevated)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Change
+              {isUploading ? "Uploading..." : "Change"}
             </button>
           </div>
+          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+            JPEG, PNG, WebP, or GIF. Max 2 MB.
+          </p>
         </div>
       </div>
 
