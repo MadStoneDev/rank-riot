@@ -50,6 +50,7 @@ export default async function ProjectSettingsPage({
     .select("*")
     .eq("id", projectId)
     .eq("user_id", user.id)
+    .is("deleted_at", null)
     .single();
 
   if (!project) {

@@ -30,6 +30,7 @@ export async function GET(
       .select("id")
       .eq("id", projectId)
       .eq("user_id", user.id)
+      .is("deleted_at", null)
       .single();
     if (!project) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });

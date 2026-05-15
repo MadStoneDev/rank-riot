@@ -72,7 +72,8 @@ export async function POST(request: NextRequest) {
     const { count: projectCount } = await supabase
       .from("projects")
       .select("*", { count: "exact", head: true })
-      .eq("user_id", user.id);
+      .eq("user_id", user.id)
+      .is("deleted_at", null);
 
     // Check if project already exists
     const { data: existingProject } = await supabase
@@ -81,6 +82,7 @@ export async function POST(request: NextRequest) {
       .eq("user_id", user.id)
       .eq("url", formattedUrl)
       .eq("project_type", project_type)
+      .is("deleted_at", null)
       .single();
 
     let projectId: string;
@@ -268,6 +270,7 @@ export async function GET(request: NextRequest) {
       .from("projects")
       .select("*")
       .eq("user_id", user.id)
+      .is("deleted_at", null)
       .order("created_at", { ascending: false });
 
     if (error) {

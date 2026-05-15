@@ -55,6 +55,7 @@ export default async function AuditProjectDetailPage({
     .select("*")
     .eq("id", projectId)
     .eq("user_id", user.id)
+    .is("deleted_at", null)
     .single();
 
   if (!project || project.project_type !== "audit") {

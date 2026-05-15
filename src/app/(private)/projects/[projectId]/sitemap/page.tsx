@@ -42,6 +42,7 @@ export default async function SiteMapPage({
     .select("id, name, url")
     .eq("id", projectId)
     .eq("user_id", user.id)
+    .is("deleted_at", null)
     .single();
 
   if (!project) notFound();

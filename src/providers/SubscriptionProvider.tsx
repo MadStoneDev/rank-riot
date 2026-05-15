@@ -108,7 +108,8 @@ export function SubscriptionProvider({
       const { count: projectCount } = await supabase
         .from("projects")
         .select("*", { count: "exact", head: true })
-        .eq("user_id", userId);
+        .eq("user_id", userId)
+        .is("deleted_at", null);
 
       // Fetch usage for current month
       const { data: usageData } = await supabase.rpc("get_current_usage", {

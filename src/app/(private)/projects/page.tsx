@@ -48,6 +48,7 @@ export default async function ProjectsPage({
     .select()
     .eq("user_id", user.id)
     .eq("project_type", "seo")
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   // Get user's Audit projects
@@ -56,6 +57,7 @@ export default async function ProjectsPage({
     .select()
     .eq("user_id", user.id)
     .eq("project_type", "audit")
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   // Calculate total project count and check limits

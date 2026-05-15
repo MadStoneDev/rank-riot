@@ -32,7 +32,8 @@ export default async function BillingPage() {
   const { count: projectCount } = await supabase
     .from("projects")
     .select("*", { count: "exact", head: true })
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .is("deleted_at", null);
 
   // Fetch usage data for current month
   const now = new Date();

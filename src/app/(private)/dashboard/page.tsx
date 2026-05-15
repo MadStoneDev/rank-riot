@@ -47,6 +47,7 @@ export default async function Dashboard() {
     .from("projects")
     .select("*")
     .eq("user_id", user?.id)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   const projectIds = projects?.map((p) => p.id) || [];

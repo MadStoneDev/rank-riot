@@ -44,7 +44,8 @@ export async function createProject(formData: FormData) {
   const { count: projectCount } = await supabase
     .from("projects")
     .select("*", { count: "exact", head: true })
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .is("deleted_at", null);
 
   // Check if user can create more projects
   if (!canCreateProject(userPlan, projectCount || 0)) {
@@ -226,10 +227,10 @@ export async function deleteProject(projectId: string) {
     };
   }
 
-  // Soft-delete: remove user's ownership instead of deleting data
+  // Soft-delete: mark as deleted but keep all data for backlink checking
   const { error } = await supabase
     .from("projects")
-    .update({ user_id: null })
+    .update({ deleted_at: new Date().toISOString() })
     .eq("id", projectId)
     .eq("user_id", user.id);
 

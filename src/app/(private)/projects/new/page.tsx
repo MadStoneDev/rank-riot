@@ -37,7 +37,8 @@ export default async function NewProjectPage() {
   const { count: projectCount } = await supabase
     .from("projects")
     .select("*", { count: "exact", head: true })
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .is("deleted_at", null);
 
   const currentProjectCount = projectCount || 0;
   const canCreate = canCreateProject(userPlan, currentProjectCount);

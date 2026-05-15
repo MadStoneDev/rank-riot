@@ -69,6 +69,7 @@ export default async function PageDetailPage({
     .select("*")
     .eq("id", projectId)
     .eq("user_id", user.id)
+    .is("deleted_at", null)
     .single();
 
   // Get page details
