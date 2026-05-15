@@ -28,7 +28,7 @@ export default function HeadingListClient({
         {icon || <IconHeading />}
       </div>
       <div className="ml-3 flex-1">
-        <h4 className="text-sm font-medium text-neutral-900">{heading}</h4>
+        <h4 className="text-sm font-medium text-[var(--color-text-primary)]">{heading}</h4>
       </div>
     </div>
   );

@@ -50,12 +50,12 @@ export default function ProjectSettingsForm({
       <div className="px-6 py-6">
         <form ref={formRef} onSubmit={handleSubmit}>
           {error && (
-            <div className="mb-6 p-4 bg-red-500/10 border-l-4 border-red-500 text-red-700 rounded-md">
+            <div className="mb-6 p-4 bg-[var(--color-score-critical-muted)] border-l-4 border-[var(--color-score-critical)] text-[var(--color-score-critical)] rounded-md">
               <p className="text-sm font-medium">{error}</p>
             </div>
           )}
           {success && (
-            <div className="mb-6 p-4 bg-green-500/10 border-l-4 border-green-500 text-green-700 rounded-md">
+            <div className="mb-6 p-4 bg-[var(--color-score-good)]/10 border-l-4 border-[var(--color-score-good)] text-[var(--color-score-good)] rounded-md">
               <p className="text-sm font-medium">{success}</p>
             </div>
           )}
@@ -74,7 +74,7 @@ export default function ProjectSettingsForm({
                   type="text"
                   required
                   defaultValue={project.name}
-                  className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] rounded-md`}
+                  className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] rounded-md`}
                   disabled={isLoading}
                 />
               </div>
@@ -93,7 +93,7 @@ export default function ProjectSettingsForm({
                   type="text"
                   required
                   defaultValue={project.url}
-                  className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] rounded-md`}
+                  className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] rounded-md`}
                   disabled={isLoading}
                 />
               </div>
@@ -111,7 +111,7 @@ export default function ProjectSettingsForm({
                   name="description"
                   rows={3}
                   defaultValue={project.description || ""}
-                  className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] rounded-md`}
+                  className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] rounded-md`}
                   disabled={isLoading}
                 />
               </div>
@@ -127,7 +127,7 @@ export default function ProjectSettingsForm({
                 <select
                   id="scan_frequency"
                   name="scan_frequency"
-                  className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] rounded-md`}
+                  className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] rounded-md`}
                   defaultValue={project.scan_frequency || ""}
                   disabled={isLoading}
                 >
@@ -153,13 +153,13 @@ export default function ProjectSettingsForm({
 
       <div className="mt-8 bg-[var(--color-surface-raised)] rounded-lg shadow overflow-hidden">
         <div className="px-6 py-5 border-b border-[var(--color-border-default)] bg-[var(--color-surface-elevated)]">
-          <h3 className="text-lg font-medium leading-6 text-[var(--color-text-primary)] text-red-600">
+          <h3 className="text-lg font-medium leading-6 text-[var(--color-score-critical)]">
             Danger Zone
           </h3>
         </div>
 
         <div className="px-6 py-6">
-          <div className="border border-red-200 rounded-md p-4">
+          <div className="border border-[var(--color-score-critical)]/20 rounded-md p-4">
             <h3 className="text-base font-medium text-[var(--color-text-primary)]">
               Delete Project
             </h3>

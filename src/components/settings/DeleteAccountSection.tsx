@@ -40,9 +40,9 @@ export default function DeleteAccountSection() {
   };
 
   return (
-    <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-red-200 overflow-hidden">
-      <div className="px-6 py-4 border-b border-red-100 bg-red-500/10">
-        <h2 className="text-lg font-semibold text-red-700">Danger Zone</h2>
+    <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-score-critical)]/20 overflow-hidden">
+      <div className="px-6 py-4 border-b border-[var(--color-score-critical)]/10 bg-[var(--color-score-critical-muted)]">
+        <h2 className="text-lg font-semibold text-[var(--color-score-critical)]">Danger Zone</h2>
       </div>
 
       <div className="p-6">
@@ -67,11 +67,11 @@ export default function DeleteAccountSection() {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="p-4 bg-red-500/10 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-800 font-medium">
+            <div className="p-4 bg-[var(--color-score-critical-muted)] border border-[var(--color-score-critical)]/20 rounded-lg">
+              <p className="text-sm text-[var(--color-score-critical)] font-medium">
                 Are you sure? This will permanently delete:
               </p>
-              <ul className="mt-2 text-sm text-red-700 list-disc list-inside space-y-1">
+              <ul className="mt-2 text-sm text-[var(--color-score-critical)] list-disc list-inside space-y-1">
                 <li>Your account and profile</li>
                 <li>All projects and scan history</li>
                 <li>All saved reports and data</li>
@@ -91,13 +91,13 @@ export default function DeleteAccountSection() {
                 value={confirmText}
                 onChange={(e) => setConfirmText(e.target.value)}
                 placeholder="DELETE"
-                className="p-2 w-full sm:w-64 border border-[var(--color-border-default)] rounded-lg text-sm focus:ring-red-500 focus:border-red-500"
+                className="p-2 w-full sm:w-64 border border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] rounded-lg text-sm focus:ring-red-500 focus:border-red-500"
                 disabled={isDeleting}
               />
             </div>
 
             {error && (
-              <p className="text-sm text-red-600 font-medium">{error}</p>
+              <p className="text-sm text-[var(--color-score-critical)] font-medium">{error}</p>
             )}
 
             <div className="flex gap-3">

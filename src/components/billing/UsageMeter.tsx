@@ -17,18 +17,18 @@ export default function UsageMeter({
   const percentage = isUnlimited ? 0 : Math.min(100, (current / (max as number)) * 100);
 
   // Color based on usage percentage
-  let barColor = "bg-green-500";
+  let barColor = "bg-[var(--color-score-good)]";
   if (!isUnlimited) {
-    if (percentage >= 90) barColor = "bg-red-500";
-    else if (percentage >= 75) barColor = "bg-orange-500";
-    else if (percentage >= 50) barColor = "bg-yellow-500";
+    if (percentage >= 90) barColor = "bg-[var(--color-score-critical)]";
+    else if (percentage >= 75) barColor = "bg-[var(--color-score-warning)]";
+    else if (percentage >= 50) barColor = "bg-[var(--color-score-warning)]";
   }
 
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-sm">
-        <span className="font-medium text-neutral-700">{label}</span>
-        <span className="text-neutral-500">
+        <span className="font-medium text-[var(--color-text-secondary)]">{label}</span>
+        <span className="text-[var(--color-text-muted)]">
           {current.toLocaleString()}
           {unit && ` ${unit}`}
           {" / "}
@@ -36,14 +36,14 @@ export default function UsageMeter({
           {unit && !isUnlimited && ` ${unit}`}
         </span>
       </div>
-      <div className="h-2 bg-neutral-200 rounded-full overflow-hidden">
+      <div className="h-2 bg-[var(--color-surface-elevated)] rounded-full overflow-hidden">
         <div
           className={`h-full ${barColor} rounded-full transition-all duration-300`}
           style={{ width: isUnlimited ? "0%" : `${percentage}%` }}
         />
       </div>
       {!isUnlimited && percentage >= 90 && (
-        <p className="text-xs text-red-600">
+        <p className="text-xs text-[var(--color-score-critical)]">
           Approaching limit - consider upgrading your plan
         </p>
       )}

@@ -82,13 +82,13 @@ export default function SchemaAuditView({ pages, projectId, projectName }: Schem
         <div>
           <Link
             href={`/projects/${projectId}`}
-            className="inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700 mb-2"
+            className="inline-flex items-center gap-1 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] mb-2"
           >
             <IconArrowLeft className="w-4 h-4" />
             Back to {projectName}
           </Link>
-          <h1 className="text-2xl font-bold text-neutral-900">Schema & Structured Data</h1>
-          <p className="text-neutral-500 mt-1">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Schema & Structured Data</h1>
+          <p className="text-[var(--color-text-muted)] mt-1">
             {pages.length} pages analyzed &middot; {pagesWithSchema.length} with schema
           </p>
         </div>
@@ -104,20 +104,20 @@ export default function SchemaAuditView({ pages, projectId, projectName }: Schem
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white rounded-2xl border border-neutral-200 p-5">
-          <p className="text-sm text-neutral-500">Pages with Schema</p>
-          <p className="text-2xl font-bold text-neutral-900 mt-1">{schemaPercent}%</p>
-          <p className="text-xs text-neutral-400 mt-1">{pagesWithSchema.length} of {pages.length}</p>
+        <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] p-5">
+          <p className="text-sm text-[var(--color-text-muted)]">Pages with Schema</p>
+          <p className="text-2xl font-bold text-[var(--color-text-primary)] mt-1">{schemaPercent}%</p>
+          <p className="text-xs text-[var(--color-text-muted)] mt-1">{pagesWithSchema.length} of {pages.length}</p>
         </div>
-        <div className="bg-white rounded-2xl border border-neutral-200 p-5">
-          <p className="text-sm text-neutral-500">Open Graph Coverage</p>
-          <p className="text-2xl font-bold text-neutral-900 mt-1">{ogPercent}%</p>
-          <p className="text-xs text-neutral-400 mt-1">{pagesWithOG.length} of {pages.length}</p>
+        <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] p-5">
+          <p className="text-sm text-[var(--color-text-muted)]">Open Graph Coverage</p>
+          <p className="text-2xl font-bold text-[var(--color-text-primary)] mt-1">{ogPercent}%</p>
+          <p className="text-xs text-[var(--color-text-muted)] mt-1">{pagesWithOG.length} of {pages.length}</p>
         </div>
-        <div className="bg-white rounded-2xl border border-neutral-200 p-5">
-          <p className="text-sm text-neutral-500">Schema Types Found</p>
-          <p className="text-2xl font-bold text-neutral-900 mt-1">{allTypes.length}</p>
-          <p className="text-xs text-neutral-400 mt-1 truncate">{allTypes.slice(0, 3).join(", ") || "None"}</p>
+        <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] p-5">
+          <p className="text-sm text-[var(--color-text-muted)]">Schema Types Found</p>
+          <p className="text-2xl font-bold text-[var(--color-text-primary)] mt-1">{allTypes.length}</p>
+          <p className="text-xs text-[var(--color-text-muted)] mt-1 truncate">{allTypes.slice(0, 3).join(", ") || "None"}</p>
         </div>
       </div>
 
@@ -134,7 +134,7 @@ export default function SchemaAuditView({ pages, projectId, projectName }: Schem
             className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
               filter === key
                 ? "border-primary bg-primary/10 text-primary font-medium"
-                : "border-neutral-200 text-neutral-600 hover:border-neutral-300"
+                : "border-[var(--color-border-default)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)]"
             }`}
           >
             {label}
@@ -147,7 +147,7 @@ export default function SchemaAuditView({ pages, projectId, projectName }: Schem
             className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
               filter === type
                 ? "border-primary bg-primary/10 text-primary font-medium"
-                : "border-neutral-200 text-neutral-600 hover:border-neutral-300"
+                : "border-[var(--color-border-default)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)]"
             }`}
           >
             {type}
@@ -156,19 +156,19 @@ export default function SchemaAuditView({ pages, projectId, projectName }: Schem
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+      <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-neutral-200 bg-neutral-50">
-                <th className="text-left px-4 py-3 font-medium text-neutral-600 w-8"></th>
-                <th className="text-left px-4 py-3 font-medium text-neutral-600">URL</th>
-                <th className="text-left px-4 py-3 font-medium text-neutral-600">Schema Types</th>
-                <th className="text-left px-4 py-3 font-medium text-neutral-600">OG</th>
-                <th className="text-left px-4 py-3 font-medium text-neutral-600">Twitter</th>
+              <tr className="border-b border-[var(--color-border-default)] bg-[var(--color-surface-overlay)]">
+                <th className="text-left px-4 py-3 font-medium text-[var(--color-text-secondary)] w-8"></th>
+                <th className="text-left px-4 py-3 font-medium text-[var(--color-text-secondary)]">URL</th>
+                <th className="text-left px-4 py-3 font-medium text-[var(--color-text-secondary)]">Schema Types</th>
+                <th className="text-left px-4 py-3 font-medium text-[var(--color-text-secondary)]">OG</th>
+                <th className="text-left px-4 py-3 font-medium text-[var(--color-text-secondary)]">Twitter</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-100">
+            <tbody className="divide-y divide-[var(--color-border-subtle)]">
               {paginated.map((p) => {
                 const hasSchema = p.schema_types && p.schema_types.length > 0;
                 const hasOG = p.open_graph && Object.keys(p.open_graph).length > 0;
@@ -176,12 +176,12 @@ export default function SchemaAuditView({ pages, projectId, projectName }: Schem
                 const isExpanded = expandedRows.has(p.id);
 
                 return (
-                  <tr key={p.id} className="hover:bg-neutral-50 group">
+                  <tr key={p.id} className="hover:bg-[var(--color-surface-hover)] group">
                     <td className="px-4 py-3" colSpan={5}>
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => toggleRow(p.id)}
-                          className="text-neutral-400 hover:text-neutral-600"
+                          className="text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
                         >
                           {isExpanded ? (
                             <IconChevronUp className="w-4 h-4" />
@@ -190,7 +190,7 @@ export default function SchemaAuditView({ pages, projectId, projectName }: Schem
                           )}
                         </button>
                         <div className="flex-1 grid grid-cols-1 sm:grid-cols-[1fr_auto_auto_auto] gap-2 sm:gap-4 items-center">
-                          <p className="text-xs text-neutral-600 truncate" title={p.url}>
+                          <p className="text-xs text-[var(--color-text-secondary)] truncate" title={p.url}>
                             {p.url}
                           </p>
                           <div className="flex flex-wrap gap-1">
@@ -204,46 +204,46 @@ export default function SchemaAuditView({ pages, projectId, projectName }: Schem
                                 </span>
                               ))
                             ) : (
-                              <span className="text-xs text-neutral-400">None</span>
+                              <span className="text-xs text-[var(--color-text-muted)]">None</span>
                             )}
                           </div>
-                          <span className={`text-xs ${hasOG ? "text-green-600" : "text-neutral-400"}`}>
+                          <span className={`text-xs ${hasOG ? "text-green-400" : "text-[var(--color-text-muted)]"}`}>
                             {hasOG ? "Yes" : "No"}
                           </span>
-                          <span className={`text-xs ${hasTwitter ? "text-green-600" : "text-neutral-400"}`}>
+                          <span className={`text-xs ${hasTwitter ? "text-green-400" : "text-[var(--color-text-muted)]"}`}>
                             {hasTwitter ? "Yes" : "No"}
                           </span>
                         </div>
                       </div>
 
                       {isExpanded && (
-                        <div className="mt-3 ml-6 p-3 bg-neutral-50 rounded-lg text-xs space-y-2">
+                        <div className="mt-3 ml-6 p-3 bg-[var(--color-surface-overlay)] rounded-lg text-xs space-y-2">
                           {hasSchema && (
                             <div>
-                              <p className="font-medium text-neutral-700 mb-1">Structured Data</p>
-                              <pre className="bg-white p-2 rounded border text-[11px] overflow-auto max-h-48 text-neutral-600">
+                              <p className="font-medium text-[var(--color-text-secondary)] mb-1">Structured Data</p>
+                              <pre className="bg-[var(--color-surface-base)] p-2 rounded border border-[var(--color-border-subtle)] text-[11px] overflow-auto max-h-48 text-[var(--color-text-secondary)]">
                                 {JSON.stringify(p.structured_data, null, 2)}
                               </pre>
                             </div>
                           )}
                           {hasOG && (
                             <div>
-                              <p className="font-medium text-neutral-700 mb-1">Open Graph</p>
-                              <pre className="bg-white p-2 rounded border text-[11px] overflow-auto max-h-32 text-neutral-600">
+                              <p className="font-medium text-[var(--color-text-secondary)] mb-1">Open Graph</p>
+                              <pre className="bg-[var(--color-surface-base)] p-2 rounded border border-[var(--color-border-subtle)] text-[11px] overflow-auto max-h-32 text-[var(--color-text-secondary)]">
                                 {JSON.stringify(p.open_graph, null, 2)}
                               </pre>
                             </div>
                           )}
                           {hasTwitter && (
                             <div>
-                              <p className="font-medium text-neutral-700 mb-1">Twitter Card</p>
-                              <pre className="bg-white p-2 rounded border text-[11px] overflow-auto max-h-32 text-neutral-600">
+                              <p className="font-medium text-[var(--color-text-secondary)] mb-1">Twitter Card</p>
+                              <pre className="bg-[var(--color-surface-base)] p-2 rounded border border-[var(--color-border-subtle)] text-[11px] overflow-auto max-h-32 text-[var(--color-text-secondary)]">
                                 {JSON.stringify(p.twitter_card, null, 2)}
                               </pre>
                             </div>
                           )}
                           {!hasSchema && !hasOG && !hasTwitter && (
-                            <p className="text-neutral-400">No structured data found for this page.</p>
+                            <p className="text-[var(--color-text-muted)]">No structured data found for this page.</p>
                           )}
                         </div>
                       )}
@@ -253,7 +253,7 @@ export default function SchemaAuditView({ pages, projectId, projectName }: Schem
               })}
               {paginated.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-12 text-center text-neutral-500">
+                  <td colSpan={5} className="px-4 py-12 text-center text-[var(--color-text-muted)]">
                     No pages match the current filter.
                   </td>
                 </tr>

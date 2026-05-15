@@ -20,17 +20,17 @@ export default function ImageItem({
         <IconPhoto />
       </div>
       <div className={`ml-3 py-4 flex-1`}>
-        <h4 className="text-sm font-medium text-neutral-900">
+        <h4 className="text-sm font-medium text-[var(--color-text-primary)]">
           {index + 1}. {image.src}
         </h4>
-        <p className="mt-1 text-sm text-neutral-500">
+        <p className="mt-1 text-sm text-[var(--color-text-muted)]">
           <span className={`font-bold`}>Alt Text:</span> {image.alt}
         </p>
 
         <Link
           href={safeHref(image.src)}
           target={`_blank`}
-          className={`mt-2 pt-1 flex items-center w-fit border-t border-neutral-300 text-sm text-primary hover:text-primary/70 transition-all duration-300 ease-in-out`}
+          className={`mt-2 pt-1 flex items-center w-fit border-t border-[var(--color-border-default)] text-sm text-primary hover:text-primary/70 transition-all duration-300 ease-in-out`}
         >
           See Full Image
           <IconExternalLink size={20} className={`ml-1`} />

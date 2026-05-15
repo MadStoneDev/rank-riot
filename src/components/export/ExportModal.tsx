@@ -180,7 +180,7 @@ export default function ExportModal({
       <div className="p-6 space-y-5">
         {/* Format selector */}
         <div>
-          <label className="block text-sm font-medium text-neutral-700 mb-2">
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
             Format
           </label>
           <div className="flex flex-wrap gap-2">
@@ -196,14 +196,14 @@ export default function ExportModal({
                     selectedFormat === value
                       ? "border-primary bg-primary/10 text-primary font-medium"
                       : disabled
-                        ? "border-neutral-200 bg-neutral-50 text-neutral-400 cursor-not-allowed"
-                        : "border-neutral-200 text-neutral-600 hover:border-neutral-300 hover:bg-neutral-50"
+                        ? "border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-muted)] cursor-not-allowed"
+                        : "border-[var(--color-border-default)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-hover)]"
                   }`}
                 >
                   <Icon className="h-4 w-4" />
                   {fLabel}
                   {proOnly && !hasPdfReports && (
-                    <span className="text-[10px] font-semibold px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full">
+                    <span className="text-[10px] font-semibold px-1.5 py-0.5 bg-amber-500/20 text-amber-400 rounded-full">
                       PRO
                     </span>
                   )}
@@ -222,13 +222,13 @@ export default function ExportModal({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Filter */}
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1.5">
               Filter
             </label>
             <select
               value={activeFilter}
               onChange={(e) => setActiveFilter(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-3 py-2 text-sm border border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             >
               {filters.map((f) => (
                 <option key={f.key} value={f.key}>
@@ -240,14 +240,14 @@ export default function ExportModal({
 
           {/* Sort */}
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1.5">
               Sort By
             </label>
             <div className="flex gap-1.5">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="flex-1 px-3 py-2 text-sm border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="flex-1 px-3 py-2 text-sm border border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               >
                 <option value="">Default order</option>
                 {availableColumns.map((col) => (
@@ -260,7 +260,7 @@ export default function ExportModal({
                 onClick={() =>
                   setSortDirection((d) => (d === "asc" ? "desc" : "asc"))
                 }
-                className="px-2 py-2 border border-neutral-300 rounded-lg text-neutral-500 hover:bg-neutral-50 text-sm"
+                className="px-2 py-2 border border-[var(--color-border-default)] rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-surface-hover)] text-sm"
                 title={sortDirection === "asc" ? "Ascending" : "Descending"}
               >
                 {sortDirection === "asc" ? "A-Z" : "Z-A"}
@@ -271,7 +271,7 @@ export default function ExportModal({
 
         {/* Limit */}
         <div>
-          <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1.5">
             Limit
           </label>
           <div className="flex items-center gap-3">
@@ -284,14 +284,14 @@ export default function ExportModal({
                 setLimit(val ? parseInt(val, 10) : null);
               }}
               placeholder="No limit"
-              className="w-32 px-3 py-2 text-sm border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-32 px-3 py-2 text-sm border border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
             <button
               onClick={() => setLimit(null)}
               className={`text-sm px-2 py-1 rounded transition-colors ${
                 limit === null
                   ? "text-primary font-medium"
-                  : "text-neutral-500 hover:text-neutral-700"
+                  : "text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
               }`}
             >
               All
@@ -303,20 +303,20 @@ export default function ExportModal({
         <div>
           <button
             onClick={() => setColumnsExpanded(!columnsExpanded)}
-            className="flex items-center justify-between w-full text-sm font-medium text-neutral-700 mb-2"
+            className="flex items-center justify-between w-full text-sm font-medium text-[var(--color-text-secondary)] mb-2"
           >
             <span>
               Columns ({selectedColumns.size} of {availableColumns.length} selected)
             </span>
             {columnsExpanded ? (
-              <IconChevronUp className="h-4 w-4 text-neutral-400" />
+              <IconChevronUp className="h-4 w-4 text-[var(--color-text-muted)]" />
             ) : (
-              <IconChevronDown className="h-4 w-4 text-neutral-400" />
+              <IconChevronDown className="h-4 w-4 text-[var(--color-text-muted)]" />
             )}
           </button>
 
           {columnsExpanded && (
-            <div className="border border-neutral-200 rounded-lg p-3 space-y-2">
+            <div className="border border-[var(--color-border-default)] rounded-lg p-3 space-y-2">
               <div className="flex gap-2 mb-2">
                 <button
                   onClick={selectAllColumns}
@@ -324,7 +324,7 @@ export default function ExportModal({
                 >
                   Select All
                 </button>
-                <span className="text-neutral-300">|</span>
+                <span className="text-[var(--color-text-muted)]">|</span>
                 <button
                   onClick={selectNoColumns}
                   className="text-xs text-primary hover:underline"
@@ -336,13 +336,14 @@ export default function ExportModal({
                 {availableColumns.map((col) => (
                   <label
                     key={col.key}
-                    className="flex items-center gap-2 text-sm text-neutral-600 cursor-pointer hover:text-neutral-900"
+                    className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)] cursor-pointer hover:text-[var(--color-text-primary)]"
+
                   >
                     <input
                       type="checkbox"
                       checked={selectedColumns.has(col.key)}
                       onChange={() => toggleColumn(col.key)}
-                      className="rounded border-neutral-300 text-primary focus:ring-primary"
+                      className="rounded border-[var(--color-border-default)] text-primary focus:ring-primary"
                     />
                     {col.header}
                   </label>
@@ -354,14 +355,14 @@ export default function ExportModal({
       </div>
 
       {/* Footer */}
-      <div className="px-6 py-4 border-t border-neutral-200 flex items-center justify-between bg-neutral-50 rounded-b-2xl">
-        <p className="text-sm text-neutral-500" aria-live="polite">
+      <div className="px-6 py-4 border-t border-[var(--color-border-default)] flex items-center justify-between bg-[var(--color-surface-overlay)] rounded-b-2xl">
+        <p className="text-sm text-[var(--color-text-muted)]" aria-live="polite">
           {processedData.length} items, {activeColumnsArray.length} columns
         </p>
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-[var(--color-text-secondary)] bg-[var(--color-surface-raised)] border border-[var(--color-border-default)] rounded-lg hover:bg-[var(--color-surface-hover)] transition-colors"
           >
             Cancel
           </button>

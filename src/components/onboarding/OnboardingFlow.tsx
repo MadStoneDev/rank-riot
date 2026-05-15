@@ -94,17 +94,17 @@ export default function OnboardingFlow() {
             <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto">
               <IconChartBar className="w-8 h-8 text-primary" />
             </div>
-            <h2 className="text-xl font-bold text-neutral-900">
+            <h2 className="text-xl font-bold text-[var(--color-text-primary)]">
               Welcome to RankRiot!
             </h2>
-            <p className="text-neutral-500 text-sm max-w-sm mx-auto">
+            <p className="text-[var(--color-text-muted)] text-sm max-w-sm mx-auto">
               Your all-in-one SEO audit platform. Let&apos;s set up your first project
               by scanning a website.
             </p>
             <div className="flex gap-3 justify-center pt-2">
               <button
                 onClick={handleDismiss}
-                className="px-4 py-2.5 text-sm font-medium text-neutral-600 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-[var(--color-text-secondary)] border border-[var(--color-border-default)] rounded-lg hover:bg-[var(--color-surface-hover)] transition-colors"
               >
                 Skip for now
               </button>
@@ -121,10 +121,10 @@ export default function OnboardingFlow() {
 
         {step === "type" && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-neutral-900">
+            <h2 className="text-lg font-bold text-[var(--color-text-primary)]">
               What type of project?
             </h2>
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-[var(--color-text-muted)]">
               Choose how you&apos;d like to analyse this website.
             </p>
             <div className="grid grid-cols-2 gap-3">
@@ -134,12 +134,12 @@ export default function OnboardingFlow() {
                 className={`relative p-4 rounded-lg border-2 transition-all text-left ${
                   projectType === "seo"
                     ? "border-primary bg-primary/5"
-                    : "border-neutral-200 hover:border-neutral-300"
+                    : "border-[var(--color-border-default)] hover:border-[var(--color-border-strong)]"
                 }`}
               >
-                <IconChartBar className={`w-6 h-6 mb-2 ${projectType === "seo" ? "text-primary" : "text-neutral-400"}`} />
-                <h3 className="text-sm font-semibold text-neutral-900">SEO Project</h3>
-                <p className="text-xs text-neutral-500 mt-1">
+                <IconChartBar className={`w-6 h-6 mb-2 ${projectType === "seo" ? "text-primary" : "text-[var(--color-text-muted)]"}`} />
+                <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">SEO Project</h3>
+                <p className="text-xs text-[var(--color-text-muted)] mt-1">
                   Full crawl, page-by-page analysis, scheduled scans
                 </p>
               </button>
@@ -149,12 +149,12 @@ export default function OnboardingFlow() {
                 className={`relative p-4 rounded-lg border-2 transition-all text-left ${
                   projectType === "audit"
                     ? "border-primary bg-primary/5"
-                    : "border-neutral-200 hover:border-neutral-300"
+                    : "border-[var(--color-border-default)] hover:border-[var(--color-border-strong)]"
                 }`}
               >
-                <IconReportSearch className={`w-6 h-6 mb-2 ${projectType === "audit" ? "text-primary" : "text-neutral-400"}`} />
-                <h3 className="text-sm font-semibold text-neutral-900">Audit Project</h3>
-                <p className="text-xs text-neutral-500 mt-1">
+                <IconReportSearch className={`w-6 h-6 mb-2 ${projectType === "audit" ? "text-primary" : "text-[var(--color-text-muted)]"}`} />
+                <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">Audit Project</h3>
+                <p className="text-xs text-[var(--color-text-muted)] mt-1">
                   Quick analysis, scores &amp; recommendations
                 </p>
               </button>
@@ -162,7 +162,7 @@ export default function OnboardingFlow() {
             <div className="flex gap-3 justify-end pt-1">
               <button
                 onClick={() => setStep("welcome")}
-                className="px-4 py-2.5 text-sm font-medium text-neutral-600 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-[var(--color-text-secondary)] border border-[var(--color-border-default)] rounded-lg hover:bg-[var(--color-surface-hover)] transition-colors"
               >
                 Back
               </button>
@@ -178,14 +178,14 @@ export default function OnboardingFlow() {
 
         {step === "url" && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-neutral-900">
+            <h2 className="text-lg font-bold text-[var(--color-text-primary)]">
               Enter your website URL
             </h2>
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-[var(--color-text-muted)]">
               We&apos;ll create a project and get ready to scan it.
             </p>
             <div className="relative">
-              <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+              <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--color-text-muted)]" />
               <input
                 type="text"
                 value={url}
@@ -193,13 +193,13 @@ export default function OnboardingFlow() {
                 onKeyDown={(e) => e.key === "Enter" && handleScan()}
                 placeholder="example.com"
                 autoFocus
-                className="w-full pl-10 pr-4 py-3 text-sm border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 text-sm border border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setStep("type")}
-                className="px-4 py-2.5 text-sm font-medium text-neutral-600 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-[var(--color-text-secondary)] border border-[var(--color-border-default)] rounded-lg hover:bg-[var(--color-surface-hover)] transition-colors"
               >
                 Back
               </button>
@@ -217,10 +217,10 @@ export default function OnboardingFlow() {
         {step === "scanning" && (
           <div className="text-center space-y-4 py-4">
             <IconLoader2 className="w-10 h-10 text-primary animate-spin mx-auto" />
-            <h2 className="text-lg font-bold text-neutral-900">
+            <h2 className="text-lg font-bold text-[var(--color-text-primary)]">
               Creating your project...
             </h2>
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-[var(--color-text-muted)]">
               Setting things up. You&apos;ll be redirected shortly.
             </p>
           </div>

@@ -75,12 +75,12 @@ export default function PdfBrandingForm({ onBrandingChange }: PdfBrandingFormPro
   };
 
   return (
-    <div className="border border-neutral-200 rounded-lg p-4 space-y-3 bg-neutral-50/50">
-      <p className="text-sm font-medium text-neutral-700">PDF Branding</p>
+    <div className="border border-[var(--color-border-default)] rounded-lg p-4 space-y-3 bg-[var(--color-surface-overlay)]">
+      <p className="text-sm font-medium text-[var(--color-text-secondary)]">PDF Branding</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs text-neutral-500 mb-1">Business Name</label>
+          <label className="block text-xs text-[var(--color-text-muted)] mb-1">Business Name</label>
           <input
             type="text"
             value={businessName}
@@ -89,11 +89,11 @@ export default function PdfBrandingForm({ onBrandingChange }: PdfBrandingFormPro
               propagate(e.target.value, clientName, logoBase64, remember);
             }}
             placeholder="Your Company"
-            className="w-full px-3 py-2 text-sm border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-3 py-2 text-sm border border-[var(--color-border-default)] bg-[var(--color-surface-elevated)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
         <div>
-          <label className="block text-xs text-neutral-500 mb-1">Client Name</label>
+          <label className="block text-xs text-[var(--color-text-muted)] mb-1">Client Name</label>
           <input
             type="text"
             value={clientName}
@@ -102,15 +102,15 @@ export default function PdfBrandingForm({ onBrandingChange }: PdfBrandingFormPro
               propagate(businessName, e.target.value, logoBase64, remember);
             }}
             placeholder="Client Name"
-            className="w-full px-3 py-2 text-sm border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-3 py-2 text-sm border border-[var(--color-border-default)] bg-[var(--color-surface-elevated)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs text-neutral-500 mb-1">Logo</label>
+        <label className="block text-xs text-[var(--color-text-muted)] mb-1">Logo</label>
         <div className="flex items-center gap-3">
-          <label className="cursor-pointer inline-flex items-center px-3 py-1.5 text-xs font-medium border border-neutral-300 rounded-lg bg-white hover:bg-neutral-50 transition-colors">
+          <label className="cursor-pointer inline-flex items-center px-3 py-1.5 text-xs font-medium border border-[var(--color-border-default)] rounded-lg bg-[var(--color-surface-raised)] hover:bg-[var(--color-surface-hover)] transition-colors">
             {logoFilename || "Upload logo"}
             <input
               type="file"
@@ -126,7 +126,7 @@ export default function PdfBrandingForm({ onBrandingChange }: PdfBrandingFormPro
                 setLogoFilename("");
                 propagate(businessName, clientName, "", remember);
               }}
-              className="text-xs text-red-500 hover:text-red-700"
+              className="text-xs text-[var(--color-score-critical)] hover:text-[var(--color-score-critical)]/80"
             >
               Remove
             </button>
@@ -134,7 +134,7 @@ export default function PdfBrandingForm({ onBrandingChange }: PdfBrandingFormPro
         </div>
       </div>
 
-      <label className="flex items-center gap-2 text-sm text-neutral-600 cursor-pointer">
+      <label className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)] cursor-pointer">
         <input
           type="checkbox"
           checked={remember}
@@ -142,7 +142,7 @@ export default function PdfBrandingForm({ onBrandingChange }: PdfBrandingFormPro
             setRemember(e.target.checked);
             propagate(businessName, clientName, logoBase64, e.target.checked);
           }}
-          className="rounded border-neutral-300 text-primary focus:ring-primary"
+          className="rounded border-[var(--color-border-default)] text-primary focus:ring-primary"
         />
         Remember branding
       </label>

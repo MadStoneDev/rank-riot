@@ -96,19 +96,19 @@ export default function Modal({
     >
       <div
         ref={contentRef}
-        className={`bg-white rounded-2xl shadow-xl w-full ${maxWidth} max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200`}
+        className={`bg-[var(--color-surface-raised)] rounded-2xl shadow-xl w-full ${maxWidth} max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200`}
       >
         {/* Fixed header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-200 flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border-default)] flex-shrink-0">
           <div>
-            <h2 className="text-lg font-semibold text-neutral-900">{title}</h2>
+            <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">{title}</h2>
             {subtitle && (
-              <p className="text-sm text-neutral-500 mt-0.5">{subtitle}</p>
+              <p className="text-sm text-[var(--color-text-muted)] mt-0.5">{subtitle}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition-colors"
+            className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-overlay)] transition-colors"
             aria-label="Close"
           >
             <IconX className="h-5 w-5" />

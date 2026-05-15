@@ -7,7 +7,7 @@ interface SkeletonCardProps {
 
 export default function SkeletonCard({ lines = 3, className = "" }: SkeletonCardProps) {
   return (
-    <div className={`bg-white rounded-2xl border border-neutral-200 p-6 ${className}`}>
+    <div className={`bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] p-6 ${className}`}>
       <div className="flex justify-between items-start">
         <div className="space-y-3 flex-1">
           <Skeleton className="h-3 w-24" />

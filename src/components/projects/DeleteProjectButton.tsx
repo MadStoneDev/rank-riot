@@ -46,11 +46,11 @@ export default function DeleteProjectButton({
   if (showConfirm) {
     return (
       <div className="flex items-center">
-        <span className="mr-3 text-sm text-neutral-700">Are you sure?</span>
+        <span className="mr-3 text-sm text-[var(--color-text-secondary)]">Are you sure?</span>
         <button
           onClick={handleCancelDelete}
           disabled={isLoading}
-          className="mr-2 px-3 py-1 border border-neutral-300 text-sm font-medium rounded-md text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          className="mr-2 px-3 py-1 border border-[var(--color-border-default)] text-sm font-medium rounded-md text-[var(--color-text-secondary)] bg-[var(--color-surface-raised)] hover:bg-[var(--color-surface-hover)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Cancel
         </button>

@@ -70,14 +70,14 @@ export default function AuthForm() {
   return (
     <div className="w-full rounded-lg shadow-md overflow-hidden">
       <div className="p-6">
-        <h2 className="text-2xl font-bold text-center text-neutral-900 mb-6">
+        <h2 className="text-2xl font-bold text-center text-[var(--color-text-primary)] mb-6">
           {authState === "email"
             ? "Sign in to your account"
             : "Enter verification code"}
         </h2>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md text-sm">
+          <div className="mb-4 p-3 bg-[var(--color-score-critical-muted)] text-[var(--color-score-critical)] rounded-md text-sm">
             {error}
           </div>
         )}
@@ -88,7 +88,7 @@ export default function AuthForm() {
               <div className="mb-4">
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-neutral-700 mb-1"
+                  className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1"
                 >
                   Email address
                 </label>
@@ -98,7 +98,7 @@ export default function AuthForm() {
                   type="email"
                   autoComplete="email"
                   required
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2 border border-[var(--color-border-default)] rounded-md bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-primary"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}
@@ -107,7 +107,7 @@ export default function AuthForm() {
 
               <button
                 type="submit"
-                className={`cursor-pointer w-full bg-neutral-800 text-white py-2 px-4 rounded-md font-medium hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed`}
+                className={`cursor-pointer w-full bg-[var(--color-primary)] text-white py-2 px-4 rounded-md font-medium hover:bg-[var(--color-primary-hover)] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed`}
                 disabled={isLoading}
               >
                 {isLoading ? "Sending..." : "Continue with Email"}
@@ -117,10 +117,10 @@ export default function AuthForm() {
             <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-neutral-300" />
+                  <div className="w-full border-t border-[var(--color-border-default)]" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-neutral-500">
+                  <span className="px-2 bg-[var(--color-surface-raised)] text-[var(--color-text-muted)]">
                     Or continue with
                   </span>
                 </div>
@@ -129,7 +129,7 @@ export default function AuthForm() {
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
-                className="mt-4 w-full flex items-center justify-center py-2 px-4 border border-neutral-300 rounded-md shadow-sm bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="mt-4 w-full flex items-center justify-center py-2 px-4 border border-[var(--color-border-default)] rounded-md shadow-sm bg-[var(--color-surface-raised)] text-sm font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isLoading}
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -159,7 +159,7 @@ export default function AuthForm() {
             <input type="hidden" name="email" value={email} />
 
             <div className="mb-6">
-              <p className="text-center text-sm text-neutral-600 mb-4">
+              <p className="text-center text-sm text-[var(--color-text-secondary)] mb-4">
                 We've sent a verification code to <strong>{email}</strong>
               </p>
 
@@ -169,7 +169,7 @@ export default function AuthForm() {
             <button
               type="submit"
               disabled={isVerifying}
-              className="w-full bg-neutral-800 text-white py-2 px-4 rounded-md font-medium hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[var(--color-primary)] text-white py-2 px-4 rounded-md font-medium hover:bg-[var(--color-primary-hover)] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isVerifying ? "Verifying..." : "Verify and Sign In"}
             </button>

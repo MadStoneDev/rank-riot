@@ -41,18 +41,18 @@ export default class ErrorBoundary extends Component<
       }
 
       return (
-        <div className="flex flex-col items-center justify-center p-8 rounded-2xl border border-red-200 bg-red-50 text-center">
-          <IconAlertTriangle className="h-10 w-10 text-red-500 mb-3" />
-          <h3 className="text-lg font-semibold text-neutral-900 mb-1">
+        <div className="flex flex-col items-center justify-center p-8 rounded-2xl border border-[var(--color-score-critical)]/20 bg-[var(--color-score-critical-muted)] text-center">
+          <IconAlertTriangle className="h-10 w-10 text-[var(--color-score-critical)] mb-3" />
+          <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-1">
             Something went wrong
           </h3>
-          <p className="text-sm text-neutral-500 mb-4 max-w-md">
+          <p className="text-sm text-[var(--color-text-muted)] mb-4 max-w-md">
             An unexpected error occurred in this section. You can try refreshing
             or continue using the rest of the app.
           </p>
           <button
             onClick={this.handleReset}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 hover:bg-neutral-800 text-white text-sm font-medium rounded-lg transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-sm font-medium rounded-lg transition-colors"
           >
             <IconRefresh className="h-4 w-4" />
             Try Again

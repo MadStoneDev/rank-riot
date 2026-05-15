@@ -79,14 +79,14 @@ export default function NewProjectForm({
   return (
     <form ref={formRef} onSubmit={handleSubmit}>
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md">
+        <div className="mb-6 p-4 bg-[var(--color-score-critical-muted)] border-l-4 border-[var(--color-score-critical)] text-[var(--color-score-critical)] rounded-md">
           <p className="text-sm font-medium">{error}</p>
         </div>
       )}
 
       {/* Project Type Selection */}
       <div className="mb-8">
-        <label className="block text-sm font-medium text-neutral-700 mb-3">
+        <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-3">
           Project Type *
         </label>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -96,8 +96,8 @@ export default function NewProjectForm({
             onClick={() => setProjectType("seo")}
             className={`relative p-5 rounded-lg border-2 transition-all text-left ${
               projectType === "seo"
-                ? "border-secondary bg-blue-50"
-                : "border-neutral-200 bg-white hover:border-neutral-300"
+                ? "border-secondary bg-[var(--color-primary-muted)]"
+                : "border-[var(--color-border-default)] bg-[var(--color-surface-raised)] hover:border-[var(--color-border-strong)]"
             }`}
           >
             {projectType === "seo" && (
@@ -115,13 +115,13 @@ export default function NewProjectForm({
                 </svg>
               </div>
             )}
-            <h3 className="text-lg font-semibold text-neutral-900 mb-2">
+            <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2">
               SEO Project
             </h3>
-            <p className="text-sm text-neutral-600 mb-3">
+            <p className="text-sm text-[var(--color-text-secondary)] mb-3">
               Comprehensive website crawl with detailed page analysis
             </p>
-            <ul className="text-xs text-neutral-500 space-y-1">
+            <ul className="text-xs text-[var(--color-text-muted)] space-y-1">
               <li>• Full website crawl (100+ pages)</li>
               <li>• Page-by-page SEO analysis</li>
               <li>• Broken link detection</li>
@@ -136,8 +136,8 @@ export default function NewProjectForm({
             onClick={() => setProjectType("audit")}
             className={`relative p-5 rounded-lg border-2 transition-all text-left ${
               projectType === "audit"
-                ? "border-secondary bg-blue-50"
-                : "border-neutral-200 bg-white hover:border-neutral-300"
+                ? "border-secondary bg-[var(--color-primary-muted)]"
+                : "border-[var(--color-border-default)] bg-[var(--color-surface-raised)] hover:border-[var(--color-border-strong)]"
             }`}
           >
             {projectType === "audit" && (
@@ -155,13 +155,13 @@ export default function NewProjectForm({
                 </svg>
               </div>
             )}
-            <h3 className="text-lg font-semibold text-neutral-900 mb-2">
+            <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2">
               Audit Project
             </h3>
-            <p className="text-sm text-neutral-600 mb-3">
+            <p className="text-sm text-[var(--color-text-secondary)] mb-3">
               Quick website analysis with actionable recommendations
             </p>
-            <ul className="text-xs text-neutral-500 space-y-1">
+            <ul className="text-xs text-[var(--color-text-muted)] space-y-1">
               <li>• Fast shallow crawl (~50 pages)</li>
               <li>• Overall quality scores</li>
               <li>• Technology stack detection</li>
@@ -173,9 +173,9 @@ export default function NewProjectForm({
 
         {/* Info box about selected type */}
         {projectType === "audit" && (
-          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md flex items-start">
-            <IconInfoCircle className="w-5 h-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-blue-800">
+          <div className="mt-4 p-3 bg-[var(--color-primary-muted)] border border-[var(--color-primary)]/20 rounded-md flex items-start">
+            <IconInfoCircle className="w-5 h-5 text-[var(--color-primary)] mr-2 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-[var(--color-primary)]">
               Audit projects are designed for quick website assessments. They
               provide overall scores and recommendations without detailed
               page-by-page analysis. Perfect for client pitches or initial
@@ -189,7 +189,7 @@ export default function NewProjectForm({
         <div className="sm:col-span-4">
           <label
             htmlFor="name"
-            className="block text-sm font-medium text-neutral-700"
+            className="block text-sm font-medium text-[var(--color-text-secondary)]"
           >
             Project Name *
           </label>
@@ -204,11 +204,11 @@ export default function NewProjectForm({
                   ? "My Website SEO"
                   : "Client Audit - Example.com"
               }
-              className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-neutral-300 rounded-md`}
+              className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] rounded-md`}
               disabled={isLoading}
             />
           </div>
-          <p className="mt-1 text-xs text-neutral-500">
+          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
             Choose a descriptive name to identify this project.
           </p>
         </div>
@@ -216,7 +216,7 @@ export default function NewProjectForm({
         <div className="sm:col-span-6">
           <label
             htmlFor="url"
-            className="block text-sm font-medium text-neutral-700"
+            className="block text-sm font-medium text-[var(--color-text-secondary)]"
           >
             Website URL *
           </label>
@@ -227,11 +227,11 @@ export default function NewProjectForm({
               type="text"
               placeholder="https://example.com"
               required
-              className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-neutral-300 rounded-md`}
+              className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] rounded-md`}
               disabled={isLoading}
             />
           </div>
-          <p className="mt-1 text-xs text-neutral-500">
+          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
             Enter the full URL of the website you want to{" "}
             {projectType === "seo" ? "crawl" : "audit"}. If you don't include
             http:// or https://, we'll add https:// automatically.
@@ -241,7 +241,7 @@ export default function NewProjectForm({
         <div className="sm:col-span-6">
           <label
             htmlFor="description"
-            className="block text-sm font-medium text-neutral-700"
+            className="block text-sm font-medium text-[var(--color-text-secondary)]"
           >
             Project Description (optional)
           </label>
@@ -251,7 +251,7 @@ export default function NewProjectForm({
               name="description"
               rows={3}
               placeholder="Brief description of your project..."
-              className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-neutral-300 rounded-md`}
+              className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] rounded-md`}
               disabled={isLoading}
             />
           </div>
@@ -262,7 +262,7 @@ export default function NewProjectForm({
           <div className="sm:col-span-3">
             <label
               htmlFor="scan_frequency"
-              className="block text-sm font-medium text-neutral-700"
+              className="block text-sm font-medium text-[var(--color-text-secondary)]"
             >
               Scan Frequency
             </label>
@@ -270,7 +270,7 @@ export default function NewProjectForm({
               <select
                 id="scan_frequency"
                 name="scan_frequency"
-                className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-neutral-300 rounded-md`}
+                className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] rounded-md`}
                 disabled={isLoading}
                 defaultValue="weekly"
               >
@@ -280,17 +280,17 @@ export default function NewProjectForm({
                 <option value="monthly">Monthly</option>
               </select>
             </div>
-            <p className="mt-1 text-xs text-neutral-500">
+            <p className="mt-1 text-xs text-[var(--color-text-muted)]">
               How often to scan automatically, or choose manual to scan on demand only.
             </p>
           </div>
         )}
       </div>
 
-      <div className="mt-8 pt-5 border-t border-neutral-200 flex justify-end space-x-3">
+      <div className="mt-8 pt-5 border-t border-[var(--color-border-default)] flex justify-end space-x-3">
         <Link
           href={"/projects"}
-          className="px-4 py-2 border border-neutral-300 rounded-md shadow-sm text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+          className="px-4 py-2 border border-[var(--color-border-default)] rounded-md shadow-sm text-sm font-medium text-[var(--color-text-secondary)] bg-[var(--color-surface-raised)] hover:bg-[var(--color-surface-hover)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
         >
           Cancel
         </Link>

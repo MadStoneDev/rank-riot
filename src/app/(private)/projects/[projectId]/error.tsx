@@ -17,8 +17,8 @@ export default function ProjectError({
 
   return (
     <div className="flex flex-col items-center justify-center p-12 text-center">
-      <div className="p-4 bg-red-500/10 rounded-full mb-4">
-        <IconAlertTriangle className="h-8 w-8 text-red-500" />
+      <div className="p-4 bg-[var(--color-score-critical)]/10 rounded-full mb-4">
+        <IconAlertTriangle className="h-8 w-8 text-[var(--color-score-critical)]" />
       </div>
       <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-2">
         Failed to load project

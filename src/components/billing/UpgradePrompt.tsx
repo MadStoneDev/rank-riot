@@ -41,10 +41,10 @@ export default function UpgradePrompt({
 
   if (variant === "inline") {
     return (
-      <div className="flex items-center justify-between p-3 bg-orange-50 border border-orange-200 rounded-lg">
+      <div className="flex items-center justify-between p-3 bg-[var(--color-score-warning)]/10 border border-[var(--color-score-warning)]/30 rounded-lg">
         <div className="flex items-center gap-2">
-          <IconAlertCircle className="h-5 w-5 text-orange-500 flex-shrink-0" />
-          <p className="text-sm text-orange-800">
+          <IconAlertCircle className="h-5 w-5 text-[var(--color-score-warning)] flex-shrink-0" />
+          <p className="text-sm text-[var(--color-score-warning)]">
             {message}.{" "}
             <Link
               href="/dashboard/billing"
@@ -65,7 +65,7 @@ export default function UpgradePrompt({
         {onDismiss && (
           <button
             onClick={onDismiss}
-            className="absolute top-2 right-2 p-1 hover:bg-white/20 rounded"
+            className="absolute top-2 right-2 p-1 hover:bg-[var(--color-surface-raised)]/20 rounded"
           >
             <IconX className="h-4 w-4" />
           </button>
@@ -84,7 +84,7 @@ export default function UpgradePrompt({
           </div>
           <Link
             href="/dashboard/billing"
-            className="inline-flex items-center gap-2 bg-white text-primary px-4 py-2 rounded-lg font-medium hover:bg-white/90 transition-colors whitespace-nowrap"
+            className="inline-flex items-center gap-2 bg-[var(--color-surface-raised)] text-[var(--color-primary)] px-4 py-2 rounded-lg font-medium hover:bg-[var(--color-surface-overlay)] transition-colors whitespace-nowrap"
           >
             Upgrade Now
             <IconArrowRight className="h-4 w-4" />
@@ -97,11 +97,11 @@ export default function UpgradePrompt({
   // Modal variant - just the content, wrap in your own modal
   return (
     <div className="text-center p-6">
-      <div className="mx-auto w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4">
-        <IconAlertCircle className="h-6 w-6 text-orange-500" />
+      <div className="mx-auto w-12 h-12 bg-[var(--color-score-warning)]/20 rounded-full flex items-center justify-center mb-4">
+        <IconAlertCircle className="h-6 w-6 text-[var(--color-score-warning)]" />
       </div>
-      <h3 className="text-lg font-semibold text-neutral-900 mb-2">{message}</h3>
-      <p className="text-neutral-600 mb-6">
+      <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2">{message}</h3>
+      <p className="text-[var(--color-text-secondary)] mb-6">
         {limitValue && currentValue && (
           <>
             You're using {currentValue} of {limitValue} available.{" "}
@@ -119,7 +119,7 @@ export default function UpgradePrompt({
         {onDismiss && (
           <button
             onClick={onDismiss}
-            className="block w-full text-neutral-600 hover:text-neutral-800"
+            className="block w-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
           >
             Maybe later
           </button>

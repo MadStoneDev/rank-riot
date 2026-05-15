@@ -135,53 +135,53 @@ export default function SiteMapView({ pages, links, totalPageCount }: SiteMapVie
           nodeStrokeWidth={3}
           zoomable
           pannable
-          style={{ background: "#f9fafb" }}
+          style={{ background: "#12121a" }}
         />
         <Background variant={BackgroundVariant.Dots} gap={16} size={1} />
       </ReactFlow>
 
       {/* Legend */}
-      <div className="absolute top-3 left-3 bg-white/95 rounded-lg shadow-md border border-neutral-200 p-3 text-xs space-y-1.5 z-10">
-        <div className="font-semibold text-neutral-700 mb-1">Depth Legend</div>
+      <div className="absolute top-3 left-3 bg-[var(--color-surface-raised)]/95 rounded-lg shadow-md border border-[var(--color-border-default)] p-3 text-xs space-y-1.5 z-10">
+        <div className="font-semibold text-[var(--color-text-secondary)] mb-1">Depth Legend</div>
         {DEPTH_LEGEND.map((item) => (
           <div key={item.label} className="flex items-center gap-2">
             <span
               className="inline-block w-3 h-3 rounded-sm"
               style={{ background: item.color }}
             />
-            <span className="text-neutral-600">{item.label}</span>
+            <span className="text-[var(--color-text-secondary)]">{item.label}</span>
           </div>
         ))}
       </div>
 
       {/* Page limit notice */}
       {showLimitNotice && (
-        <div className="absolute top-3 right-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-xs z-10">
+        <div className="absolute top-3 right-3 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded-lg px-3 py-2 text-xs z-10">
           Showing {pages.length} of {totalPageCount} pages
         </div>
       )}
 
       {/* Sidebar panel */}
       {selectedPage && (
-        <div className="absolute top-3 right-3 w-72 bg-white rounded-lg shadow-lg border border-neutral-200 z-10" style={{ top: showLimitNotice ? 52 : 12 }}>
-          <div className="p-4 border-b border-neutral-100 flex items-center justify-between">
-            <h4 className="text-sm font-semibold text-neutral-800">Page Details</h4>
+        <div className="absolute top-3 right-3 w-72 bg-[var(--color-surface-raised)] rounded-lg shadow-lg border border-[var(--color-border-default)] z-10" style={{ top: showLimitNotice ? 52 : 12 }}>
+          <div className="p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between">
+            <h4 className="text-sm font-semibold text-[var(--color-text-primary)]">Page Details</h4>
             <button
               onClick={() => setSelectedPage(null)}
-              className="text-neutral-400 hover:text-neutral-600 text-lg leading-none"
+              className="text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] text-lg leading-none"
             >
               &times;
             </button>
           </div>
           <div className="p-4 space-y-3 text-sm">
             <div>
-              <span className="text-neutral-500 text-xs block">Title</span>
-              <span className="text-neutral-900 font-medium">
+              <span className="text-[var(--color-text-muted)] text-xs block">Title</span>
+              <span className="text-[var(--color-text-primary)] font-medium">
                 {selectedPage.title || "(untitled)"}
               </span>
             </div>
             <div>
-              <span className="text-neutral-500 text-xs block">URL</span>
+              <span className="text-[var(--color-text-muted)] text-xs block">URL</span>
               <a
                 href={safeHref(selectedPage.url)}
                 target="_blank"
@@ -192,21 +192,21 @@ export default function SiteMapView({ pages, links, totalPageCount }: SiteMapVie
               </a>
             </div>
             <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="bg-neutral-50 rounded-lg p-2">
-                <div className="text-lg font-bold text-neutral-900">{selectedPage.depth}</div>
-                <div className="text-[10px] text-neutral-500">Depth</div>
+              <div className="bg-[var(--color-surface-overlay)] rounded-lg p-2">
+                <div className="text-lg font-bold text-[var(--color-text-primary)]">{selectedPage.depth}</div>
+                <div className="text-[10px] text-[var(--color-text-muted)]">Depth</div>
               </div>
-              <div className="bg-neutral-50 rounded-lg p-2">
-                <div className="text-lg font-bold text-green-600">{selectedPage.inboundCount}</div>
-                <div className="text-[10px] text-neutral-500">Inbound</div>
+              <div className="bg-[var(--color-surface-overlay)] rounded-lg p-2">
+                <div className="text-lg font-bold text-green-400">{selectedPage.inboundCount}</div>
+                <div className="text-[10px] text-[var(--color-text-muted)]">Inbound</div>
               </div>
-              <div className="bg-neutral-50 rounded-lg p-2">
-                <div className="text-lg font-bold text-blue-600">{selectedPage.outboundCount}</div>
-                <div className="text-[10px] text-neutral-500">Outbound</div>
+              <div className="bg-[var(--color-surface-overlay)] rounded-lg p-2">
+                <div className="text-lg font-bold text-[var(--color-primary)]">{selectedPage.outboundCount}</div>
+                <div className="text-[10px] text-[var(--color-text-muted)]">Outbound</div>
               </div>
             </div>
             {selectedPage.isOrphan && (
-              <div className="bg-red-50 text-red-700 text-xs rounded-lg px-3 py-2">
+              <div className="bg-[var(--color-score-critical-muted)] text-[var(--color-score-critical)] text-xs rounded-lg px-3 py-2">
                 This page has no inbound internal links (orphan).
               </div>
             )}

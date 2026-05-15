@@ -38,7 +38,7 @@ export default function ExportTriggerButton({
   const variantClasses =
     variant === "primary"
       ? "border border-transparent shadow-sm text-white bg-primary hover:bg-primary/90"
-      : "border border-neutral-300 shadow-sm text-neutral-700 bg-white hover:bg-neutral-50";
+      : "border border-[var(--color-border-default)] shadow-sm text-[var(--color-text-secondary)] bg-[var(--color-surface-raised)] hover:bg-[var(--color-surface-hover)]";
 
   return (
     <>

@@ -45,13 +45,13 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
   return (
     <form ref={formRef} onSubmit={handleSubmit}>
       {error && (
-        <div className="mb-6 p-4 bg-red-500/10 border-l-4 border-red-500 text-red-700 rounded-md">
+        <div className="mb-6 p-4 bg-[var(--color-score-critical-muted)] border-l-4 border-[var(--color-score-critical)] text-[var(--color-score-critical)] rounded-md">
           <p className="text-sm font-medium">{error}</p>
         </div>
       )}
 
       {success && (
-        <div className="mb-6 p-4 bg-green-500/10 border-l-4 border-green-500 text-green-700 rounded-md">
+        <div className="mb-6 p-4 bg-[var(--color-score-good)]/10 border-l-4 border-[var(--color-score-good)] text-[var(--color-score-good)] rounded-md">
           <p className="text-sm font-medium">{success}</p>
         </div>
       )}
@@ -71,7 +71,7 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
               type="email"
               defaultValue={profile.email || ""}
               disabled
-              className={`p-2 shadow-sm bg-[var(--color-surface-elevated)] block w-full sm:text-sm border-[var(--color-border-default)] rounded-md`}
+              className={`p-2 shadow-sm bg-[var(--color-surface-elevated)] text-[var(--color-text-muted)] block w-full sm:text-sm border-[var(--color-border-default)] rounded-md`}
             />
           </div>
           <p className="mt-1 text-xs text-[var(--color-text-muted)]">
@@ -93,7 +93,7 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
               name="full_name"
               type="text"
               defaultValue={profile.full_name || ""}
-              className={`p-2 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] rounded-md`}
+              className={`p-2 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] rounded-md`}
               disabled={isLoading}
             />
           </div>

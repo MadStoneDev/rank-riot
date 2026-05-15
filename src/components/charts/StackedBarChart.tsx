@@ -42,10 +42,10 @@ export default function StackedBarChart({
   if (!data || data.length === 0) {
     return (
       <div
-        className="flex items-center justify-center bg-neutral-50 rounded-lg"
+        className="flex items-center justify-center bg-[var(--color-surface-overlay)] rounded-lg"
         style={{ height }}
       >
-        <p className="text-neutral-500 text-sm">No data available</p>
+        <p className="text-[var(--color-text-muted)] text-sm">No data available</p>
       </div>
     );
   }
@@ -63,24 +63,24 @@ export default function StackedBarChart({
         margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
       >
         {showGrid && (
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-subtle)" vertical={false} />
         )}
         <XAxis
           dataKey="name"
-          tick={{ fontSize: 12, fill: "#737373" }}
-          tickLine={{ stroke: "#e5e5e5" }}
-          axisLine={{ stroke: "#e5e5e5" }}
+          tick={{ fontSize: 12, fill: "var(--color-text-muted)" }}
+          tickLine={{ stroke: "var(--color-border-subtle)" }}
+          axisLine={{ stroke: "var(--color-border-subtle)" }}
         />
         <YAxis
-          tick={{ fontSize: 12, fill: "#737373" }}
-          tickLine={{ stroke: "#e5e5e5" }}
-          axisLine={{ stroke: "#e5e5e5" }}
+          tick={{ fontSize: 12, fill: "var(--color-text-muted)" }}
+          tickLine={{ stroke: "var(--color-border-subtle)" }}
+          axisLine={{ stroke: "var(--color-border-subtle)" }}
           allowDecimals={false}
         />
         <Tooltip
           contentStyle={{
-            backgroundColor: "#fff",
-            border: "1px solid #e5e5e5",
+            backgroundColor: "var(--color-surface-overlay)",
+            border: "1px solid var(--color-border-default)",
             borderRadius: "8px",
             fontSize: "12px",
           }}

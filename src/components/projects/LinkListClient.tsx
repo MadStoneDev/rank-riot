@@ -38,7 +38,7 @@ export default function LinkListClient({
       </div>
       <div className={`ml-3 flex-1`}>
         <div
-          className={`flex gap-1 w-full text-sm font-medium text-neutral-900`}
+          className={`flex gap-1 w-full text-sm font-medium text-[var(--color-text-primary)]`}
         >
           <h4>Source:</h4>
           {linkDirection === "inbound link" && (
@@ -79,18 +79,18 @@ export default function LinkListClient({
         </div>
 
         {link.anchor_text && link.anchor_text.length > 0 ? (
-          <p className={`mt-1 text-sm text-neutral-500`}>
+          <p className={`mt-1 text-sm text-[var(--color-text-muted)]`}>
             <span className={`font-bold`}>Anchor Text:</span>{" "}
             {decode(link.anchor_text)}
           </p>
         ) : (
-          <p className={`mt-1 text-sm text-red-600`}>No anchor text found</p>
+          <p className={`mt-1 text-sm text-[var(--color-score-critical)]`}>No anchor text found</p>
         )}
 
         <Link
           href={safeHref(link.destination_url)}
           target={`_blank`}
-          className={`mt-2 pt-1 flex items-center w-fit border-t border-neutral-300 text-sm text-primary hover:text-primary/70 transition-all duration-300 ease-in-out`}
+          className={`mt-2 pt-1 flex items-center w-fit border-t border-[var(--color-border-default)] text-sm text-primary hover:text-primary/70 transition-all duration-300 ease-in-out`}
         >
           Go to External Link
           <IconExternalLink size={20} className={`ml-1`} />

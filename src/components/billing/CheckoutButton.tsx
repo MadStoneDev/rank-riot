@@ -75,7 +75,7 @@ export default function CheckoutButton({
     primary: "bg-secondary text-white hover:bg-secondary/90",
     secondary: "bg-primary text-white hover:bg-primary/90",
     outline:
-      "border border-neutral-300 text-neutral-700 hover:bg-neutral-50",
+      "border border-[var(--color-border-default)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]",
   };
 
   return (

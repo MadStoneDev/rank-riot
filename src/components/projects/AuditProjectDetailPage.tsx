@@ -97,18 +97,18 @@ export default async function AuditProjectDetailPage({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-neutral-900">{project.name}</h1>
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+            <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">{project.name}</h1>
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[var(--color-primary-muted)] text-[var(--color-primary)]">
               <IconChartBar className="w-4 h-4 mr-1" />
               Audit
             </span>
           </div>
-          <p className="text-neutral-500 mt-1">
+          <p className="text-[var(--color-text-muted)] mt-1">
             <a
               href={project.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:underline hover:text-neutral-700"
+              className="hover:underline hover:text-[var(--color-text-secondary)]"
             >
               {project.url}
             </a>
@@ -120,7 +120,7 @@ export default async function AuditProjectDetailPage({
 
           <Link
             href={`/projects/${projectId}/settings`}
-            className="inline-flex items-center gap-2 px-4 py-2.5 border border-neutral-200 text-sm font-medium rounded-lg text-neutral-700 bg-white hover:bg-neutral-50 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 border border-[var(--color-border-default)] text-sm font-medium rounded-lg text-[var(--color-text-secondary)] bg-[var(--color-surface-raised)] hover:bg-[var(--color-surface-hover)] transition-colors"
           >
             <IconSettings className="h-4 w-4" />
             Settings
@@ -130,12 +130,12 @@ export default async function AuditProjectDetailPage({
 
       {/* Scan Status Banner */}
       {latestScan && latestScan.status === "in_progress" && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4">
+        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-4">
           <div className="flex items-center gap-3">
-            <IconRefresh className="h-5 w-5 text-yellow-600 animate-spin flex-shrink-0" />
+            <IconRefresh className="h-5 w-5 text-yellow-400 animate-spin flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-yellow-800">Audit scan in progress...</p>
-              <p className="text-sm text-yellow-700 mt-0.5">
+              <p className="text-sm font-medium text-yellow-400">Audit scan in progress...</p>
+              <p className="text-sm text-yellow-400/80 mt-0.5">
                 Analyzing your website. This usually takes 1-2 minutes.
               </p>
             </div>
@@ -144,12 +144,12 @@ export default async function AuditProjectDetailPage({
       )}
 
       {latestScan && latestScan.status === "failed" && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-4">
+        <div className="bg-[var(--color-score-critical-muted)] border border-[var(--color-score-critical)]/20 rounded-2xl p-4">
           <div className="flex items-center gap-3">
-            <IconAlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
+            <IconAlertCircle className="h-5 w-5 text-[var(--color-score-critical)] flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-red-800">Audit scan failed</p>
-              <p className="text-sm text-red-700 mt-0.5">
+              <p className="text-sm font-medium text-[var(--color-score-critical)]">Audit scan failed</p>
+              <p className="text-sm text-[var(--color-score-critical)]/80 mt-0.5">
                 There was an error scanning your website. Please try again.
               </p>
             </div>
@@ -165,15 +165,15 @@ export default async function AuditProjectDetailPage({
 
           {/* Scan History */}
           {scanHistory && scanHistory.length > 1 && (
-            <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-              <div className="px-6 py-4 border-b border-neutral-100">
-                <h3 className="text-lg font-semibold text-neutral-900">
+            <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
+              <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
+                <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">
                   Audit History
                 </h3>
               </div>
-              <div className="divide-y divide-neutral-100">
+              <div className="divide-y divide-[var(--color-border-subtle)]">
                 {scanHistory.map((scan) => (
-                  <div key={scan.id} className="px-6 py-4 hover:bg-neutral-50 transition-colors">
+                  <div key={scan.id} className="px-6 py-4 hover:bg-[var(--color-surface-hover)] transition-colors">
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="flex items-center gap-2">
@@ -186,17 +186,17 @@ export default async function AuditProjectDetailPage({
                                   : "bg-red-500"
                             }`}
                           />
-                          <span className="text-sm font-medium text-neutral-900 capitalize">
+                          <span className="text-sm font-medium text-[var(--color-text-primary)] capitalize">
                             {scan.status}
                           </span>
                         </div>
-                        <p className="mt-1 text-sm text-neutral-500">
+                        <p className="mt-1 text-sm text-[var(--color-text-muted)]">
                           {scan.started_at &&
                             new Date(scan.started_at).toLocaleString()}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm text-neutral-600">
+                        <p className="text-sm text-[var(--color-text-secondary)]">
                           {scan.pages_scanned || 0} pages scanned
                         </p>
                       </div>
@@ -209,23 +209,23 @@ export default async function AuditProjectDetailPage({
         </>
       ) : (
         // No results yet
-        <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+        <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
           <div className="py-12 px-6 text-center">
-            <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
-              <IconChartBar className="w-10 h-10 text-neutral-400" />
+            <div className="p-4 bg-[var(--color-surface-overlay)] rounded-full w-fit mx-auto mb-4">
+              <IconChartBar className="w-10 h-10 text-[var(--color-text-muted)]" />
             </div>
-            <h2 className="text-xl font-semibold text-neutral-900 mb-2">No Audit Results Yet</h2>
-            <p className="text-neutral-600 mb-6 max-w-md mx-auto">
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-2">No Audit Results Yet</h2>
+            <p className="text-[var(--color-text-secondary)] mb-6 max-w-md mx-auto">
               Run your first audit scan to get comprehensive insights about your
               website's technology, performance, and quality.
             </p>
             <StartAuditButton projectId={projectId} />
 
-            <div className="mt-8 max-w-2xl mx-auto text-left bg-neutral-50 rounded-xl p-6">
-              <h3 className="text-sm font-medium text-neutral-900 mb-3">
+            <div className="mt-8 max-w-2xl mx-auto text-left bg-[var(--color-surface-overlay)] rounded-xl p-6">
+              <h3 className="text-sm font-medium text-[var(--color-text-primary)] mb-3">
                 What you'll get:
               </h3>
-              <ul className="space-y-3 text-sm text-neutral-600">
+              <ul className="space-y-3 text-sm text-[var(--color-text-secondary)]">
                 <li className="flex items-start gap-2">
                   <IconCircleDashedCheck className="w-5 h-5 text-green-500 flex-shrink-0" />
                   <span>

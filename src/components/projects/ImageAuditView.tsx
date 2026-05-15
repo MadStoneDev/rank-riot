@@ -49,13 +49,13 @@ export default function ImageAuditView({ images, projectId, projectName }: Image
         <div>
           <Link
             href={`/projects/${projectId}`}
-            className="inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700 mb-2"
+            className="inline-flex items-center gap-1 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] mb-2"
           >
             <IconArrowLeft className="w-4 h-4" />
             Back to {projectName}
           </Link>
-          <h1 className="text-2xl font-bold text-neutral-900">Image Audit</h1>
-          <p className="text-neutral-500 mt-1">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Image Audit</h1>
+          <p className="text-[var(--color-text-muted)] mt-1">
             {images.length} images found &middot; {missingCount} missing alt text
           </p>
         </div>
@@ -82,7 +82,7 @@ export default function ImageAuditView({ images, projectId, projectName }: Image
             className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
               filter === key
                 ? "border-primary bg-primary/10 text-primary font-medium"
-                : "border-neutral-200 text-neutral-600 hover:border-neutral-300"
+                : "border-[var(--color-border-default)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)]"
             }`}
           >
             {label}
@@ -91,22 +91,22 @@ export default function ImageAuditView({ images, projectId, projectName }: Image
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+      <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-neutral-200 bg-neutral-50">
-                <th className="text-left px-4 py-3 font-medium text-neutral-600">Preview</th>
-                <th className="text-left px-4 py-3 font-medium text-neutral-600">Source</th>
-                <th className="text-left px-4 py-3 font-medium text-neutral-600">Alt Text</th>
-                <th className="text-left px-4 py-3 font-medium text-neutral-600">Page</th>
+              <tr className="border-b border-[var(--color-border-default)] bg-[var(--color-surface-overlay)]">
+                <th className="text-left px-4 py-3 font-medium text-[var(--color-text-secondary)]">Preview</th>
+                <th className="text-left px-4 py-3 font-medium text-[var(--color-text-secondary)]">Source</th>
+                <th className="text-left px-4 py-3 font-medium text-[var(--color-text-secondary)]">Alt Text</th>
+                <th className="text-left px-4 py-3 font-medium text-[var(--color-text-secondary)]">Page</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-100">
+            <tbody className="divide-y divide-[var(--color-border-subtle)]">
               {paginated.map((img, idx) => (
-                <tr key={`${img.imageSrc}-${idx}`} className="hover:bg-neutral-50">
+                <tr key={`${img.imageSrc}-${idx}`} className="hover:bg-[var(--color-surface-hover)]">
                   <td className="px-4 py-3">
-                    <div className="w-12 h-12 rounded bg-neutral-100 flex items-center justify-center overflow-hidden">
+                    <div className="w-12 h-12 rounded bg-[var(--color-surface-overlay)] flex items-center justify-center overflow-hidden">
                       {img.imageSrc ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -118,26 +118,26 @@ export default function ImageAuditView({ images, projectId, projectName }: Image
                           }}
                         />
                       ) : (
-                        <IconPhoto className="w-5 h-5 text-neutral-400" />
+                        <IconPhoto className="w-5 h-5 text-[var(--color-text-muted)]" />
                       )}
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <p className="text-xs text-neutral-600 truncate max-w-xs" title={img.imageSrc}>
+                    <p className="text-xs text-[var(--color-text-secondary)] truncate max-w-xs" title={img.imageSrc}>
                       {img.imageSrc}
                     </p>
                   </td>
                   <td className="px-4 py-3">
                     {img.hasAlt ? (
-                      <span className="text-sm text-neutral-700">{img.alt}</span>
+                      <span className="text-sm text-[var(--color-text-secondary)]">{img.alt}</span>
                     ) : (
-                      <span className="text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded">
+                      <span className="text-xs font-medium text-[var(--color-score-critical)] bg-[var(--color-score-critical-muted)] px-2 py-0.5 rounded">
                         Missing
                       </span>
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    <p className="text-xs text-neutral-500 truncate max-w-xs" title={img.pageUrl}>
+                    <p className="text-xs text-[var(--color-text-muted)] truncate max-w-xs" title={img.pageUrl}>
                       {img.pageUrl}
                     </p>
                   </td>
@@ -145,7 +145,7 @@ export default function ImageAuditView({ images, projectId, projectName }: Image
               ))}
               {paginated.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-4 py-12 text-center text-neutral-500">
+                  <td colSpan={4} className="px-4 py-12 text-center text-[var(--color-text-muted)]">
                     No images match the current filter.
                   </td>
                 </tr>

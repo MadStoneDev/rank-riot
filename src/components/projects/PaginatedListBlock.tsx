@@ -43,12 +43,12 @@ const PaginatedList = ({
   const hasMore = !showAll && displayCount < items.length;
 
   return (
-    <div className={`bg-white rounded-lg shadow overflow-hidden`}>
-      <div className="px-6 py-4 border-b border-neutral-200">
-        <h3 className="text-lg font-medium text-neutral-900">{title}</h3>
+    <div className={`bg-[var(--color-surface-raised)] rounded-lg shadow overflow-hidden`}>
+      <div className="px-6 py-4 border-b border-[var(--color-border-default)]">
+        <h3 className="text-lg font-medium text-[var(--color-text-primary)]">{title}</h3>
         <p
           className={`mt-1 text-sm ${
-            criticalClass ? `px-2 py-1 ${criticalClass}` : "text-neutral-500"
+            criticalClass ? `px-2 py-1 ${criticalClass}` : "text-[var(--color-text-muted)]"
           } transition-all duration-300 ease-in-out`}
         >
           {description
@@ -62,13 +62,13 @@ const PaginatedList = ({
       </div>
 
       {items && items.length > 0 && (
-        <div className="divide-y divide-neutral-200">
+        <div className="divide-y divide-[var(--color-border-default)]">
           {visibleItems.map((item, index) => renderItem(item, index))}
         </div>
       )}
 
       {items.length > itemsPerPage && (
-        <div className="p-4 flex justify-center space-x-4 border-t border-neutral-200">
+        <div className="p-4 flex justify-center space-x-4 border-t border-[var(--color-border-default)]">
           {hasMore && (
             <>
               <button
@@ -79,7 +79,7 @@ const PaginatedList = ({
               </button>
               <button
                 onClick={handleShowAll}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                className="px-4 py-2 bg-[var(--color-surface-elevated)] text-[var(--color-text-primary)] rounded hover:bg-[var(--color-surface-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-strong)]"
               >
                 Show All
               </button>
@@ -89,7 +89,7 @@ const PaginatedList = ({
           {(showAll || displayCount > itemsPerPage) && (
             <button
               onClick={handleCollapse}
-              className={`px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400`}
+              className={`px-4 py-2 bg-[var(--color-surface-elevated)] text-[var(--color-text-primary)] rounded hover:bg-[var(--color-surface-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-border-strong)]`}
             >
               Collapse
             </button>

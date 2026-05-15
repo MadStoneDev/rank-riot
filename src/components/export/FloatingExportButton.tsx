@@ -75,7 +75,7 @@ export default function FloatingExportButton({
       <div ref={menuRef} className="fixed bottom-20 right-6 z-40 md:bottom-8 md:right-8">
         {/* Menu */}
         {menuOpen && (
-          <div className="absolute bottom-14 right-0 w-56 bg-white border border-neutral-200 rounded-lg shadow-xl py-1 mb-2">
+          <div className="absolute bottom-14 right-0 w-56 bg-[var(--color-surface-overlay)] border border-[var(--color-border-default)] rounded-lg shadow-xl py-1 mb-2">
             {entries.map((entry) => {
               const label =
                 entry.label || EXPORT_DATA_TYPE_LABELS[entry.dataType] || entry.dataType;
@@ -88,10 +88,10 @@ export default function FloatingExportButton({
                     setMenuOpen(false);
                   }}
                   disabled={count === 0}
-                  className="w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 disabled:text-neutral-400 disabled:cursor-not-allowed flex justify-between items-center"
+                  className="w-full text-left px-4 py-2 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] disabled:text-[var(--color-text-muted)] disabled:cursor-not-allowed flex justify-between items-center"
                 >
                   <span>{label}</span>
-                  <span className="text-xs text-neutral-400">{count}</span>
+                  <span className="text-xs text-[var(--color-text-muted)]">{count}</span>
                 </button>
               );
             })}

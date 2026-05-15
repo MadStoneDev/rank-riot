@@ -47,7 +47,7 @@ export default function ExportDropdown({
       <div ref={dropdownRef} className="relative" data-export-dropdown>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="inline-flex items-center px-3 py-2 text-sm leading-4 font-medium rounded-md border border-neutral-300 shadow-sm text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
+          className="inline-flex items-center px-3 py-2 text-sm leading-4 font-medium rounded-md border border-[var(--color-border-default)] shadow-sm text-[var(--color-text-secondary)] bg-[var(--color-surface-raised)] hover:bg-[var(--color-surface-hover)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
         >
           <IconDownload className="h-4 w-4 mr-1" />
           Export
@@ -55,7 +55,7 @@ export default function ExportDropdown({
         </button>
 
         {menuOpen && (
-          <div className="absolute right-0 mt-1 w-56 bg-white border border-neutral-200 rounded-lg shadow-lg z-40 py-1">
+          <div className="absolute right-0 mt-1 w-56 bg-[var(--color-surface-overlay)] border border-[var(--color-border-default)] rounded-lg shadow-lg z-40 py-1">
             {entries.map((entry) => {
               const label =
                 entry.label ||
@@ -70,10 +70,10 @@ export default function ExportDropdown({
                     setMenuOpen(false);
                   }}
                   disabled={count === 0}
-                  className="w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 disabled:text-neutral-400 disabled:cursor-not-allowed flex justify-between items-center"
+                  className="w-full text-left px-4 py-2 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] disabled:text-[var(--color-text-muted)] disabled:cursor-not-allowed flex justify-between items-center"
                 >
                   <span>{label}</span>
-                  <span className="text-xs text-neutral-400">{count}</span>
+                  <span className="text-xs text-[var(--color-text-muted)]">{count}</span>
                 </button>
               );
             })}
