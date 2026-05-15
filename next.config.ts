@@ -1,5 +1,18 @@
 import type { NextConfig } from "next";
 
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+const supabaseHost = supabaseUrl ? new URL(supabaseUrl).host : "";
+
+const csp = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.paddle.com https://public.profitwell.com",
+  "style-src 'self' 'unsafe-inline' https://cdn.paddle.com",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' https://fonts.gstatic.com",
+  `connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://*.paddle.com`,
+  "frame-src 'self' https://*.paddle.com",
+].join("; ");
+
 const nextConfig: NextConfig = {
   async headers() {
     return [
@@ -19,15 +32,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.paddle.com",
-              "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https:",
-              "font-src 'self' https://fonts.gstatic.com",
-              "connect-src 'self' https://*.supabase.co https://*.paddle.com",
-              "frame-src 'self' https://*.paddle.com",
-            ].join("; "),
+            value: csp,
           },
         ],
       },
