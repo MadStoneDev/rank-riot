@@ -64,7 +64,7 @@ export default async function ProjectPagesPage({
   const { data: allPages } = await supabase
     .from("pages")
     .select(
-      "id, url, title, http_status, is_indexable, has_robots_noindex, word_count, meta_description, h1s, h2s, canonical_url, images, open_graph"
+      "id, url, title, http_status, is_indexable, has_robots_noindex, word_count, meta_description, h1s, h2s, canonical_url, images, open_graph, twitter_card"
     )
     .eq("project_id", projectId)
     .order("url", { ascending: true });

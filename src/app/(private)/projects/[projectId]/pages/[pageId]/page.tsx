@@ -153,6 +153,7 @@ export default async function PageDetailPage({
     meta_description: page.meta_description,
     h1s: h1s as string[],
     h2s: h2s as string[],
+    word_count: page.word_count,
     canonical_url: page.canonical_url,
     url: page.url,
     has_robots_noindex: page.has_robots_noindex,
@@ -160,6 +161,7 @@ export default async function PageDetailPage({
     http_status: page.http_status,
     images: images as { src: string; alt: string }[],
     open_graph: page.open_graph as Record<string, any> | null,
+    twitter_card: page.twitter_card as Record<string, any> | null,
   });
 
   // HTTP Status badge variant
@@ -212,6 +214,7 @@ export default async function PageDetailPage({
           meta_description: page.meta_description,
           h1s: h1s as string[],
           h2s: h2s as string[],
+          word_count: page.word_count,
           canonical_url: page.canonical_url,
           url: page.url,
           has_robots_noindex: page.has_robots_noindex,
