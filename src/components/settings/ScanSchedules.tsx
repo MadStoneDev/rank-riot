@@ -112,7 +112,7 @@ export default function ScanSchedules({ projects }: ScanSchedulesProps) {
                   <td className="py-3 pr-4">
                     <Link
                       href={`/projects/${project.id}/settings`}
-                      className="text-[var(--color-text-link)] hover:underline font-medium"
+                      className="text-[var(--color-primary)] hover:underline font-medium"
                     >
                       {project.name}
                     </Link>
@@ -163,7 +163,7 @@ export default function ScanSchedules({ projects }: ScanSchedulesProps) {
               >
                 <Link
                   href={`/projects/${project.id}/settings`}
-                  className="text-sm text-[var(--color-text-link)] hover:underline font-medium"
+                  className="text-sm text-[var(--color-primary)] hover:underline font-medium"
                 >
                   {project.name}
                 </Link>
