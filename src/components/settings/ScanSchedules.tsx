@@ -151,32 +151,51 @@ export default function ScanSchedules({ projects }: ScanSchedulesProps) {
       )}
 
       {manualProjects.length > 0 && (
-        <div>
-          <h4 className="text-sm font-medium text-[var(--color-text-secondary)] mb-2 mt-4">
+        <div className="mt-6">
+          <h4 className="text-base font-semibold text-[var(--color-text-primary)] mb-3">
             Manual Only
           </h4>
-          <div className="space-y-1">
-            {manualProjects.map((project) => (
-              <div
-                key={project.id}
-                className="flex items-center justify-between py-2 px-3 rounded-md bg-[var(--color-surface-overlay)]"
-              >
-                <Link
-                  href={`/projects/${project.id}/settings`}
-                  className="text-sm text-[var(--color-primary)] hover:underline font-medium"
-                >
-                  {project.name}
-                </Link>
-                <div className="flex items-center gap-3">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[var(--color-surface-raised)] text-[var(--color-text-secondary)]">
-                    {project.project_type === "audit" ? "Audit" : "SEO"}
-                  </span>
-                  <span className="text-xs text-[var(--color-text-muted)]">
-                    Last: {formatDate(project.last_scan_at)}
-                  </span>
-                </div>
-              </div>
-            ))}
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-[var(--color-border-subtle)]">
+                  <th className="text-left py-2 pr-4 font-medium text-[var(--color-text-secondary)]">
+                    Project
+                  </th>
+                  <th className="text-left py-2 pr-4 font-medium text-[var(--color-text-secondary)]">
+                    Type
+                  </th>
+                  <th className="text-left py-2 font-medium text-[var(--color-text-secondary)]">
+                    Last Scan
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {manualProjects.map((project) => (
+                  <tr
+                    key={project.id}
+                    className="border-b border-[var(--color-border-subtle)] last:border-0"
+                  >
+                    <td className="py-3 pr-4">
+                      <Link
+                        href={`/projects/${project.id}/settings`}
+                        className="text-[var(--color-primary)] hover:underline font-medium"
+                      >
+                        {project.name}
+                      </Link>
+                    </td>
+                    <td className="py-3 pr-4">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[var(--color-surface-overlay)] text-[var(--color-text-secondary)]">
+                        {project.project_type === "audit" ? "Audit" : "SEO"}
+                      </span>
+                    </td>
+                    <td className="py-3 text-[var(--color-text-muted)]">
+                      {formatDate(project.last_scan_at)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
