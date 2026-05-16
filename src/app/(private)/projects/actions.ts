@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
 import { PlanId } from "@/types/subscription";
 import { canCreateProject, getPlanLimits, PLAN_LIMITS, PLAN_INFO } from "@/lib/subscription-limits";
+import { computeNextScanAt } from "@/lib/scan-schedule";
 
 // Create a new project
 export async function createProject(formData: FormData) {
@@ -63,6 +64,9 @@ export async function createProject(formData: FormData) {
   }
 
   // Create project in database
+  const frequency = project_type === "seo" ? scan_frequency || "weekly" : null;
+  const nextScanAt = frequency ? computeNextScanAt(new Date(), frequency) : null;
+
   const { data, error } = await supabase
     .from("projects")
     .insert({
@@ -70,8 +74,8 @@ export async function createProject(formData: FormData) {
       name,
       url: formattedUrl,
       description,
-      scan_frequency:
-        project_type === "seo" ? scan_frequency || "weekly" : null,
+      scan_frequency: frequency,
+      next_scan_at: nextScanAt ? nextScanAt.toISOString() : null,
       project_type,
     })
     .select()
@@ -181,6 +185,8 @@ export async function updateProject(formData: FormData) {
   // Only update scan_frequency for SEO projects
   if (existingProject.project_type === "seo") {
     updateData.scan_frequency = scan_frequency;
+    const nextScanAt = computeNextScanAt(new Date(), scan_frequency);
+    updateData.next_scan_at = nextScanAt ? nextScanAt.toISOString() : null;
   }
 
   const { error } = await supabase
