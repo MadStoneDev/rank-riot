@@ -94,12 +94,10 @@ export async function uploadAvatar(formData: FormData) {
       }),
     );
 
-    const avatarUrl = `${publicDomain}/${key}?t=${Date.now()}`;
-
     const { error: updateError } = await supabase
       .from("profiles")
       .update({
-        avatar_url: avatarUrl,
+        avatar_url: key,
         updated_at: new Date().toISOString(),
       })
       .eq("id", user.id);
@@ -110,6 +108,7 @@ export async function uploadAvatar(formData: FormData) {
 
     revalidatePath("/dashboard/settings");
     revalidatePath("/dashboard");
+    const avatarUrl = `${publicDomain}/${key}?t=${Date.now()}`;
     return { success: true, avatarUrl };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";

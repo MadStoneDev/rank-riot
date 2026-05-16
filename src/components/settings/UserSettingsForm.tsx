@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Database } from "../../../database.types";
+import { getAvatarUrl } from "@/utils/avatar";
 
 import {
   updateProfile,
@@ -138,9 +139,9 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
           </label>
           <div className="mt-1 flex items-center">
             <div className="h-12 w-12 rounded-full overflow-hidden bg-[var(--color-surface-overlay)]">
-              {avatarUrl ? (
+              {getAvatarUrl(avatarUrl) ? (
                 <img
-                  src={avatarUrl}
+                  src={getAvatarUrl(avatarUrl)!}
                   alt="Profile"
                   className="h-full w-full object-cover"
                 />

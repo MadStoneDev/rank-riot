@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { IconChevronRight, IconBolt } from "@tabler/icons-react";
 
 import { createClient } from "@/utils/supabase/client";
+import { getAvatarUrl } from "@/utils/avatar";
 import { Database } from "../../../database.types";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
@@ -130,10 +131,10 @@ export default function Header() {
             </p>
           </div>
           <div className="w-8 h-8 rounded-full overflow-hidden ring-1 ring-[var(--color-border-default)]">
-            {user?.avatar_url ? (
+            {getAvatarUrl(user?.avatar_url ?? null) ? (
               <img
-                src={user.avatar_url}
-                alt={user.full_name || "User"}
+                src={getAvatarUrl(user?.avatar_url ?? null)!}
+                alt={user?.full_name || "User"}
                 className="w-full h-full object-cover"
               />
             ) : (
