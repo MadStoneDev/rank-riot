@@ -182,7 +182,7 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
 
   if (loading) {
     return (
-      <div className="mb-6 p-4 bg-yellow-500/10 border-l-4 border-yellow-500 text-yellow-400 rounded-md">
+      <div className="mb-6 p-4 bg-[var(--color-score-warning)]/10 border-l-4 border-yellow-500 text-[var(--color-score-warning)] rounded-md">
         <div className="flex items-center">
           <IconRefresh className="h-5 w-5 mr-2 animate-spin" />
           <p className="text-sm font-medium">Loading scan status...</p>
@@ -193,7 +193,7 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
 
   if (error) {
     return (
-      <div className="mb-6 p-4 bg-red-500/10 border-l-4 border-red-500 text-red-400 rounded-md">
+      <div className="mb-6 p-4 bg-[var(--color-score-critical)]/10 border-l-4 border-red-500 text-[var(--color-score-critical)] rounded-md">
         <div className="flex items-center">
           <IconAlertCircle className="h-5 w-5 mr-2" />
           <p className="text-sm font-medium">Error: {error}</p>
@@ -206,7 +206,7 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
 
   if (showCompleted) {
     return (
-      <div className="mb-6 p-4 bg-green-500/10 border-l-4 border-green-500 text-green-400 rounded-md">
+      <div className="mb-6 p-4 bg-[var(--color-score-good)]/10 border-l-4 border-green-500 text-[var(--color-score-good)] rounded-md">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <IconCheck className="h-5 w-5 mr-2" />
@@ -215,9 +215,9 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
           <span className="text-xs font-medium">100% complete</span>
         </div>
 
-        <div className="mt-2 w-full bg-green-500/20 rounded-full h-2.5">
+        <div className="mt-2 w-full bg-[var(--color-score-good)]/20 rounded-full h-2.5">
           <div
-            className="bg-green-500 h-2.5 rounded-full transition-all duration-1000"
+            className="bg-[var(--color-score-good)] h-2.5 rounded-full transition-all duration-1000"
             style={{ width: "100%" }}
           />
         </div>
@@ -237,7 +237,7 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
           </div>
         </div>
 
-        <div className="mt-2 text-xs text-green-400/80">
+        <div className="mt-2 text-xs text-[var(--color-score-good)]/80">
           Refreshing page to show final results...
         </div>
       </div>
@@ -251,7 +251,7 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
   const showPagesIncrement = scan.pages_scanned > previousPagesScanned;
 
   return (
-    <div className="mb-6 p-4 bg-yellow-500/10 border-l-4 border-yellow-500 text-yellow-400 rounded-md">
+    <div className="mb-6 p-4 bg-[var(--color-score-warning)]/10 border-l-4 border-yellow-500 text-[var(--color-score-warning)] rounded-md">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <IconRefresh className="h-5 w-5 mr-2 animate-spin" />
@@ -269,16 +269,16 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
             {progressPercentage}% complete
           </span>
           {estimatedTimeRemaining && (
-            <div className="text-xs text-yellow-400/80">
+            <div className="text-xs text-[var(--color-score-warning)]/80">
               {estimatedTimeRemaining} remaining
             </div>
           )}
         </div>
       </div>
 
-      <div className="mt-2 w-full bg-yellow-500/20 rounded-full h-2.5">
+      <div className="mt-2 w-full bg-[var(--color-score-warning)]/20 rounded-full h-2.5">
         <div
-          className="bg-yellow-500 h-2.5 rounded-full transition-all duration-1000 ease-out"
+          className="bg-[var(--color-score-warning)] h-2.5 rounded-full transition-all duration-1000 ease-out"
           style={{ width: `${progressPercentage}%` }}
         />
       </div>
@@ -286,7 +286,7 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
       <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
         <div
           className={`transition-all duration-500 ${
-            showPagesIncrement ? "text-yellow-900 font-bold" : ""
+            showPagesIncrement ? "text-[var(--color-score-warning)] font-bold" : ""
           }`}
         >
           <span className="font-semibold">Pages scanned:</span>{" "}
@@ -307,7 +307,7 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
         </div>
       </div>
 
-      <div className="mt-2 text-xs text-yellow-400/80">
+      <div className="mt-2 text-xs text-[var(--color-score-warning)]/80">
         Last updated:{" "}
         {lastUpdateTime ? lastUpdateTime.toLocaleTimeString() : "N/A"}
         {scan.summary_stats?.processing_count > 0 && (

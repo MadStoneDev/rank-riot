@@ -62,7 +62,7 @@ export default function TechnicalHealth({
               </div>
             )}
             {summary.warnings > 0 && (
-              <div className="flex items-center gap-1 px-3 py-1 bg-[#f9731620] text-[var(--color-severity-high)] rounded-full text-sm font-medium">
+              <div className="flex items-center gap-1 px-3 py-1 bg-[var(--color-severity-high)]/10 text-[var(--color-severity-high)] rounded-full text-sm font-medium">
                 <IconAlertTriangle className="h-4 w-4" />
                 <span>{summary.warnings} Warnings</span>
               </div>

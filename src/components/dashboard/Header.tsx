@@ -138,7 +138,7 @@ export default function Header() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[var(--color-primary)] to-[#818cf8] text-white text-xs font-semibold">
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-semibold">
                 {user?.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
               </div>
             )}

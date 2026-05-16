@@ -24,10 +24,10 @@ const VARIANT_CLASSES: Record<BadgeVariant, string> = {
   critical: "bg-[var(--color-score-critical-muted)] text-[var(--color-score-critical)] border-[var(--color-score-critical)]/20",
   neutral: "bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)] border-[var(--color-border-default)]",
   info: "bg-[var(--color-primary-muted)] text-[var(--color-primary)] border-[var(--color-primary)]/20",
-  "severity-critical": "bg-[#f43f5e20] text-[#f43f5e] border-[#f43f5e]/20",
-  "severity-high": "bg-[#f9731620] text-[#f97316] border-[#f97316]/20",
-  "severity-medium": "bg-[#f59e0b20] text-[#f59e0b] border-[#f59e0b]/20",
-  "severity-low": "bg-[#6b728020] text-[#9ca3af] border-[#6b7280]/20",
+  "severity-critical": "bg-[var(--color-severity-critical)]/10 text-[var(--color-severity-critical)] border-[var(--color-severity-critical)]/20",
+  "severity-high": "bg-[var(--color-severity-high)]/10 text-[var(--color-severity-high)] border-[var(--color-severity-high)]/20",
+  "severity-medium": "bg-[var(--color-severity-medium)]/10 text-[var(--color-severity-medium)] border-[var(--color-severity-medium)]/20",
+  "severity-low": "bg-[var(--color-severity-low)]/10 text-[var(--color-severity-low)] border-[var(--color-severity-low)]/20",
 };
 
 export default function Badge({

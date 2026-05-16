@@ -50,8 +50,8 @@ export default function Backlinks({ data, projectId }: BacklinksProps) {
       <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-[#8b5cf620] rounded-lg">
-              <IconExternalLink className="h-6 w-6 text-[#8b5cf6]" />
+            <div className="p-2 bg-[var(--color-secondary)]/20 rounded-lg">
+              <IconExternalLink className="h-6 w-6 text-[var(--color-secondary)]" />
             </div>
             <div>
               <h3 className="text-lg font-medium text-[var(--color-text-primary)]">
@@ -65,7 +65,7 @@ export default function Backlinks({ data, projectId }: BacklinksProps) {
 
           {/* Summary badges */}
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 px-3 py-1 bg-[#8b5cf620] text-[#8b5cf6] rounded-full text-sm font-medium">
+            <div className="flex items-center gap-1 px-3 py-1 bg-[var(--color-secondary)]/20 text-[var(--color-secondary)] rounded-full text-sm font-medium">
               <IconLink className="h-4 w-4" />
               <span>{data.totalCount} Backlinks</span>
             </div>
@@ -206,7 +206,7 @@ export default function Backlinks({ data, projectId }: BacklinksProps) {
               {data.backlinks.length > 10 && (
                 <button
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className="w-full px-4 py-2 text-sm text-[#8b5cf6] hover:bg-[var(--color-surface-hover)] border-t border-[var(--color-border-subtle)] flex items-center justify-center gap-1"
+                  className="w-full px-4 py-2 text-sm text-[var(--color-secondary)] hover:bg-[var(--color-surface-hover)] border-t border-[var(--color-border-subtle)] flex items-center justify-center gap-1"
                 >
                   {isExpanded ? (
                     <>

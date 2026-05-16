@@ -63,7 +63,7 @@ export default async function Dashboard() {
   ] = await Promise.all([
     supabase
       .from("pages")
-      .select("project_id, http_status, is_indexable, title, meta_description, word_count, h1s, load_time_ms")
+      .select("project_id, http_status, is_indexable, has_robots_noindex, title, meta_description, word_count, h1s, load_time_ms, canonical_url")
       .in("project_id", safeProjectIds)
       .like("url", "http%"),
     supabase

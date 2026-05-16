@@ -53,11 +53,11 @@ export default function DeleteScanButton({
         lg:h-auto
         lg:max-w-0
         lg:group-hover/scan:max-w-12
-        bg-red-100
-        hover:bg-red-200
+        bg-[var(--color-danger-muted)]
+        hover:bg-[var(--color-danger)]/30
         rounded-full
         lg:rounded-none
-        text-red-600
+        text-[var(--color-danger)]
         overflow-hidden
         transition-all
         duration-300

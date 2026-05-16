@@ -207,10 +207,10 @@ export default function SchemaAuditView({ pages, projectId, projectName }: Schem
                               <span className="text-xs text-[var(--color-text-muted)]">None</span>
                             )}
                           </div>
-                          <span className={`text-xs ${hasOG ? "text-green-400" : "text-[var(--color-text-muted)]"}`}>
+                          <span className={`text-xs ${hasOG ? "text-[var(--color-score-good)]" : "text-[var(--color-text-muted)]"}`}>
                             {hasOG ? "Yes" : "No"}
                           </span>
-                          <span className={`text-xs ${hasTwitter ? "text-green-400" : "text-[var(--color-text-muted)]"}`}>
+                          <span className={`text-xs ${hasTwitter ? "text-[var(--color-score-good)]" : "text-[var(--color-text-muted)]"}`}>
                             {hasTwitter ? "Yes" : "No"}
                           </span>
                         </div>

@@ -8,6 +8,13 @@
   --color-primary: #3b82f6;
   --color-primary-hover: #2563eb;
   --color-primary-muted: #3b82f620;
+  --color-secondary: #6366f1;
+  --color-secondary-hover: #4f46e5;
+
+  /* ── Danger ── */
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+  --color-danger-muted: #ef444420;
 
   /* ── Semantic Score Colors ── */
   --color-score-good: #10b981;
@@ -91,7 +98,7 @@
     box-shadow: 0 0 20px -5px var(--color-score-critical-muted);
   }
   .gradient-text {
-    background: linear-gradient(135deg, var(--color-primary), #818cf8);
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

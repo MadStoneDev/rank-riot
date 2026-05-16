@@ -80,7 +80,7 @@ export default function HttpStatusCard({
       case "3xx":
         return "text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] bg-[var(--color-primary-muted)]";
       case "4xx":
-        return "text-[var(--color-severity-high)] border-b-2 border-[var(--color-severity-high)] bg-[#f9731620]";
+        return "text-[var(--color-severity-high)] border-b-2 border-[var(--color-severity-high)] bg-[var(--color-severity-high)]/10";
       case "5xx":
         return "text-[var(--color-severity-critical)] border-b-2 border-[var(--color-severity-critical)] bg-[var(--color-score-critical-muted)]";
       default:
@@ -148,7 +148,7 @@ export default function HttpStatusCard({
                       (page.http_status ?? 0) >= 500
                         ? "bg-[var(--color-score-critical-muted)] text-[var(--color-severity-critical)]"
                         : (page.http_status ?? 0) >= 400
-                          ? "bg-[#f9731620] text-[var(--color-severity-high)]"
+                          ? "bg-[var(--color-severity-high)]/10 text-[var(--color-severity-high)]"
                           : (page.http_status ?? 0) >= 300
                             ? "bg-[var(--color-primary-muted)] text-[var(--color-primary)]"
                             : "bg-[var(--color-score-good-muted)] text-[var(--color-score-good)]"

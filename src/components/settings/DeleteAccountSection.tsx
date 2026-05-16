@@ -60,7 +60,7 @@ export default function DeleteAccountSection() {
             <button
               type="button"
               onClick={() => setShowConfirm(true)}
-              className="inline-flex items-center px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
+              className="inline-flex items-center px-4 py-2.5 bg-danger hover:bg-danger-hover text-white text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
             >
               Delete Account
             </button>
@@ -91,7 +91,7 @@ export default function DeleteAccountSection() {
                 value={confirmText}
                 onChange={(e) => setConfirmText(e.target.value)}
                 placeholder="DELETE"
-                className="p-2 w-full sm:w-64 border border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] rounded-lg text-sm focus:ring-red-500 focus:border-red-500"
+                className="p-2 w-full sm:w-64 border border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] rounded-lg text-sm focus:ring-danger focus:border-[var(--color-danger)]"
                 disabled={isDeleting}
               />
             </div>
@@ -117,7 +117,7 @@ export default function DeleteAccountSection() {
                 type="button"
                 onClick={handleDelete}
                 disabled={confirmText !== "DELETE" || isDeleting}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 text-sm font-medium text-white bg-danger hover:bg-danger-hover rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isDeleting ? "Deleting..." : "Permanently Delete Account"}
               </button>

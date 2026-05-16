@@ -73,7 +73,7 @@ const PaginatedList = ({
             <>
               <button
                 onClick={handleShowMore}
-                className="px-4 py-2 bg-primary hover:bg-secondary text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+                className="px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 Show More
               </button>

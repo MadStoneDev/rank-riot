@@ -36,6 +36,7 @@ interface Page {
   canonical_url: string | null;
   images: { src: string; alt: string }[] | null;
   open_graph: Record<string, any> | null;
+  twitter_card: Record<string, any> | null;
 }
 
 interface PageIssueCount {

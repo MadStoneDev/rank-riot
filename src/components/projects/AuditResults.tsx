@@ -29,15 +29,15 @@ export default function AuditResults({ results }: AuditResultsProps) {
   }
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-green-400";
-    if (score >= 60) return "text-yellow-400";
-    return "text-red-400";
+    if (score >= 80) return "text-[var(--color-score-good)]";
+    if (score >= 60) return "text-[var(--color-score-warning)]";
+    return "text-[var(--color-score-critical)]";
   };
 
   const getScoreBg = (score: number) => {
-    if (score >= 80) return "bg-green-500/20";
-    if (score >= 60) return "bg-yellow-500/20";
-    return "bg-red-500/20";
+    if (score >= 80) return "bg-[var(--color-score-good-muted)]";
+    if (score >= 60) return "bg-[var(--color-score-warning-muted)]";
+    return "bg-[var(--color-score-critical-muted)]";
   };
 
   const getScoreLabel = (score: number) => {
@@ -169,7 +169,7 @@ export default function AuditResults({ results }: AuditResultsProps) {
                     (tool: string, index: number) => (
                       <span
                         key={index}
-                        className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm"
+                        className="px-3 py-1 bg-[var(--color-secondary)]/20 text-[var(--color-secondary)] rounded-full text-sm"
                       >
                         {tool}
                       </span>
@@ -217,7 +217,7 @@ export default function AuditResults({ results }: AuditResultsProps) {
                     (platform: string, index: number) => (
                       <span
                         key={index}
-                        className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm capitalize"
+                        className="px-3 py-1 bg-[var(--color-score-good-muted)] text-[var(--color-score-good)] rounded-full text-sm capitalize"
                       >
                         {platform}
                       </span>
@@ -340,9 +340,9 @@ function ScoreCard({
   icon: React.ReactNode;
 }) {
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-green-400";
-    if (score >= 60) return "text-yellow-400";
-    return "text-red-400";
+    if (score >= 80) return "text-[var(--color-score-good)]";
+    if (score >= 60) return "text-[var(--color-score-warning)]";
+    return "text-[var(--color-score-critical)]";
   };
 
   return (
@@ -361,18 +361,18 @@ function RecommendationCard({ recommendation }: { recommendation: any }) {
   const getTypeIcon = (type: string) => {
     switch (type) {
       case "critical":
-        return <IconCircleDashedX className="w-5 h-5 text-red-500" />;
+        return <IconCircleDashedX className="w-5 h-5 text-[var(--color-score-critical)]" />;
       case "important":
-        return <IconAlertCircle className="w-5 h-5 text-yellow-500" />;
+        return <IconAlertCircle className="w-5 h-5 text-[var(--color-score-warning)]" />;
       default:
-        return <IconCircleDashedCheck className="w-5 h-5 text-blue-500" />;
+        return <IconCircleDashedCheck className="w-5 h-5 text-[var(--color-primary)]" />;
     }
   };
 
   const getTypeBadge = (type: string) => {
     const styles = {
-      critical: "bg-red-500/20 text-red-400",
-      important: "bg-yellow-500/20 text-yellow-400",
+      critical: "bg-[var(--color-score-critical-muted)] text-[var(--color-score-critical)]",
+      important: "bg-[var(--color-score-warning-muted)] text-[var(--color-score-warning)]",
       "nice-to-have": "bg-[var(--color-primary-muted)] text-[var(--color-primary)]",
     };
     return styles[type as keyof typeof styles] || styles["nice-to-have"];
@@ -380,9 +380,9 @@ function RecommendationCard({ recommendation }: { recommendation: any }) {
 
   const getEffortBadge = (effort: string) => {
     const styles = {
-      low: "bg-green-500/20 text-green-400",
-      medium: "bg-yellow-500/20 text-yellow-400",
-      high: "bg-red-500/20 text-red-400",
+      low: "bg-[var(--color-score-good-muted)] text-[var(--color-score-good)]",
+      medium: "bg-[var(--color-score-warning-muted)] text-[var(--color-score-warning)]",
+      high: "bg-[var(--color-score-critical-muted)] text-[var(--color-score-critical)]",
     };
     return (
       styles[effort as keyof typeof styles] || "bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)]"

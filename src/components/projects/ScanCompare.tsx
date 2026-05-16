@@ -118,7 +118,7 @@ export default function ScanCompare({
     return (
       <span
         className={`flex items-center ${
-          isPositive ? "text-green-400" : "text-red-400"
+          isPositive ? "text-[var(--color-score-good)]" : "text-[var(--color-score-critical)]"
         }`}
       >
         {change > 0 ? (
@@ -244,7 +244,7 @@ export default function ScanCompare({
           <p className="text-[var(--color-score-critical)]">{error}</p>
           <button
             onClick={fetchComparison}
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            className="mt-4 px-4 py-2 bg-danger text-white rounded-lg hover:bg-danger-hover transition-colors"
           >
             <IconRefresh className="w-4 h-4 inline-block mr-2" />
             Retry
@@ -339,13 +339,13 @@ export default function ScanCompare({
             <div className="p-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <div>
-                  <p className="text-3xl font-bold text-red-400">
+                  <p className="text-3xl font-bold text-[var(--color-score-critical)]">
                     +{comparison.changes.newIssues}
                   </p>
                   <p className="text-sm text-[var(--color-text-muted)] mt-1">New Issues</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-green-400">
+                  <p className="text-3xl font-bold text-[var(--color-score-good)]">
                     -{comparison.changes.fixedIssues}
                   </p>
                   <p className="text-sm text-[var(--color-text-muted)] mt-1">Fixed Issues</p>

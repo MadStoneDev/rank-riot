@@ -11,7 +11,7 @@ export default function Skeleton({
   width,
   height,
 }: SkeletonProps) {
-  const baseClasses = "animate-pulse bg-neutral-200";
+  const baseClasses = "animate-pulse bg-[var(--color-surface-elevated)]";
 
   const variantClasses = {
     text: "rounded h-4 w-full",

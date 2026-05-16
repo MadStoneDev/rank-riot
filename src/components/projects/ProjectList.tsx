@@ -268,8 +268,8 @@ function ProjectListItem({
                 <span
                   className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                     projectType === "seo"
-                      ? "bg-emerald-500/15 text-emerald-400"
-                      : "bg-blue-500/15 text-blue-400"
+                      ? "bg-[var(--color-score-good-muted)] text-[var(--color-score-good)]"
+                      : "bg-[var(--color-primary-muted)] text-[var(--color-primary)]"
                   }`}
                 >
                   {projectType === "seo" ? "SEO" : "Audit"}
@@ -277,8 +277,8 @@ function ProjectListItem({
                 <span
                   className={`px-2 py-0.5 text-xs font-medium rounded-full ${
                     project.last_scan_at
-                      ? "bg-emerald-500/15 text-emerald-400"
-                      : "bg-amber-500/15 text-amber-400"
+                      ? "bg-[var(--color-score-good-muted)] text-[var(--color-score-good)]"
+                      : "bg-[var(--color-score-warning-muted)] text-[var(--color-score-warning)]"
                   }`}
                 >
                   {project.last_scan_at ? "Scanned" : "Pending"}
@@ -298,7 +298,7 @@ function ProjectListItem({
                   </span>
                 )}
                 {issueCount !== undefined && issueCount > 0 && (
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-red-500/15 text-red-400">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-[var(--color-score-critical)]/15 text-[var(--color-score-critical)]">
                     {issueCount} issues
                   </span>
                 )}
@@ -355,8 +355,8 @@ function ProjectListItem({
             disabled={isDeleting}
             className={`flex-1 grid place-content-center transition-colors ${
               confirmDelete
-                ? "bg-red-600 text-white hover:bg-red-700"
-                : "text-[var(--color-text-muted)] hover:text-red-400 hover:bg-[var(--color-surface-hover)]"
+                ? "bg-danger text-white hover:bg-danger-hover"
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-danger)] hover:bg-[var(--color-surface-hover)]"
             }`}
             title={confirmDelete ? "Click again to confirm" : "Remove project"}
           >

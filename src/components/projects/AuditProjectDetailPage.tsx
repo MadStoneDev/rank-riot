@@ -131,12 +131,12 @@ export default async function AuditProjectDetailPage({
 
       {/* Scan Status Banner */}
       {latestScan && latestScan.status === "in_progress" && (
-        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-4">
+        <div className="bg-[var(--color-score-warning-muted)] border border-[var(--color-score-warning)]/20 rounded-2xl p-4">
           <div className="flex items-center gap-3">
-            <IconRefresh className="h-5 w-5 text-yellow-400 animate-spin flex-shrink-0" />
+            <IconRefresh className="h-5 w-5 text-[var(--color-score-warning)] animate-spin flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-yellow-400">Audit scan in progress...</p>
-              <p className="text-sm text-yellow-400/80 mt-0.5">
+              <p className="text-sm font-medium text-[var(--color-score-warning)]">Audit scan in progress...</p>
+              <p className="text-sm text-[var(--color-score-warning)]/80 mt-0.5">
                 Analyzing your website. This usually takes 1-2 minutes.
               </p>
             </div>
@@ -181,10 +181,10 @@ export default async function AuditProjectDetailPage({
                           <span
                             className={`inline-block h-2 w-2 rounded-full ${
                               scan.status === "completed"
-                                ? "bg-green-500"
+                                ? "bg-[var(--color-score-good)]"
                                 : scan.status === "in_progress"
-                                  ? "bg-yellow-500"
-                                  : "bg-red-500"
+                                  ? "bg-[var(--color-score-warning)]"
+                                  : "bg-[var(--color-score-critical)]"
                             }`}
                           />
                           <span className="text-sm font-medium text-[var(--color-text-primary)] capitalize">
@@ -228,35 +228,35 @@ export default async function AuditProjectDetailPage({
               </h3>
               <ul className="space-y-3 text-sm text-[var(--color-text-secondary)]">
                 <li className="flex items-start gap-2">
-                  <IconCircleDashedCheck className="w-5 h-5 text-green-500 flex-shrink-0" />
+                  <IconCircleDashedCheck className="w-5 h-5 text-[var(--color-score-good)] flex-shrink-0" />
                   <span>
                     <strong>Overall Quality Score</strong> - Instant assessment
                     from 0-100
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <IconCircleDashedCheck className="w-5 h-5 text-green-500 flex-shrink-0" />
+                  <IconCircleDashedCheck className="w-5 h-5 text-[var(--color-score-good)] flex-shrink-0" />
                   <span>
                     <strong>Technology Stack Detection</strong> - Framework, CMS,
                     libraries
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <IconCircleDashedCheck className="w-5 h-5 text-green-500 flex-shrink-0" />
+                  <IconCircleDashedCheck className="w-5 h-5 text-[var(--color-score-good)] flex-shrink-0" />
                   <span>
                     <strong>Performance Analysis</strong> - Load times, page
                     sizes, bottlenecks
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <IconCircleDashedCheck className="w-5 h-5 text-green-500 flex-shrink-0" />
+                  <IconCircleDashedCheck className="w-5 h-5 text-[var(--color-score-good)] flex-shrink-0" />
                   <span>
                     <strong>Actionable Recommendations</strong> - Prioritized
                     improvements
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <IconClock className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                  <IconClock className="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" />
                   <span>
                     <strong>Fast Results</strong> - Complete in 1-2 minutes
                   </span>
