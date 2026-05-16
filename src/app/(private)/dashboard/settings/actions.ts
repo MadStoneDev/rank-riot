@@ -73,9 +73,9 @@ export async function uploadAvatar(formData: FormData) {
   }
 
   const bucket = process.env.R2_BUCKET_NAME || "rankriot-uploads";
-  const publicDomain = process.env.R2_PUBLIC_DOMAIN;
+  const publicDomain = process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN || process.env.R2_PUBLIC_DOMAIN;
   if (!publicDomain) {
-    return { error: "R2_PUBLIC_DOMAIN is not configured" };
+    return { error: "NEXT_PUBLIC_R2_PUBLIC_DOMAIN is not configured" };
   }
 
   const ext = file.name.split(".").pop()?.toLowerCase() || "png";
