@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { IconRefresh, IconAlertCircle, IconCheck } from "@tabler/icons-react";
 import { createClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
 
 interface ScanProgressProps {
   scanId: string;
@@ -17,7 +16,6 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
   const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
   const [showCompleted, setShowCompleted] = useState(false);
   const [previousPagesScanned, setPreviousPagesScanned] = useState(0);
-  const router = useRouter();
 
   // Refs to avoid stale closures in subscription/polling callbacks
   const scanRef = useRef<any>(null);
@@ -48,7 +46,7 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
       }
 
       completedRef.current = setTimeout(() => {
-        router.refresh();
+        window.location.reload();
       }, 2000);
     };
 
@@ -134,7 +132,7 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
       if (completedRef.current) clearTimeout(completedRef.current);
       supabase.removeChannel(channel);
     };
-  }, [scanId, projectId, router]);
+  }, [scanId, projectId]);
 
   // Progress calculation
   const calculateProgress = () => {
