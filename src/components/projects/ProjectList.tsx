@@ -93,13 +93,14 @@ export default function ProjectList({
   const SortButton = ({ field, label }: { field: SortField; label: string }) => (
     <button
       onClick={() => handleSort(field)}
-      className={`px-3 py-1.5 text-xs rounded-md flex items-center gap-1 transition-colors ${
+      className={`px-2 py-1.5 sm:px-3 text-xs rounded-md flex items-center gap-1 transition-colors ${
         sortField === field
           ? "bg-[var(--color-primary)] text-white"
           : "bg-[var(--color-surface-overlay)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-hover)]"
       }`}
     >
-      {label}
+      <span className="hidden sm:inline">{label}</span>
+      <span className="sm:hidden">{field === "last_scan" ? "Scan" : label}</span>
       {sortField === field &&
         (sortDirection === "asc" ? (
           <IconSortAscending className="h-3 w-3" />
@@ -136,7 +137,7 @@ export default function ProjectList({
   return (
     <div className="space-y-4">
       {/* Search and Sort Controls */}
-      <div className="flex flex-wrap items-center gap-4 glass-card p-4">
+      <div className="flex flex-wrap items-center gap-3 sm:gap-4 glass-card p-3 sm:p-4">
         <div className="relative flex-1 min-w-[200px]">
           <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-text-muted)]" />
           <input
@@ -164,7 +165,7 @@ export default function ProjectList({
 
       {/* Project List */}
       {sortedProjects.length > 0 ? (
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {sortedProjects.map((project) => (
             <ProjectListItem
               key={project.id}
@@ -239,10 +240,10 @@ function ProjectListItem({
         href={`/projects/${project.id}`}
         className="block flex-1 min-w-0 hover:bg-[var(--color-surface-hover)] transition-colors"
       >
-        <div className="px-5 py-5 sm:px-6">
-          <div className="flex items-center gap-4">
+        <div className="px-3 py-3 sm:px-6 sm:py-5">
+          <div className="flex items-center gap-3 sm:gap-4">
             {/* Site favicon/thumbnail */}
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 hidden sm:block">
               <div className="h-12 w-12 rounded-lg bg-[var(--color-surface-overlay)] border border-[var(--color-border-subtle)] flex items-center justify-center overflow-hidden">
                 {faviconUrl ? (
                   <img
@@ -261,12 +262,9 @@ function ProjectListItem({
 
             {/* Project info */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3">
-                <h2 className="text-lg font-bold text-[var(--color-text-primary)] truncate">
-                  {project.name}
-                </h2>
+              <div className="flex items-center gap-2 mb-1 sm:mb-0">
                 <span
-                  className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                  className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-medium flex-shrink-0 ${
                     projectType === "seo"
                       ? "bg-[var(--color-score-good-muted)] text-[var(--color-score-good)]"
                       : "bg-[var(--color-primary-muted)] text-[var(--color-primary)]"
@@ -275,7 +273,7 @@ function ProjectListItem({
                   {projectType === "seo" ? "SEO" : "Audit"}
                 </span>
                 <span
-                  className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                  className={`px-1.5 py-0.5 text-[10px] sm:text-xs font-medium rounded-full flex-shrink-0 ${
                     project.last_scan_at
                       ? "bg-[var(--color-score-good-muted)] text-[var(--color-score-good)]"
                       : "bg-[var(--color-score-warning-muted)] text-[var(--color-score-warning)]"
@@ -284,7 +282,10 @@ function ProjectListItem({
                   {project.last_scan_at ? "Scanned" : "Pending"}
                 </span>
               </div>
-              <p className="mt-1 text-sm text-[var(--color-text-muted)] truncate">
+              <h2 className="text-sm sm:text-lg font-bold text-[var(--color-text-primary)] truncate">
+                {project.name}
+              </h2>
+              <p className="mt-0.5 text-xs sm:text-sm text-[var(--color-text-muted)] truncate">
                 {project.url}
               </p>
             </div>
