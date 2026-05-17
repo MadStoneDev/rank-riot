@@ -45,7 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${outfit.variable} ${playfairDisplay.variable} text-neutral-900 dark:text-neutral-50 antialiased`}
+        className={`${outfit.variable} ${playfairDisplay.variable} text-[var(--color-text-primary)] antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           {children}

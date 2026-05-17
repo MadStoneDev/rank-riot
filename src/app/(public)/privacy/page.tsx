@@ -13,14 +13,14 @@ export default function PrivacyPolicyPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-neutral-200">
-        <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 to-white" />
+      <section className="relative overflow-hidden border-b border-[var(--color-border-default)]">
+        <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-surface-raised)] to-[var(--color-surface-base)]" />
         <div className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-12">
           <div className="max-w-3xl">
-            <h1 className="text-4xl sm:text-5xl font-bold text-neutral-900 tracking-tight">
+            <h1 className="text-4xl sm:text-5xl font-bold text-[var(--color-text-primary)] tracking-tight">
               Privacy Policy
             </h1>
-            <p className="mt-4 text-neutral-500">
+            <p className="mt-4 text-[var(--color-text-muted)]">
               Last updated: {lastUpdated}
             </p>
           </div>
@@ -29,18 +29,18 @@ export default function PrivacyPolicyPage() {
 
       <section className="py-16">
         <div className="max-w-3xl mx-auto px-6 lg:px-8">
-          <div className="prose prose-neutral max-w-none prose-headings:text-neutral-900 prose-h2:text-2xl prose-h2:font-semibold prose-h3:text-xl prose-h3:font-medium prose-a:text-primary hover:prose-a:underline">
+          <div className="prose max-w-none prose-headings:text-[var(--color-text-primary)] prose-h2:text-2xl prose-h2:font-semibold prose-h3:text-xl prose-h3:font-medium prose-a:text-primary hover:prose-a:underline">
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-primary mb-4">
                 Introduction
               </h2>
-              <p className="text-neutral-700 mb-4">
+              <p className="text-[var(--color-text-secondary)] mb-4">
                 RankRiot ("we", "our", or "us") is committed to protecting your
                 privacy. This Privacy Policy explains how we collect, use,
                 disclose, and safeguard your information when you use our SEO
                 analysis and website auditing service.
               </p>
-              <p className="text-neutral-700">
+              <p className="text-[var(--color-text-secondary)]">
                 By using RankRiot, you agree to the collection and use of
                 information in accordance with this policy. If you do not agree
                 with our policies and practices, please do not use our service.
@@ -52,28 +52,28 @@ export default function PrivacyPolicyPage() {
                 Information We Collect
               </h2>
 
-              <h3 className="text-xl font-medium text-neutral-900 mb-3">
+              <h3 className="text-xl font-medium text-[var(--color-text-primary)] mb-3">
                 Account Information
               </h3>
-              <p className="text-neutral-700 mb-4">
+              <p className="text-[var(--color-text-secondary)] mb-4">
                 When you create an account, we collect:
               </p>
-              <ul className="list-disc pl-6 text-neutral-700 mb-6 space-y-2">
+              <ul className="list-disc pl-6 text-[var(--color-text-secondary)] mb-6 space-y-2">
                 <li>Email address</li>
                 <li>Name (if provided)</li>
                 <li>Password (stored securely using industry-standard encryption)</li>
                 <li>Billing information (processed securely through our payment provider, Paddle)</li>
               </ul>
 
-              <h3 className="text-xl font-medium text-neutral-900 mb-3">
+              <h3 className="text-xl font-medium text-[var(--color-text-primary)] mb-3">
                 Website Data You Share With Us
               </h3>
-              <p className="text-neutral-700 mb-4">
+              <p className="text-[var(--color-text-secondary)] mb-4">
                 To provide our SEO analysis and auditing services, we collect
                 and analyse information from the websites you submit to us,
                 including:
               </p>
-              <ul className="list-disc pl-6 text-neutral-700 mb-6 space-y-2">
+              <ul className="list-disc pl-6 text-[var(--color-text-secondary)] mb-6 space-y-2">
                 <li>Website URLs and page content</li>
                 <li>Meta tags, titles, and descriptions</li>
                 <li>Internal and external link structures</li>
@@ -81,21 +81,21 @@ export default function PrivacyPolicyPage() {
                 <li>Technical SEO elements (headers, schema markup, etc.)</li>
                 <li>Page performance metrics</li>
               </ul>
-              <p className="text-neutral-700 mb-4">
+              <p className="text-[var(--color-text-secondary)] mb-4">
                 <strong>Important:</strong> We only analyse websites that you
                 explicitly submit to our service. We do not crawl or collect
                 data from websites without your direct request.
               </p>
 
-              <h3 className="text-xl font-medium text-neutral-900 mb-3">
+              <h3 className="text-xl font-medium text-[var(--color-text-primary)] mb-3">
                 Usage and Analytics Data
               </h3>
-              <p className="text-neutral-700 mb-4">
+              <p className="text-[var(--color-text-secondary)] mb-4">
                 We collect information about how you interact with RankRiot
                 through analytics platforms to better understand user behaviour
                 and improve our service. This may include:
               </p>
-              <ul className="list-disc pl-6 text-neutral-700 space-y-2">
+              <ul className="list-disc pl-6 text-[var(--color-text-secondary)] space-y-2">
                 <li>Pages visited and features used</li>
                 <li>Time spent on the platform</li>
                 <li>Device type, browser, and operating system</li>
@@ -108,10 +108,10 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-2xl font-semibold text-primary mb-4">
                 How We Use Your Information
               </h2>
-              <p className="text-neutral-700 mb-4">
+              <p className="text-[var(--color-text-secondary)] mb-4">
                 We use the information we collect to:
               </p>
-              <ul className="list-disc pl-6 text-neutral-700 space-y-2">
+              <ul className="list-disc pl-6 text-[var(--color-text-secondary)] space-y-2">
                 <li>Provide, maintain, and improve our SEO analysis services</li>
                 <li>Generate reports and insights about the websites you submit</li>
                 <li>Process transactions and manage your subscription</li>
@@ -127,22 +127,22 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-2xl font-semibold text-primary mb-4">
                 Information Sharing and Disclosure
               </h2>
-              <p className="text-neutral-700 mb-4">
+              <p className="text-[var(--color-text-secondary)] mb-4">
                 <strong>
                   We do not sell your personal information or website data.
                 </strong>
               </p>
-              <p className="text-neutral-700 mb-4">
+              <p className="text-[var(--color-text-secondary)] mb-4">
                 <strong>
                   We do not share your information with third-party companies
                   for their marketing purposes.
                 </strong>
               </p>
-              <p className="text-neutral-700 mb-4">
+              <p className="text-[var(--color-text-secondary)] mb-4">
                 We may share limited information only in the following
                 circumstances:
               </p>
-              <ul className="list-disc pl-6 text-neutral-700 space-y-2">
+              <ul className="list-disc pl-6 text-[var(--color-text-secondary)] space-y-2">
                 <li>
                   <strong>Service Providers:</strong> We work with trusted
                   service providers who assist in operating our platform (e.g.,
@@ -169,18 +169,18 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-2xl font-semibold text-primary mb-4">
                 Data Security
               </h2>
-              <p className="text-neutral-700 mb-4">
+              <p className="text-[var(--color-text-secondary)] mb-4">
                 We implement appropriate technical and organisational security
                 measures to protect your information, including:
               </p>
-              <ul className="list-disc pl-6 text-neutral-700 space-y-2">
+              <ul className="list-disc pl-6 text-[var(--color-text-secondary)] space-y-2">
                 <li>Encryption of data in transit (HTTPS/TLS)</li>
                 <li>Encryption of sensitive data at rest</li>
                 <li>Regular security assessments and updates</li>
                 <li>Access controls and authentication measures</li>
                 <li>Secure data centres with industry-standard protections</li>
               </ul>
-              <p className="text-neutral-700 mt-4">
+              <p className="text-[var(--color-text-secondary)] mt-4">
                 While we strive to protect your information, no method of
                 transmission over the internet or electronic storage is 100%
                 secure. We cannot guarantee absolute security.
@@ -191,13 +191,13 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-2xl font-semibold text-primary mb-4">
                 Data Retention
               </h2>
-              <p className="text-neutral-700 mb-4">
+              <p className="text-[var(--color-text-secondary)] mb-4">
                 We retain your information for as long as your account is active
                 or as needed to provide you services. Historical scan data is
                 retained according to your subscription plan's data history
                 limits.
               </p>
-              <p className="text-neutral-700">
+              <p className="text-[var(--color-text-secondary)]">
                 If you close your account, we will delete or anonymise your
                 personal information within 90 days, except where we are
                 required to retain it for legal, accounting, or security
@@ -209,10 +209,10 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-2xl font-semibold text-primary mb-4">
                 Your Rights and Choices
               </h2>
-              <p className="text-neutral-700 mb-4">
+              <p className="text-[var(--color-text-secondary)] mb-4">
                 Depending on your location, you may have the following rights:
               </p>
-              <ul className="list-disc pl-6 text-neutral-700 space-y-2">
+              <ul className="list-disc pl-6 text-[var(--color-text-secondary)] space-y-2">
                 <li>
                   <strong>Access:</strong> Request a copy of the personal
                   information we hold about you
@@ -234,7 +234,7 @@ export default function PrivacyPolicyPage() {
                   at any time
                 </li>
               </ul>
-              <p className="text-neutral-700 mt-4">
+              <p className="text-[var(--color-text-secondary)] mt-4">
                 To exercise any of these rights, please contact us at the
                 details provided below.
               </p>
@@ -244,11 +244,11 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-2xl font-semibold text-primary mb-4">
                 Cookies and Tracking Technologies
               </h2>
-              <p className="text-neutral-700 mb-4">
+              <p className="text-[var(--color-text-secondary)] mb-4">
                 We use cookies and similar tracking technologies to collect
                 usage data and improve your experience. These include:
               </p>
-              <ul className="list-disc pl-6 text-neutral-700 space-y-2">
+              <ul className="list-disc pl-6 text-[var(--color-text-secondary)] space-y-2">
                 <li>
                   <strong>Essential Cookies:</strong> Required for the platform
                   to function (e.g., authentication)
@@ -258,7 +258,7 @@ export default function PrivacyPolicyPage() {
                   users interact with RankRiot
                 </li>
               </ul>
-              <p className="text-neutral-700 mt-4">
+              <p className="text-[var(--color-text-secondary)] mt-4">
                 You can control cookies through your browser settings. However,
                 disabling certain cookies may affect the functionality of our
                 service.
@@ -269,7 +269,7 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-2xl font-semibold text-primary mb-4">
                 International Data Transfers
               </h2>
-              <p className="text-neutral-700">
+              <p className="text-[var(--color-text-secondary)]">
                 Your information may be transferred to and processed in
                 countries other than your own. We ensure appropriate safeguards
                 are in place to protect your information in compliance with
@@ -281,7 +281,7 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-2xl font-semibold text-primary mb-4">
                 Children's Privacy
               </h2>
-              <p className="text-neutral-700">
+              <p className="text-[var(--color-text-secondary)]">
                 RankRiot is not intended for use by individuals under the age of
                 18. We do not knowingly collect personal information from
                 children. If we become aware that we have collected information
@@ -293,7 +293,7 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-2xl font-semibold text-primary mb-4">
                 Changes to This Privacy Policy
               </h2>
-              <p className="text-neutral-700">
+              <p className="text-[var(--color-text-secondary)]">
                 We may update this Privacy Policy from time to time. We will
                 notify you of any material changes by posting the new policy on
                 this page and updating the "Last updated" date. We encourage you
@@ -305,11 +305,11 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-2xl font-semibold text-primary mb-4">
                 Contact Us
               </h2>
-              <p className="text-neutral-700 mb-4">
+              <p className="text-[var(--color-text-secondary)] mb-4">
                 If you have any questions about this Privacy Policy or our data
                 practices, please contact us:
               </p>
-              <p className="text-neutral-700">
+              <p className="text-[var(--color-text-secondary)]">
                 <Link
                   href="/contact"
                   className="text-secondary hover:underline"

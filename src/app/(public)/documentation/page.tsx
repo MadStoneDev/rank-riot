@@ -95,26 +95,26 @@ export default function DocumentationPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-neutral-200">
-        <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 to-white" />
+      <section className="relative overflow-hidden border-b border-[var(--color-border-default)]">
+        <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-surface-raised)] to-[var(--color-surface-base)]" />
 
         <div className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16">
           <div className="max-w-2xl">
-            <h1 className="text-4xl sm:text-5xl font-bold text-neutral-900 tracking-tight">
+            <h1 className="text-4xl sm:text-5xl font-bold text-[var(--color-text-primary)] tracking-tight">
               Documentation
             </h1>
-            <p className="mt-6 text-lg text-neutral-600 leading-relaxed">
+            <p className="mt-6 text-lg text-[var(--color-text-secondary)] leading-relaxed">
               Everything you need to get started with RankRiot and make the most
               of your SEO analysis.
             </p>
 
             {/* Search */}
             <div className="mt-8 relative">
-              <IconSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+              <IconSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--color-text-muted)]" />
               <input
                 type="text"
                 placeholder="Search documentation..."
-                className="w-full pl-12 pr-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full pl-12 pr-4 py-3 border border-[var(--color-border-strong)] rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
               />
             </div>
           </div>
@@ -122,10 +122,10 @@ export default function DocumentationPage() {
       </section>
 
       {/* Quick Links */}
-      <section className="py-8 bg-neutral-50 border-b border-neutral-200">
+      <section className="py-8 bg-[var(--color-surface-raised)] border-b border-[var(--color-border-default)]">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex flex-wrap gap-4">
-            <span className="text-sm text-neutral-500">Quick links:</span>
+            <span className="text-sm text-[var(--color-text-muted)]">Quick links:</span>
             <Link
               href="#getting-started"
               className="text-sm text-primary hover:underline"
@@ -153,16 +153,16 @@ export default function DocumentationPage() {
               <div
                 key={i}
                 id={guide.href.replace("#", "")}
-                className="group p-6 rounded-2xl border border-neutral-200 hover:border-neutral-300 hover:shadow-lg transition-all"
+                className="group p-6 rounded-2xl border border-[var(--color-border-default)] hover:border-[var(--color-border-strong)] hover:shadow-lg transition-all"
               >
                 <div className="w-12 h-12 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl flex items-center justify-center mb-4">
                   <guide.icon className="w-6 h-6 text-primary" />
                 </div>
 
-                <h2 className="text-xl font-semibold text-neutral-900 mb-2">
+                <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-2">
                   {guide.title}
                 </h2>
-                <p className="text-neutral-600 text-sm mb-4">
+                <p className="text-[var(--color-text-secondary)] text-sm mb-4">
                   {guide.description}
                 </p>
 
@@ -171,9 +171,9 @@ export default function DocumentationPage() {
                     <li key={j}>
                       <a
                         href={`${guide.href}/${article.toLowerCase().replace(/\s+/g, "-")}`}
-                        className="text-sm text-neutral-600 hover:text-primary transition-colors flex items-center gap-2"
+                        className="text-sm text-[var(--color-text-secondary)] hover:text-primary transition-colors flex items-center gap-2"
                       >
-                        <span className="w-1 h-1 bg-neutral-300 rounded-full" />
+                        <span className="w-1 h-1 bg-[var(--color-text-muted)] rounded-full" />
                         {article}
                       </a>
                     </li>
@@ -194,20 +194,20 @@ export default function DocumentationPage() {
       </section>
 
       {/* Help Section */}
-      <section className="py-24 bg-neutral-50 border-t border-neutral-200">
+      <section className="py-24 bg-[var(--color-surface-raised)] border-t border-[var(--color-border-default)]">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-2xl font-bold text-neutral-900 mb-4">
+            <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-4">
               Can&apos;t find what you&apos;re looking for?
             </h2>
-            <p className="text-neutral-600 mb-8">
+            <p className="text-[var(--color-text-secondary)] mb-8">
               Our support team is here to help. Reach out and we&apos;ll get back to
               you within 24 hours.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/contact"
-                className="w-full sm:w-auto px-6 py-3 bg-neutral-900 text-white font-medium rounded-lg hover:bg-neutral-800 transition-colors"
+                className="w-full sm:w-auto px-6 py-3 bg-[var(--color-primary)] text-[var(--color-text-inverse)] font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors"
               >
                 Contact Support
               </Link>
@@ -215,7 +215,7 @@ export default function DocumentationPage() {
               {/*  href="https://github.com/rankriot"*/}
               {/*  target="_blank"*/}
               {/*  rel="noopener noreferrer"*/}
-              {/*  className="w-full sm:w-auto px-6 py-3 border border-neutral-300 text-neutral-700 font-medium rounded-lg hover:bg-white transition-colors"*/}
+              {/*  className="w-full sm:w-auto px-6 py-3 border border-[var(--color-border-strong)] text-neutral-700 font-medium rounded-lg hover:bg-white transition-colors"*/}
               {/*>*/}
               {/*  Open GitHub Issue*/}
               {/*</a>*/}
