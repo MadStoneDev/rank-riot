@@ -11,16 +11,16 @@ export const metadata: Metadata = {
 
 export default function AuthPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-50">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--color-surface-base)]">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold">RankRiot</h1>
-          <p className="text-neutral-600 mt-2">
+          <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">RankRiot</h1>
+          <p className="text-[var(--color-text-muted)] mt-2">
             Optimize your website's performance
           </p>
         </div>
         <AuthForm />
-        <div className="mt-8 text-center text-sm text-neutral-500">
+        <div className="mt-8 text-center text-sm text-[var(--color-text-muted)]">
           <p>
             By signing up, you agree to our{" "}
             <Link href="/terms" className="text-secondary hover:underline">
