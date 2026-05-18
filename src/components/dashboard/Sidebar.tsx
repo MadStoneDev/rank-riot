@@ -13,6 +13,7 @@ import {
   IconLogout,
   IconBolt,
 } from "@tabler/icons-react";
+import AdminNavLink from "@/components/dashboard/AdminNavLink";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -96,6 +97,7 @@ export default function Sidebar() {
               </Link>
             );
           })}
+          <AdminNavLink />
         </nav>
 
         {/* Sign Out */}
