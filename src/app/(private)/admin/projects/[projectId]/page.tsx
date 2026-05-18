@@ -9,8 +9,12 @@ import {
   IconAlertTriangle,
   IconExternalLink,
   IconArrowLeft,
+  IconUser,
 } from "@tabler/icons-react";
 import StatCard from "@/components/ui/StatCard";
+import ProjectEditor from "@/components/admin/ProjectEditor";
+import ScanActions from "@/components/admin/ScanActions";
+import AdminNotes from "@/components/admin/AdminNotes";
 
 export async function generateMetadata({
   params,
@@ -29,6 +33,46 @@ export async function generateMetadata({
     title: `${project?.name || "Project"} | Admin | RankRiot`,
   };
 }
+
+// ---------------------------------------------------------------------------
+// Robust count helper — falls back to a regular query if count is null
+// ---------------------------------------------------------------------------
+
+async function getCount(
+  admin: ReturnType<typeof createAdminClient>,
+  table: string,
+  filters: Record<string, unknown>,
+): Promise<number> {
+  let query = admin.from(table).select("*", { count: "exact", head: true });
+  for (const [key, value] of Object.entries(filters)) {
+    query = query.eq(key, value);
+  }
+
+  const { count, error } = await query;
+  if (error) {
+    console.error(`Count error (${table}):`, error);
+  }
+
+  if (count !== null && count !== undefined) {
+    return count;
+  }
+
+  // Fallback: fetch ids and count locally
+  let fallbackQuery = admin.from(table).select("id");
+  for (const [key, value] of Object.entries(filters)) {
+    fallbackQuery = fallbackQuery.eq(key, value);
+  }
+  const { data, error: fallbackError } = await fallbackQuery;
+  if (fallbackError) {
+    console.error(`Fallback count error (${table}):`, fallbackError);
+    return 0;
+  }
+  return data?.length ?? 0;
+}
+
+// ---------------------------------------------------------------------------
+// Page component
+// ---------------------------------------------------------------------------
 
 export default async function AdminProjectPage({
   params,
@@ -53,32 +97,17 @@ export default async function AdminProjectPage({
     .eq("id", project.user_id)
     .single();
 
-  // Get counts
-  const [
-    { count: pageCount },
-    { count: linkCount },
-    { count: issueCount },
-    { count: brokenLinkCount },
-  ] = await Promise.all([
-    admin
-      .from("pages")
-      .select("*", { count: "exact", head: true })
-      .eq("project_id", projectId),
-    admin
-      .from("page_links")
-      .select("*", { count: "exact", head: true })
-      .eq("project_id", projectId),
-    admin
-      .from("issues")
-      .select("*", { count: "exact", head: true })
-      .eq("project_id", projectId)
-      .eq("is_fixed", false),
-    admin
-      .from("page_links")
-      .select("*", { count: "exact", head: true })
-      .eq("project_id", projectId)
-      .eq("is_broken", true),
-  ]);
+  // Get counts with robust fallback
+  const [pageCount, linkCount, issueCount, brokenLinkCount] =
+    await Promise.all([
+      getCount(admin, "pages", { project_id: projectId }),
+      getCount(admin, "page_links", { project_id: projectId }),
+      getCount(admin, "issues", { project_id: projectId, is_fixed: false }),
+      getCount(admin, "page_links", {
+        project_id: projectId,
+        is_broken: true,
+      }),
+    ]);
 
   // Get all scans for this project
   const { data: scans } = await admin
@@ -113,16 +142,49 @@ export default async function AdminProjectPage({
 
   const pageMap = new Map((issuePages || []).map((p) => [p.id, p]));
 
+  // Get admin notes for this project
+  const { data: adminNotes } = await admin
+    .from("admin_notes")
+    .select("id, author_id, content, created_at")
+    .eq("target_type", "project")
+    .eq("target_id", projectId)
+    .order("created_at", { ascending: false });
+
+  // Resolve author emails for notes
+  const noteAuthorIds = [
+    ...new Set((adminNotes || []).map((n) => n.author_id).filter(Boolean)),
+  ];
+  const { data: noteAuthors } =
+    noteAuthorIds.length > 0
+      ? await admin
+          .from("profiles")
+          .select("id, email, full_name")
+          .in("id", noteAuthorIds)
+      : { data: [] };
+
+  const authorMap = new Map(
+    (noteAuthors || []).map((a) => [a.id, a]),
+  );
+
+  const notesWithAuthors = (adminNotes || []).map((note) => {
+    const author = authorMap.get(note.author_id);
+    return {
+      ...note,
+      author_email: author?.email || undefined,
+      author_name: author?.full_name || undefined,
+    };
+  });
+
   return (
     <div className="space-y-6">
       {/* Back + Header */}
       <div>
         <Link
-          href="/admin"
+          href="/admin/projects"
           className="inline-flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors mb-3"
         >
           <IconArrowLeft className="h-4 w-4" />
-          Back to Overview
+          Back to Projects
         </Link>
 
         <div className="flex items-start justify-between">
@@ -150,13 +212,20 @@ export default async function AdminProjectPage({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
             <p className="text-[var(--color-text-muted)] text-xs">Owner</p>
-            <p className="text-[var(--color-text-primary)] font-medium mt-0.5">
+            <Link
+              href={`/admin/users/${project.user_id}`}
+              className="inline-flex items-center gap-1 text-[var(--color-text-primary)] font-medium mt-0.5 hover:text-[var(--color-primary)] transition-colors"
+            >
+              <IconUser className="h-3.5 w-3.5" />
               {owner?.full_name || owner?.email || project.user_id.slice(0, 8)}
-            </p>
+            </Link>
             {owner?.email && (
-              <p className="text-[10px] text-[var(--color-text-muted)]">
+              <Link
+                href={`/admin/users/${project.user_id}`}
+                className="block text-[10px] text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
+              >
                 {owner.email}
-              </p>
+              </Link>
             )}
           </div>
           <div>
@@ -184,28 +253,36 @@ export default async function AdminProjectPage({
         </div>
       </div>
 
+      {/* Project Settings Editor */}
+      <ProjectEditor
+        projectId={projectId}
+        initialName={project.name || ""}
+        initialUrl={project.url || ""}
+        initialScanFrequency={project.scan_frequency || "manual"}
+      />
+
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard
           label="Pages"
-          value={pageCount || 0}
+          value={pageCount}
           icon={<IconFile className="w-5 h-5 text-[var(--color-primary)]" />}
         />
         <StatCard
           label="Links"
-          value={(linkCount || 0).toLocaleString()}
+          value={linkCount.toLocaleString()}
           icon={<IconLink className="w-5 h-5 text-[var(--color-secondary)]" />}
         />
         <StatCard
           label="Open Issues"
-          value={issueCount || 0}
+          value={issueCount}
           icon={
             <IconAlertTriangle className="w-5 h-5 text-[var(--color-score-warning)]" />
           }
         />
         <StatCard
           label="Broken Links"
-          value={brokenLinkCount || 0}
+          value={brokenLinkCount}
           icon={
             <IconLink className="w-5 h-5 text-[var(--color-score-critical)]" />
           }
@@ -230,7 +307,8 @@ export default async function AdminProjectPage({
                 <th className="px-5 py-2 font-medium">Issues</th>
                 <th className="px-5 py-2 font-medium">Started</th>
                 <th className="px-5 py-2 font-medium">Duration</th>
-                <th className="px-5 py-2 font-medium">Details</th>
+                <th className="px-5 py-2 font-medium">Stats</th>
+                <th className="px-5 py-2 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--color-border-subtle)]">
@@ -246,9 +324,10 @@ export default async function AdminProjectPage({
                 const stats =
                   scan.summary_stats &&
                   typeof scan.summary_stats === "object"
-                    ? (scan.summary_stats as Record<string, any>)
+                    ? (scan.summary_stats as Record<string, unknown>)
                     : null;
-                const errorMsg = stats?.error_message || null;
+                const errorMsg =
+                  (stats?.error_message as string) || null;
 
                 return (
                   <tr
@@ -284,30 +363,31 @@ export default async function AdminProjectPage({
                       {duration !== null ? formatDuration(duration) : "-"}
                     </td>
                     <td className="px-5 py-2.5">
-                      {errorMsg ? (
-                        <p
-                          className="text-[10px] text-[var(--color-score-critical)] max-w-[300px] break-words"
-                          title={errorMsg}
-                        >
-                          {errorMsg.length > 120
-                            ? errorMsg.slice(0, 120) + "..."
-                            : errorMsg}
-                        </p>
-                      ) : stats ? (
+                      {stats && !errorMsg ? (
                         <div className="text-[10px] text-[var(--color-text-muted)] space-y-0.5">
-                          {stats.pages_found != null && (
+                          {(stats.pages_found as number) != null && (
                             <p>
-                              {stats.pages_found} stored, {stats.links_created || 0}{" "}
-                              links
-                              {stats.pages_removed > 0 &&
-                                `, ${stats.pages_removed} cleaned`}
+                              {stats.pages_found as number} found
+                              {(stats.pages_removed as number) > 0 &&
+                                `, ${stats.pages_removed as number} removed`}
                             </p>
                           )}
-                          {stats.overall_score != null && (
-                            <p>Audit score: {stats.overall_score}/100</p>
+                          {(stats.links_created as number) != null && (
+                            <p>{stats.links_created as number} links created</p>
+                          )}
+                          {(stats.overall_score as number) != null && (
+                            <p>Score: {stats.overall_score as number}/100</p>
                           )}
                         </div>
                       ) : null}
+                    </td>
+                    <td className="px-5 py-2.5">
+                      <ScanActions
+                        scanId={scan.id}
+                        status={scan.status}
+                        errorMessage={errorMsg}
+                        summaryStats={stats}
+                      />
                     </td>
                   </tr>
                 );
@@ -315,7 +395,7 @@ export default async function AdminProjectPage({
               {(scans || []).length === 0 && (
                 <tr>
                   <td
-                    colSpan={8}
+                    colSpan={9}
                     className="px-5 py-8 text-center text-[var(--color-text-muted)]"
                   >
                     No scans yet
@@ -332,7 +412,7 @@ export default async function AdminProjectPage({
         <div className="glass-card overflow-hidden">
           <div className="px-5 py-3 border-b border-[var(--color-border-default)]">
             <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">
-              Recent Issues ({issueCount || 0} open)
+              Recent Issues ({issueCount} open)
             </h2>
           </div>
           <div className="divide-y divide-[var(--color-border-subtle)]">
@@ -378,9 +458,20 @@ export default async function AdminProjectPage({
           </div>
         </div>
       )}
+
+      {/* Admin Notes */}
+      <AdminNotes
+        targetType="project"
+        targetId={projectId}
+        initialNotes={notesWithAuthors}
+      />
     </div>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Helper components
+// ---------------------------------------------------------------------------
 
 function StatusBadge({ status }: { status: string }) {
   const config: Record<string, { bg: string; text: string; label: string }> = {
@@ -398,6 +489,11 @@ function StatusBadge({ status }: { status: string }) {
       bg: "bg-[var(--color-score-warning)]/15",
       text: "text-[var(--color-score-warning)]",
       label: "Running",
+    },
+    pending: {
+      bg: "bg-[var(--color-text-muted)]/15",
+      text: "text-[var(--color-text-muted)]",
+      label: "Pending",
     },
   };
   const c = config[status] || config.completed;

@@ -46,6 +46,12 @@ export default async function AdminLayout({
             Users
           </a>
           <a
+            href="/admin/projects"
+            className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
+          >
+            Projects
+          </a>
+          <a
             href="/admin/scans"
             className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
           >

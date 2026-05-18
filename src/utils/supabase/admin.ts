@@ -10,5 +10,7 @@ export function createAdminClient() {
     );
   }
 
-  return createSupabaseClient(url, serviceKey);
+  return createSupabaseClient(url, serviceKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
 }

@@ -10,11 +10,23 @@ export const metadata: Metadata = {
 export default async function AdminScansPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; q?: string; type?: string }>;
 }) {
-  const { status: filterStatus } = await searchParams;
+  const { status: filterStatus, q, type: filterType } = await searchParams;
+  const searchQuery = q?.trim() || "";
   const admin = createAdminClient();
 
+  // If searching by project name, find matching project IDs first
+  let searchProjectIds: string[] | null = null;
+  if (searchQuery) {
+    const { data: matchingProjects } = await admin
+      .from("projects")
+      .select("id")
+      .ilike("name", `%${searchQuery}%`);
+    searchProjectIds = (matchingProjects || []).map((p) => p.id);
+  }
+
+  // Build scans query
   let query = admin
     .from("scans")
     .select(
@@ -23,8 +35,69 @@ export default async function AdminScansPage({
     .order("started_at", { ascending: false })
     .limit(100);
 
-  if (filterStatus && ["completed", "failed", "in_progress"].includes(filterStatus)) {
+  if (
+    filterStatus &&
+    ["completed", "failed", "in_progress"].includes(filterStatus)
+  ) {
     query = query.eq("status", filterStatus);
+  }
+
+  if (filterType && ["seo", "audit"].includes(filterType)) {
+    query = query.eq("scan_type", filterType);
+  }
+
+  if (searchProjectIds !== null) {
+    if (searchProjectIds.length === 0) {
+      // No projects match the search -- return empty
+      return (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
+              Scan Log
+            </h1>
+            <span className="text-sm text-[var(--color-text-muted)]">
+              0 scans
+            </span>
+          </div>
+          <SearchAndFilters
+            searchQuery={searchQuery}
+            filterStatus={filterStatus}
+            filterType={filterType}
+          />
+          <div className="glass-card overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-xs text-[var(--color-text-muted)] border-b border-[var(--color-border-subtle)]">
+                    <th className="px-5 py-3 font-medium">Project</th>
+                    <th className="px-5 py-3 font-medium">User</th>
+                    <th className="px-5 py-3 font-medium">Type</th>
+                    <th className="px-5 py-3 font-medium">Status</th>
+                    <th className="px-5 py-3 font-medium">Pages</th>
+                    <th className="px-5 py-3 font-medium">Links</th>
+                    <th className="px-5 py-3 font-medium">Issues</th>
+                    <th className="px-5 py-3 font-medium">Started</th>
+                    <th className="px-5 py-3 font-medium">Duration</th>
+                    <th className="px-5 py-3 font-medium">Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td
+                      colSpan={10}
+                      className="px-5 py-8 text-center text-[var(--color-text-muted)]"
+                    >
+                      No scans found
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    query = query.in("project_id", searchProjectIds);
   }
 
   const { data: scans } = await query;
@@ -52,20 +125,6 @@ export default async function AdminScansPage({
 
   const userMap = new Map((users || []).map((u) => [u.id, u]));
 
-  const statusCounts = {
-    all: (scans || []).length,
-    completed: 0,
-    failed: 0,
-    in_progress: 0,
-  };
-  // Count from unfiltered would be better, but this is good enough for the filter tabs
-  if (!filterStatus) {
-    for (const s of scans || []) {
-      if (s.status in statusCounts)
-        statusCounts[s.status as keyof typeof statusCounts]++;
-    }
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -73,36 +132,15 @@ export default async function AdminScansPage({
           Scan Log
         </h1>
         <span className="text-sm text-[var(--color-text-muted)]">
-          Last 100 scans
+          {(scans || []).length} scans
         </span>
       </div>
 
-      {/* Status Filter Tabs */}
-      <div className="flex gap-2">
-        {(
-          [
-            { key: undefined, label: "All" },
-            { key: "in_progress", label: "Running" },
-            { key: "failed", label: "Failed" },
-            { key: "completed", label: "Completed" },
-          ] as const
-        ).map((tab) => (
-          <Link
-            key={tab.label}
-            href={
-              tab.key ? `/admin/scans?status=${tab.key}` : "/admin/scans"
-            }
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-              filterStatus === tab.key ||
-              (!filterStatus && tab.key === undefined)
-                ? "bg-[var(--color-primary)] text-white"
-                : "bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]"
-            }`}
-          >
-            {tab.label}
-          </Link>
-        ))}
-      </div>
+      <SearchAndFilters
+        searchQuery={searchQuery}
+        filterStatus={filterStatus}
+        filterType={filterType}
+      />
 
       {/* Scans Table */}
       <div className="glass-card overflow-hidden">
@@ -119,7 +157,7 @@ export default async function AdminScansPage({
                 <th className="px-5 py-3 font-medium">Issues</th>
                 <th className="px-5 py-3 font-medium">Started</th>
                 <th className="px-5 py-3 font-medium">Duration</th>
-                <th className="px-5 py-3 font-medium">Error</th>
+                <th className="px-5 py-3 font-medium">Details</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--color-border-subtle)]">
@@ -157,8 +195,19 @@ export default async function AdminScansPage({
                         {project?.url || ""}
                       </p>
                     </td>
-                    <td className="px-5 py-2.5 text-xs text-[var(--color-text-muted)]">
-                      {user?.email || "-"}
+                    <td className="px-5 py-2.5">
+                      {user ? (
+                        <Link
+                          href={`/admin/users/${project!.user_id}`}
+                          className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-primary)] hover:underline"
+                        >
+                          {user.email}
+                        </Link>
+                      ) : (
+                        <span className="text-xs text-[var(--color-text-muted)]">
+                          -
+                        </span>
+                      )}
                     </td>
                     <td className="px-5 py-2.5">
                       <span className="text-xs px-1.5 py-0.5 rounded bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)]">
@@ -190,14 +239,15 @@ export default async function AdminScansPage({
                     <td className="px-5 py-2.5">
                       {errorMsg ? (
                         <p
-                          className="text-[10px] text-[var(--color-score-critical)] max-w-[250px] truncate"
+                          className="text-[10px] text-[var(--color-score-critical)] max-w-[250px] truncate cursor-help"
                           title={errorMsg}
                         >
                           {errorMsg}
                         </p>
                       ) : stats?.pages_found ? (
                         <p className="text-[10px] text-[var(--color-text-muted)]">
-                          {stats.pages_found} stored, {stats.links_created || 0} links
+                          {stats.pages_found} stored, {stats.links_created || 0}{" "}
+                          links
                           {stats.pages_removed > 0 &&
                             `, ${stats.pages_removed} removed`}
                         </p>
@@ -218,6 +268,123 @@ export default async function AdminScansPage({
               )}
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SearchAndFilters({
+  searchQuery,
+  filterStatus,
+  filterType,
+}: {
+  searchQuery: string;
+  filterStatus?: string;
+  filterType?: string;
+}) {
+  // Build filter link helper: preserves other params when changing one
+  function filterHref(params: Record<string, string | undefined>) {
+    const merged: Record<string, string> = {};
+    if (searchQuery) merged.q = searchQuery;
+    if (filterStatus) merged.status = filterStatus;
+    if (filterType) merged.type = filterType;
+    for (const [k, v] of Object.entries(params)) {
+      if (v === undefined) {
+        delete merged[k];
+      } else {
+        merged[k] = v;
+      }
+    }
+    const qs = new URLSearchParams(merged).toString();
+    return qs ? `/admin/scans?${qs}` : "/admin/scans";
+  }
+
+  return (
+    <div className="space-y-3">
+      {/* Search */}
+      <form className="flex gap-2">
+        {/* Preserve existing filters when searching */}
+        {filterStatus && (
+          <input type="hidden" name="status" value={filterStatus} />
+        )}
+        {filterType && (
+          <input type="hidden" name="type" value={filterType} />
+        )}
+        <input
+          type="text"
+          name="q"
+          defaultValue={searchQuery}
+          placeholder="Search by project name..."
+          className="px-3 py-1.5 text-sm rounded-lg bg-[var(--color-surface-elevated)] border border-[var(--color-border-default)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
+        />
+        <button
+          type="submit"
+          className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--color-primary)] text-white hover:opacity-90 transition-opacity"
+        >
+          Search
+        </button>
+      </form>
+
+      {/* Filter Tabs */}
+      <div className="flex items-center gap-4">
+        {/* Status Filter */}
+        <div className="flex gap-2">
+          <span className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] self-center mr-1">
+            Status:
+          </span>
+          {(
+            [
+              { key: undefined, label: "All" },
+              { key: "in_progress", label: "Running" },
+              { key: "failed", label: "Failed" },
+              { key: "completed", label: "Completed" },
+            ] as const
+          ).map((tab) => (
+            <Link
+              key={tab.label}
+              href={filterHref({
+                status: tab.key,
+              })}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                filterStatus === tab.key ||
+                (!filterStatus && tab.key === undefined)
+                  ? "bg-[var(--color-primary)] text-white"
+                  : "bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]"
+              }`}
+            >
+              {tab.label}
+            </Link>
+          ))}
+        </div>
+
+        {/* Type Filter */}
+        <div className="flex gap-2">
+          <span className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] self-center mr-1">
+            Type:
+          </span>
+          {(
+            [
+              { key: undefined, label: "All" },
+              { key: "seo", label: "SEO" },
+              { key: "audit", label: "Audit" },
+            ] as const
+          ).map((tab) => (
+            <Link
+              key={tab.label}
+              href={filterHref({
+                type: tab.key,
+              })}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                filterType === tab.key ||
+                (!filterType && tab.key === undefined)
+                  ? "bg-[var(--color-primary)] text-white"
+                  : "bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]"
+              }`}
+            >
+              {tab.label}
+            </Link>
+          ))}
         </div>
       </div>
     </div>

@@ -7,13 +7,34 @@ export const metadata: Metadata = {
   title: "Users | Admin | RankRiot",
 };
 
-export default async function AdminUsersPage() {
+export default async function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; role?: string }>;
+}) {
+  const { q, role: filterRole } = await searchParams;
+  const searchQuery = q?.trim() || "";
   const admin = createAdminClient();
 
-  const { data: profiles } = await admin
+  // Fetch profiles
+  let query = admin
     .from("profiles")
-    .select("id, email, full_name, subscription_tier, subscription_status, created_at, updated_at")
+    .select(
+      "id, email, full_name, role, subscription_tier, subscription_status, created_at, updated_at",
+    )
     .order("created_at", { ascending: false });
+
+  if (searchQuery) {
+    query = query.or(
+      `email.ilike.%${searchQuery}%,full_name.ilike.%${searchQuery}%`,
+    );
+  }
+
+  if (filterRole) {
+    query = query.eq("role", filterRole);
+  }
+
+  const { data: profiles } = await query;
 
   // Get project counts per user
   const { data: projects } = await admin
@@ -46,6 +67,9 @@ export default async function AdminUsersPage() {
     }
   }
 
+  // Collect unique roles for the filter tabs
+  const knownRoles = ["admin", "moderator", "user"];
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -57,12 +81,73 @@ export default async function AdminUsersPage() {
         </span>
       </div>
 
+      {/* Search + Filters */}
+      <div className="space-y-3">
+        <form className="flex gap-2">
+          {filterRole && (
+            <input type="hidden" name="role" value={filterRole} />
+          )}
+          <input
+            type="text"
+            name="q"
+            defaultValue={searchQuery}
+            placeholder="Search by email or name..."
+            className="px-3 py-1.5 text-sm rounded-lg bg-[var(--color-surface-elevated)] border border-[var(--color-border-default)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
+          />
+          <button
+            type="submit"
+            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--color-primary)] text-white hover:opacity-90 transition-opacity"
+          >
+            Search
+          </button>
+        </form>
+
+        {/* Role Filter */}
+        <div className="flex gap-2">
+          <span className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] self-center mr-1">
+            Role:
+          </span>
+          <Link
+            href={
+              searchQuery
+                ? `/admin/users?q=${encodeURIComponent(searchQuery)}`
+                : "/admin/users"
+            }
+            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+              !filterRole
+                ? "bg-[var(--color-primary)] text-white"
+                : "bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]"
+            }`}
+          >
+            All
+          </Link>
+          {knownRoles.map((role) => (
+            <Link
+              key={role}
+              href={
+                searchQuery
+                  ? `/admin/users?q=${encodeURIComponent(searchQuery)}&role=${role}`
+                  : `/admin/users?role=${role}`
+              }
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                filterRole === role
+                  ? "bg-[var(--color-primary)] text-white"
+                  : "bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]"
+              }`}
+            >
+              {role.charAt(0).toUpperCase() + role.slice(1)}
+            </Link>
+          ))}
+        </div>
+      </div>
+
       <div className="glass-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-xs text-[var(--color-text-muted)] border-b border-[var(--color-border-subtle)]">
                 <th className="px-5 py-3 font-medium">User</th>
+                <th className="px-5 py-3 font-medium">Role</th>
                 <th className="px-5 py-3 font-medium">Plan</th>
                 <th className="px-5 py-3 font-medium">Projects</th>
                 <th className="px-5 py-3 font-medium">Last Scan</th>
@@ -81,14 +166,20 @@ export default async function AdminUsersPage() {
                     className="hover:bg-[var(--color-surface-hover)]"
                   >
                     <td className="px-5 py-3">
-                      <div>
+                      <Link
+                        href={`/admin/users/${profile.id}`}
+                        className="hover:underline"
+                      >
                         <p className="font-medium text-[var(--color-text-primary)]">
                           {profile.full_name || "No name"}
                         </p>
                         <p className="text-xs text-[var(--color-text-muted)]">
                           {profile.email || profile.id.slice(0, 8)}
                         </p>
-                      </div>
+                      </Link>
+                    </td>
+                    <td className="px-5 py-3">
+                      <RoleBadge role={profile.role} />
                     </td>
                     <td className="px-5 py-3">
                       <PlanBadge
@@ -157,11 +248,38 @@ export default async function AdminUsersPage() {
                   </tr>
                 );
               })}
+              {(profiles || []).length === 0 && (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="px-5 py-8 text-center text-[var(--color-text-muted)]"
+                  >
+                    No users found
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
     </div>
+  );
+}
+
+function RoleBadge({ role }: { role: string | null }) {
+  const roleConfig: Record<string, string> = {
+    admin:
+      "bg-[var(--color-score-critical)]/15 text-[var(--color-score-critical)]",
+    moderator:
+      "bg-[var(--color-score-warning)]/15 text-[var(--color-score-warning)]",
+    user: "bg-[var(--color-surface-elevated)] text-[var(--color-text-muted)]",
+  };
+  const color =
+    roleConfig[role || "user"] || roleConfig.user;
+  return (
+    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${color}`}>
+      {role || "user"}
+    </span>
   );
 }
 
@@ -185,7 +303,9 @@ function PlanBadge({
 
   return (
     <div>
-      <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${color}`}>
+      <span
+        className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${color}`}
+      >
         {tier || "free"}
       </span>
       {status && status !== "active" && (
