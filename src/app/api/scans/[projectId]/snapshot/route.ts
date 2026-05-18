@@ -51,12 +51,12 @@ export async function POST(
       );
     }
 
-    // Get issue counts by severity
+    // Get issue counts by severity — scoped to this specific scan
     const { data: issues } = await supabase
       .from("issues")
       .select("severity")
       .eq("project_id", projectId)
-      .eq("is_fixed", false);
+      .eq("scan_id", scanId);
 
     const issueCounts = {
       critical: 0,

@@ -120,6 +120,7 @@ export default async function PageDetailPage({
       )
     `
     )
+    .eq("project_id", projectId)
     .filter("destination_url", "ilike", `%${escapedUrl}`);
 
   const filteredInPageLinks =
@@ -127,13 +128,27 @@ export default async function PageDetailPage({
       return normalizeUrl(link.destination_url) === normalizedPageUrl;
     }) || [];
 
-  // Get issues for this page
-  const { data: pageIssues } = await supabase
+  // Get latest completed scan for issue scoping
+  const { data: latestPageScan } = await supabase
+    .from("scans")
+    .select("id")
+    .eq("project_id", projectId)
+    .eq("status", "completed")
+    .order("started_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  // Get issues for this page — scoped to latest scan if available
+  let pageIssuesQuery = supabase
     .from("issues")
     .select("*")
     .eq("page_id", pageId)
     .eq("is_fixed", false)
     .order("created_at", { ascending: false });
+  if (latestPageScan) {
+    pageIssuesQuery = pageIssuesQuery.eq("scan_id", latestPageScan.id);
+  }
+  const { data: pageIssues } = await pageIssuesQuery;
 
   // Extract data from page
   const {

@@ -137,19 +137,13 @@ export default async function ProjectDetailPage({
     .eq("project_id", projectId)
     .like("url", "http%");
 
-  const { count: issuesCount } = await supabase
-    .from("issues")
-    .select("*", { count: "exact", head: true })
-    .eq("project_id", projectId)
-    .eq("is_fixed", false);
-
   const { count: brokenLinksCount } = await supabase
     .from("page_links")
     .select("*", { count: "exact", head: true })
     .eq("project_id", projectId)
     .eq("is_broken", true);
 
-  // Get the latest scan
+  // Get the latest scan (fetched first so we can scope issues to it)
   const { data: latestScan } = await supabase
     .from("scans")
     .select("*")
@@ -158,8 +152,24 @@ export default async function ProjectDetailPage({
     .limit(1)
     .single();
 
-  // Get recent issues
-  const { data: recentIssues } = await supabase
+  // Find the latest completed scan to scope issues
+  const latestCompletedScanId = latestScan?.status === "completed"
+    ? latestScan.id
+    : null;
+
+  // Get issues count — scoped to latest completed scan if available
+  let issuesCountQuery = supabase
+    .from("issues")
+    .select("*", { count: "exact", head: true })
+    .eq("project_id", projectId)
+    .eq("is_fixed", false);
+  if (latestCompletedScanId) {
+    issuesCountQuery = issuesCountQuery.eq("scan_id", latestCompletedScanId);
+  }
+  const { count: issuesCount } = await issuesCountQuery;
+
+  // Get recent issues — scoped to latest completed scan if available
+  let recentIssuesQuery = supabase
     .from("issues")
     .select(
       `
@@ -171,6 +181,10 @@ export default async function ProjectDetailPage({
     .eq("is_fixed", false)
     .order("created_at", { ascending: false })
     .limit(50);
+  if (latestCompletedScanId) {
+    recentIssuesQuery = recentIssuesQuery.eq("scan_id", latestCompletedScanId);
+  }
+  const { data: recentIssues } = await recentIssuesQuery;
 
   // Get scan history
   const { data: scanHistory } = await supabase
@@ -426,13 +440,15 @@ export default async function ProjectDetailPage({
       has_robots_noindex, has_robots_nofollow, redirect_url,
       h1s, h2s, h3s, h4s, h5s, h6s,
       images, schema_types, structured_data, open_graph, twitter_card,
-      js_count, css_count, content_type`)
+      js_count, css_count, content_type,
+      has_viewport_meta, has_mixed_content, heading_hierarchy_valid,
+      security_headers, redirect_chain`)
     .eq("project_id", projectId)
     .like("url", "http%")
     .order("url");
 
-  // Get all issues for export
-  const { data: allIssuesForExport } = await supabase
+  // Get all issues for export — scoped to latest completed scan if available
+  let allIssuesForExportQuery = supabase
     .from("issues")
     .select(`
       issue_type,
@@ -446,6 +462,10 @@ export default async function ProjectDetailPage({
     .eq("project_id", projectId)
     .eq("is_fixed", false)
     .order("created_at", { ascending: false });
+  if (latestCompletedScanId) {
+    allIssuesForExportQuery = allIssuesForExportQuery.eq("scan_id", latestCompletedScanId);
+  }
+  const { data: allIssuesForExport } = await allIssuesForExportQuery;
 
   // Format issues for export
   const formattedIssuesForExport = (allIssuesForExport || []).map((issue: any) => ({
