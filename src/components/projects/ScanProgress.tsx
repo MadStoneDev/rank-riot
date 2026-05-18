@@ -16,12 +16,14 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
   const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
   const [showCompleted, setShowCompleted] = useState(false);
   const [previousPagesScanned, setPreviousPagesScanned] = useState(0);
+  const [stagnantSince, setStagnantSince] = useState<number | null>(null);
 
   // Refs to avoid stale closures in subscription/polling callbacks
   const scanRef = useRef<any>(null);
   const showCompletedRef = useRef(false);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
   const completedRef = useRef<NodeJS.Timeout | null>(null);
+  const stagnantSinceRef = useRef<number | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -71,13 +73,20 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
         const prev = scanRef.current;
         if (prev && prev.pages_scanned !== data.pages_scanned) {
           setPreviousPagesScanned(prev.pages_scanned || 0);
+          stagnantSinceRef.current = null;
+          setStagnantSince(null);
+        } else if (prev && prev.pages_scanned === data.pages_scanned && data.pages_scanned > 0) {
+          if (!stagnantSinceRef.current) {
+            stagnantSinceRef.current = Date.now();
+            setStagnantSince(Date.now());
+          }
         }
 
         scanRef.current = data;
         setScan(data);
         setLastUpdateTime(new Date());
 
-        if (data.status === "completed") {
+        if (data.status === "completed" || data.status === "failed") {
           onCompleted();
         }
       } catch {
@@ -117,7 +126,7 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
           setLastUpdateTime(new Date());
 
           if (
-            payload.new.status === "completed" &&
+            (payload.new.status === "completed" || payload.new.status === "failed") &&
             !showCompletedRef.current
           ) {
             onCompleted();
@@ -247,6 +256,7 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
   const progressPercentage = calculateProgress();
   const estimatedTimeRemaining = getEstimatedTimeRemaining();
   const showPagesIncrement = scan.pages_scanned > previousPagesScanned;
+  const isProcessingResults = stagnantSince && (Date.now() - stagnantSince > 10000);
 
   return (
     <div className="mb-6 p-4 bg-[var(--color-score-warning)]/10 border-l-4 border-yellow-500 text-[var(--color-score-warning)] rounded-md">
@@ -254,8 +264,8 @@ export default function ScanProgress({ scanId, projectId }: ScanProgressProps) {
         <div className="flex items-center">
           <IconRefresh className="h-5 w-5 mr-2 animate-spin" />
           <p className="text-sm font-medium">
-            Scan in progress...
-            {scan.summary_stats?.queue_size > 0 && (
+            {isProcessingResults ? "Processing results..." : "Scan in progress..."}
+            {!isProcessingResults && scan.summary_stats?.queue_size > 0 && (
               <span className="ml-1 text-xs">
                 ({scan.summary_stats.queue_size} pages in queue)
               </span>

@@ -40,19 +40,31 @@ export function findOrphanPages(
   pages: PageWithDepth[],
   internalLinks: InternalLink[]
 ): OrphanPage[] {
-  // Get all page IDs that have inbound links
+  // Get all page IDs that have inbound links (via destination_page_id)
   const pagesWithInboundLinks = new Set(
     internalLinks
       .filter((link) => link.destination_page_id !== null)
       .map((link) => link.destination_page_id)
   );
 
+  // Also build a set of URLs that are linked to (for fallback matching)
+  const linkedUrls = new Set<string>();
+  for (const link of internalLinks) {
+    if (link.destination_url) {
+      linkedUrls.add(link.destination_url.toLowerCase().replace(/\/$/, ""));
+    }
+  }
+
   // Find pages that don't have any inbound links (excluding homepage at depth 0)
   return pages
-    .filter(
-      (page) =>
-        !pagesWithInboundLinks.has(page.id) && (page.depth ?? 0) > 0
-    )
+    .filter((page) => {
+      if ((page.depth ?? 0) === 0) return false;
+      if (pagesWithInboundLinks.has(page.id)) return false;
+      // Fallback: check if any link's destination_url matches this page
+      const normalizedUrl = page.url.toLowerCase().replace(/\/$/, "");
+      if (linkedUrls.has(normalizedUrl)) return false;
+      return true;
+    })
     .map((page) => ({
       id: page.id,
       url: page.url,
@@ -88,16 +100,26 @@ export function calculateLinkStats(
     outboundCounts.set(page.id, 0);
   });
 
+  // Build URL-to-ID map for fallback matching (case-insensitive, trailing slash agnostic)
+  const urlToId = new Map<string, string>();
+  for (const page of pages) {
+    urlToId.set(page.url.toLowerCase().replace(/\/$/, ""), page.id);
+  }
+
   // Count inbound and outbound links
   internalLinks.forEach((link) => {
     // Outbound from source
     const currentOutbound = outboundCounts.get(link.source_page_id) ?? 0;
     outboundCounts.set(link.source_page_id, currentOutbound + 1);
 
-    // Inbound to destination
-    if (link.destination_page_id) {
-      const currentInbound = inboundCounts.get(link.destination_page_id) ?? 0;
-      inboundCounts.set(link.destination_page_id, currentInbound + 1);
+    // Inbound to destination (by page ID or by URL fallback)
+    let destId = link.destination_page_id;
+    if (!destId && link.destination_url) {
+      destId = urlToId.get(link.destination_url.toLowerCase().replace(/\/$/, "")) || null;
+    }
+    if (destId) {
+      const currentInbound = inboundCounts.get(destId) ?? 0;
+      inboundCounts.set(destId, currentInbound + 1);
     }
   });
 

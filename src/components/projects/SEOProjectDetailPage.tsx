@@ -277,7 +277,7 @@ export default async function ProjectDetailPage({
   // Get internal links for orphan/linking analysis
   const { data: internalLinks } = await supabase
     .from("page_links")
-    .select("source_page_id, destination_page_id")
+    .select("source_page_id, destination_page_id, destination_url")
     .eq("project_id", projectId)
     .eq("link_type", "internal");
 

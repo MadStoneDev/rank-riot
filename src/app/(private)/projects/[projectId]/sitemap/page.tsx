@@ -60,7 +60,7 @@ export default async function SiteMapPage({
   const pageIds = (allPages || []).map((p) => p.id);
   const { data: internalLinks } = await supabase
     .from("page_links")
-    .select("source_page_id, destination_page_id")
+    .select("source_page_id, destination_page_id, destination_url")
     .eq("project_id", projectId)
     .eq("link_type", "internal");
 
@@ -73,6 +73,7 @@ export default async function SiteMapPage({
     links.map((l) => ({
       source_page_id: l.source_page_id,
       destination_page_id: l.destination_page_id,
+      destination_url: l.destination_url,
     })),
   );
 

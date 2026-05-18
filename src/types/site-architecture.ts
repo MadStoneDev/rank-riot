@@ -28,6 +28,7 @@ export interface PageLinkStats {
 export interface InternalLink {
   source_page_id: string;
   destination_page_id: string | null;
+  destination_url?: string;
 }
 
 export interface SiteArchitectureData {

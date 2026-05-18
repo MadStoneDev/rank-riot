@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { IconRefresh } from "@tabler/icons-react";
 import { startScan } from "@/app/(private)/projects/actions";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 interface StartScanButtonProps {
@@ -12,7 +11,6 @@ interface StartScanButtonProps {
 
 export default function StartScanButton({ projectId }: StartScanButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   // Listen for scan completion from ScanProgress component
   const handleScanCompleted = useCallback(() => {
@@ -42,9 +40,9 @@ export default function StartScanButton({ projectId }: StartScanButtonProps) {
         setIsLoading(false);
       } else {
         toast.success("Scan started successfully");
-        // Refresh the page so the server re-renders with ScanProgress
-        router.refresh();
-        // Keep button disabled — ScanProgress will take over
+        // Full page reload ensures the server component re-renders and
+        // ScanProgress mounts with the new in_progress scan
+        setTimeout(() => window.location.reload(), 500);
       }
     } catch (error) {
       const errorMessage =
