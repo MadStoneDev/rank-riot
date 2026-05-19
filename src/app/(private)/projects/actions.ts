@@ -64,8 +64,8 @@ export async function createProject(formData: FormData) {
   }
 
   // Create project in database
-  const frequency = project_type === "seo" ? scan_frequency || "weekly" : null;
-  const nextScanAt = frequency ? computeNextScanAt(new Date(), frequency) : null;
+  const frequency = scan_frequency || "weekly";
+  const nextScanAt = computeNextScanAt(new Date(), frequency);
 
   const { data, error } = await supabase
     .from("projects")
@@ -182,8 +182,7 @@ export async function updateProject(formData: FormData) {
     updated_at: new Date().toISOString(),
   };
 
-  // Only update scan_frequency for SEO projects
-  if (existingProject.project_type === "seo") {
+  if (scan_frequency) {
     updateData.scan_frequency = scan_frequency;
     const nextScanAt = computeNextScanAt(new Date(), scan_frequency);
     updateData.next_scan_at = nextScanAt ? nextScanAt.toISOString() : null;

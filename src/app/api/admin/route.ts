@@ -295,6 +295,116 @@ async function cancelScan(
   return NextResponse.json({ success: true, scanId, status: "failed" });
 }
 
+async function diagnoseOrphan(
+  params: Record<string, unknown>,
+): Promise<NextResponse> {
+  const { projectId, pageUrl } = params as {
+    projectId?: string;
+    pageUrl?: string;
+  };
+
+  if (!projectId || !pageUrl) {
+    return error("Missing required params: projectId, pageUrl", 400);
+  }
+
+  const admin = createAdminClient();
+
+  // Find the page
+  const { data: pages } = await admin
+    .from("pages")
+    .select("id, url, depth, title")
+    .eq("project_id", projectId)
+    .ilike("url", `%${pageUrl}%`);
+
+  if (!pages || pages.length === 0) {
+    return NextResponse.json({
+      success: true,
+      diagnosis: "Page not found in database",
+      searchedFor: pageUrl,
+      projectId,
+    });
+  }
+
+  const results = [];
+
+  for (const page of pages) {
+    // Find inbound links (other pages linking TO this page)
+    const { data: inboundById } = await admin
+      .from("page_links")
+      .select("source_page_id, destination_url, destination_page_id, anchor_text")
+      .eq("project_id", projectId)
+      .eq("destination_page_id", page.id);
+
+    // Also check by destination_url matching
+    const { data: inboundByUrl } = await admin
+      .from("page_links")
+      .select("source_page_id, destination_url, destination_page_id, anchor_text")
+      .eq("project_id", projectId)
+      .eq("destination_url", page.url);
+
+    // Get source page URLs for context
+    const sourceIds = new Set([
+      ...(inboundById || []).map((l) => l.source_page_id),
+      ...(inboundByUrl || []).map((l) => l.source_page_id),
+    ]);
+
+    let sourcePagesMap: Record<string, string> = {};
+    if (sourceIds.size > 0) {
+      const { data: sourcePages } = await admin
+        .from("pages")
+        .select("id, url")
+        .in("id", [...sourceIds]);
+      sourcePagesMap = Object.fromEntries(
+        (sourcePages || []).map((p) => [p.id, p.url]),
+      );
+    }
+
+    // Find outbound links FROM this page (to verify it was crawled with links)
+    const { data: outbound } = await admin
+      .from("page_links")
+      .select("destination_url, destination_page_id")
+      .eq("project_id", projectId)
+      .eq("source_page_id", page.id)
+      .limit(10);
+
+    // Check if there are orphan_page issues for this page
+    const { data: orphanIssues } = await admin
+      .from("issues")
+      .select("id, scan_id, issue_type, created_at")
+      .eq("project_id", projectId)
+      .eq("page_id", page.id)
+      .eq("issue_type", "orphan_page");
+
+    results.push({
+      page: {
+        id: page.id,
+        url: page.url,
+        depth: page.depth,
+        title: page.title,
+      },
+      inboundLinks: {
+        byPageId: (inboundById || []).map((l) => ({
+          from: sourcePagesMap[l.source_page_id] || l.source_page_id,
+          anchor: l.anchor_text,
+          destination_url: l.destination_url,
+        })),
+        byUrl: (inboundByUrl || []).map((l) => ({
+          from: sourcePagesMap[l.source_page_id] || l.source_page_id,
+          anchor: l.anchor_text,
+          destination_page_id: l.destination_page_id,
+        })),
+        totalById: (inboundById || []).length,
+        totalByUrl: (inboundByUrl || []).length,
+      },
+      outboundLinks: (outbound || []).length,
+      outboundSample: outbound || [],
+      orphanIssues: orphanIssues || [],
+    });
+  }
+
+  return NextResponse.json({ success: true, projectId, diagnosis: results });
+}
+
 // ---------------------------------------------------------------------------
 // Route handler
 // ---------------------------------------------------------------------------
@@ -333,6 +443,8 @@ export async function POST(request: NextRequest) {
         return await deleteScan(params);
       case "cancel_scan":
         return await cancelScan(params);
+      case "diagnose_orphan":
+        return await diagnoseOrphan(params);
       default:
         return error(`Unknown action: ${action}`, 400);
     }

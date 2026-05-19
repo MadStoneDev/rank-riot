@@ -257,8 +257,7 @@ export default function NewProjectForm({
           </div>
         </div>
 
-        {/* Only show scan frequency for SEO projects */}
-        {projectType === "seo" && (
+        {(projectType === "seo" || projectType === "audit") && (
           <div className="sm:col-span-3">
             <label
               htmlFor="scan_frequency"
