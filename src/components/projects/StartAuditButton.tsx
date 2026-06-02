@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { IconChartBar, IconRefresh } from "@tabler/icons-react";
 import { startAuditScan } from "@/app/(private)/projects/actions";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 interface StartAuditButtonProps {
@@ -12,7 +11,15 @@ interface StartAuditButtonProps {
 
 export default function StartAuditButton({ projectId }: StartAuditButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+
+  const handleScanCompleted = useCallback(() => {
+    setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("scanCompleted", handleScanCompleted);
+    return () => window.removeEventListener("scanCompleted", handleScanCompleted);
+  }, [handleScanCompleted]);
 
   const handleStartAudit = async () => {
     setIsLoading(true);
@@ -29,11 +36,13 @@ export default function StartAuditButton({ projectId }: StartAuditButtonProps) {
               "An error occurred while starting the audit";
 
         toast.error(errorMessage);
+        setIsLoading(false);
       } else if (result.success) {
         toast.success("Audit scan started successfully");
-        router.refresh();
+        setTimeout(() => window.location.reload(), 500);
       } else {
         toast.error("Unexpected response from server");
+        setIsLoading(false);
       }
     } catch (error) {
       const errorMessage =
@@ -42,7 +51,6 @@ export default function StartAuditButton({ projectId }: StartAuditButtonProps) {
           : "An error occurred while starting the audit";
 
       toast.error(errorMessage);
-    } finally {
       setIsLoading(false);
     }
   };

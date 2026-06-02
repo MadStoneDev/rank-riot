@@ -3,7 +3,6 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import {
   IconSettings,
-  IconRefresh,
   IconChartBar,
   IconAlertCircle,
   IconCircleDashedCheck,
@@ -11,6 +10,7 @@ import {
 } from "@tabler/icons-react";
 
 import AuditResults from "@/components/projects/AuditResults";
+import ScanProgress from "@/components/projects/ScanProgress";
 import StartAuditButton from "@/components/projects/StartAuditButton";
 
 export async function generateMetadata({
@@ -129,19 +129,9 @@ export default async function AuditProjectDetailPage({
         </div>
       </div>
 
-      {/* Scan Status Banner */}
+      {/* Scan Progress (polls + auto-reloads on completion) */}
       {latestScan && latestScan.status === "in_progress" && (
-        <div className="bg-[var(--color-score-warning-muted)] border border-[var(--color-score-warning)]/20 rounded-2xl p-4">
-          <div className="flex items-center gap-3">
-            <IconRefresh className="h-5 w-5 text-[var(--color-score-warning)] animate-spin flex-shrink-0" />
-            <div>
-              <p className="text-sm font-medium text-[var(--color-score-warning)]">Audit scan in progress...</p>
-              <p className="text-sm text-[var(--color-score-warning)]/80 mt-0.5">
-                Analyzing your website. This usually takes 1-2 minutes.
-              </p>
-            </div>
-          </div>
-        </div>
+        <ScanProgress scanId={latestScan.id} projectId={projectId} />
       )}
 
       {latestScan && latestScan.status === "failed" && (
