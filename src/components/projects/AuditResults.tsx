@@ -8,6 +8,10 @@ import {
   IconCpu,
   IconPalette,
   IconShield,
+  IconAccessible,
+  IconBolt,
+  IconCheck,
+  IconX,
 } from "@tabler/icons-react";
 
 interface AuditResultsProps {
@@ -322,8 +326,30 @@ export default function AuditResults({ results }: AuditResultsProps) {
                 </div>
               </div>
             )}
+
+          {results.performance_metrics.findings &&
+            results.performance_metrics.findings.length > 0 && (
+              <div className="mt-4">
+                <p className="text-sm font-medium text-[var(--color-text-secondary)] mb-2">
+                  Performance Findings
+                </p>
+                <FindingsList findings={results.performance_metrics.findings} />
+              </div>
+            )}
         </div>
       )}
+
+      {/* Standards & Accessibility */}
+      {results.modern_standards?.findings &&
+        results.modern_standards.findings.length > 0 && (
+          <div className="bg-[var(--color-surface-raised)] rounded-lg shadow p-6">
+            <h3 className="text-xl font-bold mb-4 flex items-center">
+              <IconAccessible className="w-5 h-5 mr-2" />
+              Standards & Accessibility
+            </h3>
+            <FindingsList findings={results.modern_standards.findings} />
+          </div>
+        )}
     </div>
   );
 }
@@ -419,6 +445,30 @@ function RecommendationCard({ recommendation }: { recommendation: any }) {
           </p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function FindingsList({ findings }: { findings: string[] }) {
+  const negativePatterns = /^no |^missing |not |lack|insufficient|without|outdated|slow|large |critical|invisible/i;
+
+  return (
+    <div className="space-y-2">
+      {findings.map((finding: string, index: number) => {
+        const isNegative = negativePatterns.test(finding);
+        return (
+          <div key={index} className="flex items-start gap-2 text-sm">
+            {isNegative ? (
+              <IconX className="w-4 h-4 mt-0.5 flex-shrink-0 text-[var(--color-score-critical)]" />
+            ) : (
+              <IconCheck className="w-4 h-4 mt-0.5 flex-shrink-0 text-[var(--color-score-good)]" />
+            )}
+            <span className={isNegative ? "text-[var(--color-text-primary)]" : "text-[var(--color-text-secondary)]"}>
+              {finding}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
