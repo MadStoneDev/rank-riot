@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback, type RefObject } from "react";
+import { createPortal } from "react-dom";
 import { IconX } from "@tabler/icons-react";
 
 interface ModalProps {
@@ -83,7 +84,7 @@ export default function Modal({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div
       ref={overlayRef}
       className="fixed top-0 right-0 bottom-0 left-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-in fade-in duration-200"
@@ -118,6 +119,7 @@ export default function Modal({
         {/* Scrollable body */}
         <div className="overflow-y-auto flex-1">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
