@@ -583,6 +583,12 @@ export default async function ProjectDetailPage({
     ? (latestScan.summary_stats as any).site_level_data
     : null;
 
+  // Helper to safely flatten schema_types (which may contain arrays due to JSON-LD multi-type)
+  const getSchemaTypes = (p: any): string[] =>
+    Array.isArray(p.schema_types)
+      ? p.schema_types.flatMap((t: any) => Array.isArray(t) ? t : [t]).filter((t: any) => typeof t === 'string')
+      : [];
+
   // Build checklist scan data from all available data
   const allExportPages = allPagesForExport || [];
   const checklistScanData: ChecklistScanData = {
@@ -622,11 +628,11 @@ export default async function ProjectDetailPage({
     pagesWithValidHeadingHierarchy: allExportPages.filter((p: any) => p.heading_hierarchy_valid).length,
     pagesWithSecurityHeaders: allExportPages.filter((p: any) => p.security_headers && Object.keys(p.security_headers).length > 0).length,
     pagesWithRedirectChains: allExportPages.filter((p: any) => Array.isArray(p.redirect_chain) && p.redirect_chain.length >= 3).length,
-    pagesWithFaqSchema: allExportPages.filter((p: any) => Array.isArray(p.schema_types) && p.schema_types.some((t: string) => t.toLowerCase().includes('faq'))).length,
-    pagesWithHowToSchema: allExportPages.filter((p: any) => Array.isArray(p.schema_types) && p.schema_types.some((t: string) => t.toLowerCase().includes('howto'))).length,
-    pagesWithBreadcrumbSchema: allExportPages.filter((p: any) => Array.isArray(p.schema_types) && p.schema_types.some((t: string) => t.toLowerCase().includes('breadcrumb'))).length,
-    pagesWithArticleSchema: allExportPages.filter((p: any) => Array.isArray(p.schema_types) && p.schema_types.some((t: string) => t.toLowerCase().includes('article'))).length,
-    pagesWithOrganizationSchema: allExportPages.filter((p: any) => Array.isArray(p.schema_types) && p.schema_types.some((t: string) => t.toLowerCase().includes('organization'))).length,
+    pagesWithFaqSchema: allExportPages.filter((p: any) => getSchemaTypes(p).some(t => t.toLowerCase().includes('faq'))).length,
+    pagesWithHowToSchema: allExportPages.filter((p: any) => getSchemaTypes(p).some(t => t.toLowerCase().includes('howto'))).length,
+    pagesWithBreadcrumbSchema: allExportPages.filter((p: any) => getSchemaTypes(p).some(t => t.toLowerCase().includes('breadcrumb'))).length,
+    pagesWithArticleSchema: allExportPages.filter((p: any) => getSchemaTypes(p).some(t => t.toLowerCase().includes('article'))).length,
+    pagesWithOrganizationSchema: allExportPages.filter((p: any) => getSchemaTypes(p).some(t => t.toLowerCase().includes('organization'))).length,
   };
 
   const exportFilenamePrefix = sanitizeFilename(project.name);

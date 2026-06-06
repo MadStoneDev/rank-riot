@@ -45,8 +45,9 @@ export function calculateAeoReadiness(page: AeoPageInput): AeoResult {
   const signals: AeoSignal[] = [];
   const recommendations: string[] = [];
 
-  const schemaTypes = Array.isArray(page.schema_types) ? page.schema_types : [];
-  const schemaTypesLower = schemaTypes.map((s) => s.toLowerCase());
+  const schemaTypesRaw = Array.isArray(page.schema_types) ? page.schema_types : [];
+  const schemaTypes = schemaTypesRaw.flatMap((s: any) => Array.isArray(s) ? s : [s]).filter((s: any) => typeof s === 'string');
+  const schemaTypesLower = schemaTypes.map((s: string) => s.toLowerCase());
 
   // ── FUNDAMENTALS (up to 70 points) ──────────────────────────────────
 
