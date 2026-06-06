@@ -332,7 +332,7 @@ export default async function ProjectDetailPage({
   // Get pages with technical data
   const { data: pagesWithTechnical } = await supabase
     .from("pages")
-    .select("id, url, title, http_status, redirect_url, is_indexable, has_robots_noindex, canonical_url, load_time_ms, first_byte_time_ms, size_bytes")
+    .select("id, url, title, http_status, redirect_url, is_indexable, has_robots_noindex, canonical_url, canonical_is_self, load_time_ms, first_byte_time_ms, size_bytes")
     .eq("project_id", projectId)
     .like("url", "http%");
 
@@ -637,13 +637,12 @@ export default async function ProjectDetailPage({
 
   const exportFilenamePrefix = sanitizeFilename(project.name);
 
-  // Calculate category scores for the overview
-  const technicalScore = Math.round(
-    100 - (technicalHealthData.summary.critical * 15 + technicalHealthData.summary.warnings * 5)
-  );
-  const contentScore = Math.round(
-    100 - (contentIntelligenceData.summary.critical * 15 + contentIntelligenceData.summary.warnings * 5)
-  );
+  // Calculate category scores for the overview (proportional to site size)
+  const totalPagesForScoring = Math.max(1, pagesCount || 1);
+  const technicalPenalty = (technicalHealthData.summary.critical * 15 + technicalHealthData.summary.warnings * 5) / totalPagesForScoring;
+  const technicalScore = Math.round(Math.max(0, Math.min(100, 100 - technicalPenalty * 10)));
+  const contentPenalty = (contentIntelligenceData.summary.critical * 15 + contentIntelligenceData.summary.warnings * 5) / totalPagesForScoring;
+  const contentScore = Math.round(Math.max(0, Math.min(100, 100 - contentPenalty * 10)));
   const mediaScore = Math.round(
     mediaAnalysisData.totalImages > 0 ? mediaAnalysisData.altCoveragePercent : 100
   );

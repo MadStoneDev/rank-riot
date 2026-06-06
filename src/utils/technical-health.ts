@@ -133,6 +133,7 @@ export function findNonIndexablePages(
     is_indexable: boolean | null;
     has_robots_noindex: boolean | null;
     canonical_url: string | null;
+    canonical_is_self?: boolean | null;
   }[]
 ): NonIndexablePage[] {
   return pages
@@ -140,13 +141,13 @@ export function findNonIndexablePages(
       (page) =>
         page.is_indexable === false ||
         page.has_robots_noindex === true ||
-        (page.canonical_url && page.canonical_url !== page.url)
+        (page.canonical_url && page.canonical_is_self === false)
     )
     .map((page) => {
       let reason: NonIndexablePage["reason"] = "not_indexable";
       if (page.has_robots_noindex) {
         reason = "noindex";
-      } else if (page.canonical_url && page.canonical_url !== page.url) {
+      } else if (page.canonical_url && page.canonical_is_self === false) {
         reason = "canonical_mismatch";
       }
       return {
