@@ -237,21 +237,28 @@ export default async function AdminScansPage({
                       {duration !== null ? formatDuration(duration) : "-"}
                     </td>
                     <td className="px-5 py-2.5">
-                      {errorMsg ? (
+                      <Link
+                        href={`/admin/scans/${scan.id}`}
+                        className="text-xs text-[var(--color-primary)] hover:underline"
+                      >
+                        View Log
+                      </Link>
+                      {errorMsg && (
                         <p
-                          className="text-[10px] text-[var(--color-score-critical)] max-w-[250px] truncate cursor-help"
+                          className="text-[10px] text-[var(--color-score-critical)] max-w-[250px] truncate cursor-help mt-0.5"
                           title={errorMsg}
                         >
                           {errorMsg}
                         </p>
-                      ) : stats?.pages_found ? (
-                        <p className="text-[10px] text-[var(--color-text-muted)]">
+                      )}
+                      {!errorMsg && stats?.pages_found && (
+                        <p className="text-[10px] text-[var(--color-text-muted)] mt-0.5">
                           {stats.pages_found} stored, {stats.links_created || 0}{" "}
                           links
                           {stats.pages_removed > 0 &&
                             `, ${stats.pages_removed} removed`}
                         </p>
-                      ) : null}
+                      )}
                     </td>
                   </tr>
                 );
