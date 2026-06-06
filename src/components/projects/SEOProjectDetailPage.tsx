@@ -640,9 +640,9 @@ export default async function ProjectDetailPage({
   // Calculate category scores for the overview (proportional to site size)
   const totalPagesForScoring = Math.max(1, pagesCount || 1);
   const technicalPenalty = (technicalHealthData.summary.critical * 15 + technicalHealthData.summary.warnings * 5) / totalPagesForScoring;
-  const technicalScore = Math.round(Math.max(0, Math.min(100, 100 - technicalPenalty * 10)));
+  const technicalScore = Math.round(Math.max(0, Math.min(100, 100 - technicalPenalty * 6)));
   const contentPenalty = (contentIntelligenceData.summary.critical * 15 + contentIntelligenceData.summary.warnings * 5) / totalPagesForScoring;
-  const contentScore = Math.round(Math.max(0, Math.min(100, 100 - contentPenalty * 10)));
+  const contentScore = Math.round(Math.max(0, Math.min(100, 100 - contentPenalty * 6)));
   const mediaScore = Math.round(
     mediaAnalysisData.totalImages > 0 ? mediaAnalysisData.altCoveragePercent : 100
   );
