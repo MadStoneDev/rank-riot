@@ -271,7 +271,7 @@ export default function AdvancedSettingsFields({
               : null;
           return (
             <div key={index}>
-            <div className="flex items-center gap-3">
+            <div className="grid grid-cols-[11rem_minmax(0,1fr)_auto] items-center gap-3">
               <select
                 value={entry.type}
                 onChange={(e) =>
@@ -279,7 +279,7 @@ export default function AdvancedSettingsFields({
                     type: e.target.value as CustomUrlType,
                   })
                 }
-                className={`${inputClasses} w-44 flex-shrink-0`}
+                className={inputClasses}
                 disabled={disabled}
                 aria-label="Info type"
               >
