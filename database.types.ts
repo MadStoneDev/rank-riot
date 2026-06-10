@@ -12,6 +12,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_notes: {
+        Row: {
+          id: string
+          author_id: string | null
+          target_type: string
+          target_id: string
+          content: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          author_id?: string | null
+          target_type: string
+          target_id: string
+          content: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          author_id?: string | null
+          target_type?: string
+          target_id?: string
+          content?: string
+          created_at?: string | null
+        }
+        Relationships: []
+      }
       audit_results: {
         Row: {
           id: string
@@ -564,6 +591,7 @@ export type Database = {
           paddle_customer_id: string | null
           subscription_status: string | null
           subscription_tier: string | null
+          role: string | null
           settings: Json | null
           created_at: string | null
           updated_at: string | null
@@ -578,6 +606,7 @@ export type Database = {
           paddle_customer_id?: string | null
           subscription_status?: string | null
           subscription_tier?: string | null
+          role?: string | null
           settings?: Json | null
           created_at?: string | null
           updated_at?: string | null
@@ -592,6 +621,7 @@ export type Database = {
           paddle_customer_id?: string | null
           subscription_status?: string | null
           subscription_tier?: string | null
+          role?: string | null
           settings?: Json | null
           created_at?: string | null
           updated_at?: string | null

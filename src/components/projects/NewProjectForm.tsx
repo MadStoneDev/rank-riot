@@ -6,6 +6,7 @@ import Link from "next/link";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { PlanId } from "@/types/subscription";
+import AdvancedSettingsFields from "./AdvancedSettingsFields";
 
 interface NewProjectFormProps {
   currentPlan?: PlanId;
@@ -21,6 +22,8 @@ export default function NewProjectForm({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [projectType, setProjectType] = useState<"seo" | "audit">("seo");
+  const [activeTab, setActiveTab] = useState<"basics" | "advanced">("basics");
+  const [url, setUrl] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const router = useRouter();
 
@@ -33,6 +36,15 @@ export default function NewProjectForm({
 
     const formData = new FormData(formRef.current);
     formData.append("project_type", projectType);
+
+    // Manual validation (form is noValidate): required fields live on the
+    // basics tab, which may be hidden — switch to it so errors are visible
+    if (!String(formData.get("name") || "").trim() || !String(formData.get("url") || "").trim()) {
+      setActiveTab("basics");
+      setError("Project name and website URL are required.");
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch("/api/projects", {
@@ -77,7 +89,7 @@ export default function NewProjectForm({
   };
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit}>
+    <form ref={formRef} onSubmit={handleSubmit} noValidate>
       {error && (
         <div className="mb-6 p-4 bg-[var(--color-score-critical-muted)] border-l-4 border-[var(--color-score-critical)] text-[var(--color-score-critical)] rounded-md">
           <p className="text-sm font-medium">{error}</p>
@@ -185,7 +197,36 @@ export default function NewProjectForm({
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+      {/* Basics / Advanced tabs — both panels stay mounted so all fields submit */}
+      <div className="mb-6 border-b border-[var(--color-border-default)]">
+        <nav className="-mb-px flex gap-6" aria-label="Project configuration tabs">
+          {(
+            [
+              { id: "basics", label: "Basic Information" },
+              { id: "advanced", label: "Advanced (optional)" },
+            ] as const
+          ).map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === tab.id
+                  ? "border-secondary text-[var(--color-text-primary)]"
+                  : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+      </div>
+
+      <div className={activeTab === "advanced" ? "" : "hidden"}>
+        <AdvancedSettingsFields baseUrl={url} disabled={isLoading} />
+      </div>
+
+      <div className={`grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6 ${activeTab === "basics" ? "" : "hidden"}`}>
         <div className="sm:col-span-4">
           <label
             htmlFor="name"
@@ -227,6 +268,8 @@ export default function NewProjectForm({
               type="text"
               placeholder="https://example.com"
               required
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
               className={`p-3 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] rounded-md`}
               disabled={isLoading}
             />

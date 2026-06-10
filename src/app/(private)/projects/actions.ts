@@ -4,9 +4,9 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/utils/supabase/server";
-import { PlanId } from "@/types/subscription";
-import { canCreateProject, getPlanLimits, PLAN_LIMITS, PLAN_INFO } from "@/lib/subscription-limits";
+import { canCreateProject, getPlanLimits, toPlanId, PLAN_LIMITS, PLAN_INFO } from "@/lib/subscription-limits";
 import { computeNextScanAt } from "@/lib/scan-schedule";
+import { parseSettingsFormValue } from "@/lib/project-settings";
 
 // Create a new project
 export async function createProject(formData: FormData) {
@@ -39,7 +39,7 @@ export async function createProject(formData: FormData) {
     .eq("id", user.id)
     .single();
 
-  const userPlan = (profile?.subscription_tier as PlanId) || "free";
+  const userPlan = toPlanId(profile?.subscription_tier);
 
   // Get current project count
   const { count: projectCount } = await supabase
@@ -182,6 +182,16 @@ export async function updateProject(formData: FormData) {
     updated_at: new Date().toISOString(),
   };
 
+  // Only touch settings when the form actually submitted the field, so other
+  // callers of this action don't wipe existing advanced configuration.
+  // Validate against the project URL to keep custom URLs same-domain.
+  if (formData.has("settings")) {
+    updateData.settings = parseSettingsFormValue(
+      formData.get("settings"),
+      formattedUrl,
+    );
+  }
+
   if (scan_frequency) {
     updateData.scan_frequency = scan_frequency;
     const nextScanAt = computeNextScanAt(new Date(), scan_frequency);
@@ -290,7 +300,7 @@ export async function startScan(projectId: string) {
     .eq("id", user.id)
     .single();
 
-  const userPlan = (profile?.subscription_tier as PlanId) || "free";
+  const userPlan = toPlanId(profile?.subscription_tier);
   const planLimits = getPlanLimits(userPlan);
 
   // Get access token for backend auth
@@ -468,7 +478,7 @@ export async function startAuditScan(projectId: string) {
       .eq("id", user.id)
       .single();
 
-    const auditPlan = (auditProfile?.subscription_tier as PlanId) || "free";
+    const auditPlan = toPlanId(auditProfile?.subscription_tier);
     const auditLimits = getPlanLimits(auditPlan);
 
     // Get access token for backend auth

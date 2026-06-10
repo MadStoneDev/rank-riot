@@ -247,7 +247,7 @@ async function deleteScan(
   }
 
   const { error: snapshotsError } = await admin
-    .from("snapshots")
+    .from("scan_snapshots")
     .delete()
     .eq("scan_id", scanId);
 

@@ -6,6 +6,8 @@ import { updateProject, deleteProject } from "@/app/(private)/projects/actions";
 import { toast } from "sonner";
 
 import { Database } from "../../../database.types";
+import { ProjectSettings, sanitizeProjectSettings } from "@/lib/project-settings";
+import AdvancedSettingsFields from "./AdvancedSettingsFields";
 
 type Project = Database["public"]["Tables"]["projects"]["Row"];
 
@@ -22,7 +24,14 @@ export default function ProjectSettingsForm({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"general" | "advanced">("general");
   const formRef = useRef<HTMLFormElement>(null);
+
+  // Normalize whatever is stored in the JSONB column into the known shape
+  const initialSettings: ProjectSettings | null = sanitizeProjectSettings(
+    project.settings,
+    project.url,
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +43,15 @@ export default function ProjectSettingsForm({
 
     const formData = new FormData(formRef.current);
     formData.append("id", project.id);
+
+    // Manual validation (form is noValidate): required fields live on the
+    // general tab, which may be hidden — switch to it so errors are visible
+    if (!String(formData.get("name") || "").trim() || !String(formData.get("url") || "").trim()) {
+      setActiveTab("general");
+      setError("Project name and website URL are required.");
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const result = await updateProject(formData);
@@ -53,7 +71,7 @@ export default function ProjectSettingsForm({
   return (
     <>
       <div className="px-6 py-6">
-        <form ref={formRef} onSubmit={handleSubmit}>
+        <form ref={formRef} onSubmit={handleSubmit} noValidate>
           {error && (
             <div className="mb-6 p-4 bg-[var(--color-score-critical-muted)] border-l-4 border-[var(--color-score-critical)] text-[var(--color-score-critical)] rounded-md">
               <p className="text-sm font-medium">{error}</p>
@@ -64,7 +82,40 @@ export default function ProjectSettingsForm({
               <p className="text-sm font-medium">{success}</p>
             </div>
           )}
-          <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+          {/* General / Advanced tabs — both panels stay mounted so all fields submit */}
+          <div className="mb-6 border-b border-[var(--color-border-default)]">
+            <nav className="-mb-px flex gap-6" aria-label="Project settings tabs">
+              {(
+                [
+                  { id: "general", label: "General" },
+                  { id: "advanced", label: "Advanced" },
+                ] as const
+              ).map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
+                    activeTab === tab.id
+                      ? "border-secondary text-[var(--color-text-primary)]"
+                      : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+
+          <div className={activeTab === "advanced" ? "" : "hidden"}>
+            <AdvancedSettingsFields
+              initialSettings={initialSettings}
+              baseUrl={project.url}
+              disabled={isLoading}
+            />
+          </div>
+
+          <div className={`grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6 ${activeTab === "general" ? "" : "hidden"}`}>
             <div className="sm:col-span-4">
               <label
                 htmlFor="name"

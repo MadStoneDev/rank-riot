@@ -99,6 +99,13 @@ export function getPlanLimits(planId: PlanId | null): PlanLimits {
   return PLAN_LIMITS[planId || "free"];
 }
 
+// Coerce an untrusted value (e.g. profiles.subscription_tier) to a valid PlanId
+export function toPlanId(value: unknown): PlanId {
+  return typeof value === "string" && value in PLAN_LIMITS
+    ? (value as PlanId)
+    : "free";
+}
+
 // Check if user can create a new project
 export function canCreateProject(
   planId: PlanId | null,

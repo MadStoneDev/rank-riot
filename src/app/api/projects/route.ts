@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
-import { PlanId } from "@/types/subscription";
-import { canCreateProject, PLAN_LIMITS, PLAN_INFO } from "@/lib/subscription-limits";
+import { canCreateProject, toPlanId, PLAN_LIMITS, PLAN_INFO } from "@/lib/subscription-limits";
+import { parseSettingsFormValue } from "@/lib/project-settings";
 import { createRateLimiter, getClientIp } from "@/utils/rate-limit";
 import { validateOrigin } from "@/utils/csrf";
 
@@ -59,6 +59,21 @@ export async function POST(request: NextRequest) {
       formattedUrl = `https://${url}`;
     }
 
+    // Advanced settings are validated against the project URL so custom
+    // sitemap/page URLs can't point at another domain
+    const settings = parseSettingsFormValue(formData.get("settings"), formattedUrl);
+
+    // Validate crawler config before any database writes so a misconfigured
+    // server doesn't leave behind a project that can never scan
+    const crawlerApiUrl = process.env.CRAWLER_API_URL;
+    if (!crawlerApiUrl) {
+      console.error("❌ CRAWLER_API_URL is not set in environment variables!");
+      return NextResponse.json(
+        { error: "Server configuration error: CRAWLER_API_URL not set" },
+        { status: 500 },
+      );
+    }
+
     // Get user's subscription tier
     const { data: profile } = await supabase
       .from("profiles")
@@ -66,7 +81,7 @@ export async function POST(request: NextRequest) {
       .eq("id", user.id)
       .single();
 
-    const userPlan = (profile?.subscription_tier as PlanId) || "free";
+    const userPlan = toPlanId(profile?.subscription_tier);
 
     // Get current project count
     const { count: projectCount } = await supabase
@@ -101,6 +116,9 @@ export async function POST(request: NextRequest) {
           description,
           scan_frequency:
             project_type === "seo" ? scan_frequency || "weekly" : null,
+          // Keep existing advanced settings unless new ones were provided —
+          // re-creating a project with an empty Advanced tab shouldn't wipe them
+          ...(settings ? { settings } : {}),
           updated_at: new Date().toISOString(),
         })
         .eq("id", projectId);
@@ -141,6 +159,7 @@ export async function POST(request: NextRequest) {
             project_type === "seo" ? scan_frequency || "weekly" : null,
           project_type,
           notification_email: user.email,
+          settings,
         })
         .select()
         .single();
@@ -151,21 +170,6 @@ export async function POST(request: NextRequest) {
       }
 
       projectId = data.id;
-    }
-
-    // ⚠️ VALIDATE ENV VAR
-    const crawlerApiUrl = process.env.CRAWLER_API_URL;
-
-    if (!crawlerApiUrl) {
-      console.error("❌ CRAWLER_API_URL is not set in environment variables!");
-      return NextResponse.json(
-        {
-          error: "Server configuration error: CRAWLER_API_URL not set",
-          id: projectId,
-          scanFailed: true,
-        },
-        { status: 500 },
-      );
     }
 
     // Trigger appropriate scan type

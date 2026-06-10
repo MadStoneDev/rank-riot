@@ -16,9 +16,12 @@ export function validateOrigin(request: Request): NextResponse | null {
 
   const allowedOrigin = process.env.NEXT_PUBLIC_BASE_URL || "";
   if (!allowedOrigin) {
-    // If NEXT_PUBLIC_BASE_URL is not configured, allow the request but log a warning.
-    console.warn("CSRF check skipped: NEXT_PUBLIC_BASE_URL is not configured");
-    return null;
+    // Fail closed: without a configured origin we cannot verify the request.
+    console.error("CSRF check failed: NEXT_PUBLIC_BASE_URL is not configured");
+    return NextResponse.json(
+      { error: "Server configuration error" },
+      { status: 500 },
+    );
   }
 
   // Normalize: strip trailing slashes for comparison
