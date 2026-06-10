@@ -23,6 +23,7 @@ import StatCard from "@/components/ui/StatCard";
 
 import ScanHistory from "@/components/projects/ScanHistory";
 import ScanProgress from "@/components/projects/ScanProgress";
+import BotBlockedNotice from "@/components/projects/BotBlockedNotice";
 import StartScanButton from "@/components/projects/StartScanButton";
 import ContentIntelligence from "@/components/projects/ContentIntelligence";
 import SiteArchitecture from "@/components/projects/SiteArchitecture";
@@ -583,6 +584,12 @@ export default async function ProjectDetailPage({
     ? (latestScan.summary_stats as any).site_level_data
     : null;
 
+  // Bot-protection block recorded by the crawler — used to prompt the customer
+  // to allowlist us instead of returning a misleadingly empty scan
+  const botProtection = latestScan?.summary_stats && typeof latestScan.summary_stats === 'object' && 'bot_protection' in (latestScan.summary_stats as any)
+    ? (latestScan.summary_stats as any).bot_protection
+    : null;
+
   // Helper to safely flatten schema_types (which may contain arrays due to JSON-LD multi-type)
   const getSchemaTypes = (p: any): string[] =>
     Array.isArray(p.schema_types)
@@ -796,6 +803,10 @@ export default async function ProjectDetailPage({
 
       {latestScan && latestScan.status === "in_progress" && (
         <ScanProgress scanId={latestScan.id} projectId={projectId} />
+      )}
+
+      {botProtection?.blocked && (
+        <BotBlockedNotice info={botProtection} projectUrl={project.url} />
       )}
 
       {/* Score Overview Row */}

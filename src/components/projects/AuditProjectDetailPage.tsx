@@ -11,6 +11,7 @@ import {
 
 import AuditResults from "@/components/projects/AuditResults";
 import ScanProgress from "@/components/projects/ScanProgress";
+import BotBlockedNotice from "@/components/projects/BotBlockedNotice";
 import StartAuditButton from "@/components/projects/StartAuditButton";
 
 export async function generateMetadata({
@@ -72,6 +73,10 @@ export default async function AuditProjectDetailPage({
     .limit(1)
     .single();
 
+  const botProtection = latestScan?.summary_stats && typeof latestScan.summary_stats === 'object' && 'bot_protection' in (latestScan.summary_stats as any)
+    ? (latestScan.summary_stats as any).bot_protection
+    : null;
+
   // Get audit results if scan is completed
   let auditResults = null;
   if (latestScan && latestScan.status === "completed") {
@@ -132,6 +137,10 @@ export default async function AuditProjectDetailPage({
       {/* Scan Progress (polls + auto-reloads on completion) */}
       {latestScan && latestScan.status === "in_progress" && (
         <ScanProgress scanId={latestScan.id} projectId={projectId} />
+      )}
+
+      {botProtection?.blocked && (
+        <BotBlockedNotice info={botProtection} projectUrl={project.url} />
       )}
 
       {latestScan && latestScan.status === "failed" && (
