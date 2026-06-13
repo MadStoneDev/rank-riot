@@ -198,7 +198,7 @@ export default function SchemaAuditView({ pages, projectId, projectName }: Schem
                               (p.schema_types || []).map((t) => (
                                 <span
                                   key={t}
-                                  className="text-[10px] px-1.5 py-0.5 bg-primary/10 text-primary rounded font-medium"
+                                  className="text-xs px-1.5 py-0.5 bg-primary/10 text-primary rounded font-medium"
                                 >
                                   {t}
                                 </span>
@@ -221,7 +221,7 @@ export default function SchemaAuditView({ pages, projectId, projectName }: Schem
                           {hasSchema && (
                             <div>
                               <p className="font-medium text-[var(--color-text-secondary)] mb-1">Structured Data</p>
-                              <pre className="bg-[var(--color-surface-base)] p-2 rounded border border-[var(--color-border-subtle)] text-[11px] overflow-auto max-h-48 text-[var(--color-text-secondary)]">
+                              <pre className="bg-[var(--color-surface-base)] p-2 rounded border border-[var(--color-border-subtle)] text-xs overflow-auto max-h-48 text-[var(--color-text-secondary)]">
                                 {JSON.stringify(p.structured_data, null, 2)}
                               </pre>
                             </div>
@@ -229,7 +229,7 @@ export default function SchemaAuditView({ pages, projectId, projectName }: Schem
                           {hasOG && (
                             <div>
                               <p className="font-medium text-[var(--color-text-secondary)] mb-1">Open Graph</p>
-                              <pre className="bg-[var(--color-surface-base)] p-2 rounded border border-[var(--color-border-subtle)] text-[11px] overflow-auto max-h-32 text-[var(--color-text-secondary)]">
+                              <pre className="bg-[var(--color-surface-base)] p-2 rounded border border-[var(--color-border-subtle)] text-xs overflow-auto max-h-32 text-[var(--color-text-secondary)]">
                                 {JSON.stringify(p.open_graph, null, 2)}
                               </pre>
                             </div>
@@ -237,7 +237,7 @@ export default function SchemaAuditView({ pages, projectId, projectName }: Schem
                           {hasTwitter && (
                             <div>
                               <p className="font-medium text-[var(--color-text-secondary)] mb-1">Twitter Card</p>
-                              <pre className="bg-[var(--color-surface-base)] p-2 rounded border border-[var(--color-border-subtle)] text-[11px] overflow-auto max-h-32 text-[var(--color-text-secondary)]">
+                              <pre className="bg-[var(--color-surface-base)] p-2 rounded border border-[var(--color-border-subtle)] text-xs overflow-auto max-h-32 text-[var(--color-text-secondary)]">
                                 {JSON.stringify(p.twitter_card, null, 2)}
                               </pre>
                             </div>

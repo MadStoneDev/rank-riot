@@ -294,7 +294,7 @@ export default async function AdminOverviewPage() {
                       <StatusBadge status={scan.status} />
                       {errorMsg && (
                         <p
-                          className="text-[10px] text-[var(--color-score-critical)] mt-0.5 max-w-[200px] truncate"
+                          className="text-xs text-[var(--color-score-critical)] mt-0.5 max-w-[200px] truncate"
                           title={errorMsg}
                         >
                           {errorMsg}
@@ -352,7 +352,7 @@ function StatusBadge({ status }: { status: string }) {
   const c = config[status] || config.completed;
   return (
     <span
-      className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${c.bg} ${c.text}`}
+      className={`text-xs font-medium px-1.5 py-0.5 rounded ${c.bg} ${c.text}`}
     >
       {c.label}
     </span>

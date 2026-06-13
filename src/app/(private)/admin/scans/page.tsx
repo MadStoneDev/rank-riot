@@ -191,7 +191,7 @@ export default async function AdminScansPage({
                       >
                         {project?.name || scan.project_id.slice(0, 8)}
                       </Link>
-                      <p className="text-[10px] text-[var(--color-text-muted)] truncate max-w-[200px]">
+                      <p className="text-xs text-[var(--color-text-muted)] truncate max-w-[200px]">
                         {project?.url || ""}
                       </p>
                     </td>
@@ -245,14 +245,14 @@ export default async function AdminScansPage({
                       </Link>
                       {errorMsg && (
                         <p
-                          className="text-[10px] text-[var(--color-score-critical)] max-w-[250px] truncate cursor-help mt-0.5"
+                          className="text-xs text-[var(--color-score-critical)] max-w-[250px] truncate cursor-help mt-0.5"
                           title={errorMsg}
                         >
                           {errorMsg}
                         </p>
                       )}
                       {!errorMsg && stats?.pages_found && (
-                        <p className="text-[10px] text-[var(--color-text-muted)] mt-0.5">
+                        <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
                           {stats.pages_found} stored, {stats.links_created || 0}{" "}
                           links
                           {stats.pages_removed > 0 &&
@@ -337,7 +337,7 @@ function SearchAndFilters({
       <div className="flex items-center gap-4">
         {/* Status Filter */}
         <div className="flex gap-2">
-          <span className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] self-center mr-1">
+          <span className="text-xs uppercase tracking-wider text-[var(--color-text-muted)] self-center mr-1">
             Status:
           </span>
           {(
@@ -367,7 +367,7 @@ function SearchAndFilters({
 
         {/* Type Filter */}
         <div className="flex gap-2">
-          <span className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] self-center mr-1">
+          <span className="text-xs uppercase tracking-wider text-[var(--color-text-muted)] self-center mr-1">
             Type:
           </span>
           {(
@@ -419,7 +419,7 @@ function StatusBadge({ status }: { status: string }) {
   const c = config[status] || config.completed;
   return (
     <span
-      className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${c.bg} ${c.text}`}
+      className={`text-xs font-medium px-1.5 py-0.5 rounded ${c.bg} ${c.text}`}
     >
       {c.label}
     </span>

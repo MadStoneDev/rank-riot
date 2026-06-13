@@ -37,9 +37,12 @@
   --color-border-strong: #ffffff25;
 
   /* ── Text ── */
+  /* Contrast on the dark surfaces (base/raised/overlay) is kept at WCAG AA
+     (>=4.5:1) for body text. text-muted was #6b6b80 (~3.6:1 on raised — fails);
+     #8a8aa0 clears 4.5:1 on every surface. */
   --color-text-primary: #f0f0f5;
   --color-text-secondary: #a0a0b5;
-  --color-text-muted: #6b6b80;
+  --color-text-muted: #8a8aa0;
   --color-text-inverse: #0a0a0f;
 
   /* ── Severity Colors ── */

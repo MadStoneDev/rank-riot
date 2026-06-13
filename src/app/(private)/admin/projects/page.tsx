@@ -187,7 +187,7 @@ export default async function AdminProjectsPage({
                           <ScanTypeBadge type="audit" />
                         )}
                         {!scanTypes && (
-                          <span className="text-[10px] text-[var(--color-text-muted)]">
+                          <span className="text-xs text-[var(--color-text-muted)]">
                             No scans
                           </span>
                         )}
@@ -212,7 +212,7 @@ export default async function AdminProjectsPage({
                           <p className="text-xs font-medium text-[var(--color-text-primary)]">
                             {owner.full_name || "No name"}
                           </p>
-                          <p className="text-[10px] text-[var(--color-text-muted)]">
+                          <p className="text-xs text-[var(--color-text-muted)]">
                             {owner.email}
                           </p>
                         </Link>
@@ -396,7 +396,7 @@ function SearchAndFilters({
       </form>
 
       <div className="flex gap-2">
-        <span className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] self-center mr-1">
+        <span className="text-xs uppercase tracking-wider text-[var(--color-text-muted)] self-center mr-1">
           Type:
         </span>
         {(
@@ -464,7 +464,7 @@ function ScanTypeBadge({ type }: { type: "seo" | "audit" }) {
   };
   return (
     <span
-      className={`text-[10px] font-medium px-1.5 py-0.5 rounded uppercase ${config[type]}`}
+      className={`text-xs font-medium px-1.5 py-0.5 rounded uppercase ${config[type]}`}
     >
       {type}
     </span>
@@ -492,7 +492,7 @@ function StatusBadge({ status }: { status: string }) {
   const c = config[status] || config.completed;
   return (
     <span
-      className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${c.bg} ${c.text}`}
+      className={`text-xs font-medium px-1.5 py-0.5 rounded ${c.bg} ${c.text}`}
     >
       {c.label}
     </span>
@@ -508,7 +508,7 @@ function PlanBadge({ tier }: { tier: string | null | undefined }) {
   };
   const color = tierColors[tier || "free"] || tierColors.free;
   return (
-    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${color}`}>
+    <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${color}`}>
       {tier || "free"}
     </span>
   );

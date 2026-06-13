@@ -85,19 +85,19 @@ function ImportanceBadge({ importance }: { importance: "critical" | "recommended
   switch (importance) {
     case "critical":
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[color-mix(in_srgb,var(--color-score-critical)_15%,transparent)] text-[var(--color-score-critical)]">
+        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[color-mix(in_srgb,var(--color-score-critical)_15%,transparent)] text-[var(--color-score-critical)]">
           Critical
         </span>
       );
     case "recommended":
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[color-mix(in_srgb,var(--color-primary)_15%,transparent)] text-[var(--color-primary)]">
+        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[color-mix(in_srgb,var(--color-primary)_15%,transparent)] text-[var(--color-primary)]">
           Recommended
         </span>
       );
     case "nice_to_have":
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[var(--color-surface-elevated)] text-[var(--color-text-muted)]">
+        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-surface-elevated)] text-[var(--color-text-muted)]">
           Nice to Have
         </span>
       );
@@ -318,14 +318,14 @@ export default function ChecklistView({ scanData }: ChecklistViewProps) {
         <div className="mt-4">
           <ProgressBar percent={overall.percent} />
           <div className="flex justify-between mt-1.5">
-            <span className="text-[10px] text-[var(--color-text-muted)]">0%</span>
+            <span className="text-xs text-[var(--color-text-muted)]">0%</span>
             <span
               className="text-xs font-bold"
               style={{ color: overallColor }}
             >
               {overall.percent}%
             </span>
-            <span className="text-[10px] text-[var(--color-text-muted)]">100%</span>
+            <span className="text-xs text-[var(--color-text-muted)]">100%</span>
           </div>
         </div>
       </div>

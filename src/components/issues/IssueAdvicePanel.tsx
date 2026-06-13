@@ -53,7 +53,10 @@ const severityDotColor: Record<string, string> = {
   low: "bg-[var(--color-severity-low)]",
 };
 
-function truncateUrl(url: string, maxLength = 50): string {
+// High cap on purpose: the URL is rendered in a flex container with CSS
+// `truncate`, so width-based clipping already adapts to the screen. A low cap
+// here just clipped URLs short even when there was plenty of room.
+function truncateUrl(url: string, maxLength = 120): string {
   if (!url) return "";
   try {
     const parsed = new URL(url);

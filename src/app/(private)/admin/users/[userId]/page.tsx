@@ -189,7 +189,7 @@ export default async function AdminUserDetailPage({
                 : "-"}
             </p>
             {profile.created_at && (
-              <p className="text-[10px] text-[var(--color-text-muted)]">
+              <p className="text-xs text-[var(--color-text-muted)]">
                 {formatDistanceToNow(new Date(profile.created_at), {
                   addSuffix: true,
                 })}
@@ -198,7 +198,7 @@ export default async function AdminUserDetailPage({
           </div>
         </div>
         {profile.updated_at && (
-          <p className="text-[10px] text-[var(--color-text-muted)] mt-3">
+          <p className="text-xs text-[var(--color-text-muted)] mt-3">
             Last updated{" "}
             {formatDistanceToNow(new Date(profile.updated_at), {
               addSuffix: true,
@@ -380,7 +380,7 @@ export default async function AdminUserDetailPage({
                     <td className="px-5 py-2.5">
                       {errorMsg ? (
                         <p
-                          className="text-[10px] text-[var(--color-score-critical)] max-w-[200px] break-words"
+                          className="text-xs text-[var(--color-score-critical)] max-w-[200px] break-words"
                           title={errorMsg}
                         >
                           {errorMsg.length > 80
@@ -446,7 +446,7 @@ function StatusBadge({ status }: { status: string }) {
   const c = config[status] || config.completed;
   return (
     <span
-      className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${c.bg} ${c.text}`}
+      className={`text-xs font-medium px-1.5 py-0.5 rounded ${c.bg} ${c.text}`}
     >
       {c.label}
     </span>

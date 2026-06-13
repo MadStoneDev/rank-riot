@@ -90,7 +90,7 @@ export default function CategoryCard({
                     {item.text}
                   </p>
                   {item.detail && (
-                    <p className="text-[10px] text-[var(--color-text-muted)] truncate">
+                    <p className="text-xs text-[var(--color-text-muted)] truncate">
                       {item.detail}
                     </p>
                   )}
@@ -102,7 +102,7 @@ export default function CategoryCard({
           {hasMore && !expanded && (
             <button
               onClick={() => setExpanded(true)}
-              className="flex items-center gap-1 text-[11px] text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] mt-2 transition-colors"
+              className="flex items-center gap-1 text-xs text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] mt-2 transition-colors"
             >
               +{items.length - maxCollapsedItems} more
               <IconChevronDown className="w-3 h-3" />

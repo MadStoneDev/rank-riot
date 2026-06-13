@@ -262,7 +262,7 @@ function LlmsTxtCard({
           )}
           {content && (
             <CollapsibleSection title="View Content">
-              <pre className="text-[10px] leading-relaxed text-[var(--color-text-muted)] bg-[var(--color-surface-base)] rounded-lg p-3 overflow-x-auto max-h-48 overflow-y-auto whitespace-pre-wrap break-all">
+              <pre className="text-xs leading-relaxed text-[var(--color-text-muted)] bg-[var(--color-surface-base)] rounded-lg p-3 overflow-x-auto max-h-48 overflow-y-auto whitespace-pre-wrap break-all">
                 {content}
               </pre>
             </CollapsibleSection>
@@ -340,14 +340,14 @@ function AiBotCrawlabilityCard({
 
           {blocked.length > 0 && (
             <div className="mb-3">
-              <p className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] mb-1.5 font-medium">
+              <p className="text-xs uppercase tracking-wider text-[var(--color-text-muted)] mb-1.5 font-medium">
                 Blocked AI Bots
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {blocked.map((bot) => (
                   <span
                     key={bot}
-                    className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[color-mix(in_srgb,var(--color-score-critical)_15%,transparent)] text-[var(--color-score-critical)]"
+                    className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[color-mix(in_srgb,var(--color-score-critical)_15%,transparent)] text-[var(--color-score-critical)]"
                   >
                     {bot}
                   </span>
@@ -358,14 +358,14 @@ function AiBotCrawlabilityCard({
 
           {allowed.length > 0 && (
             <div className="mb-2">
-              <p className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] mb-1.5 font-medium">
+              <p className="text-xs uppercase tracking-wider text-[var(--color-text-muted)] mb-1.5 font-medium">
                 Allowed AI Bots
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {allowed.map((bot) => (
                   <span
                     key={bot}
-                    className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[color-mix(in_srgb,var(--color-score-good)_15%,transparent)] text-[var(--color-score-good)]"
+                    className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[color-mix(in_srgb,var(--color-score-good)_15%,transparent)] text-[var(--color-score-good)]"
                   >
                     {bot}
                   </span>
@@ -456,7 +456,7 @@ function SitemapValidationCard({
       ) : (
         <>
           {data?.url && (
-            <p className="text-[10px] text-[var(--color-text-muted)] mb-2 font-mono break-all">{data.url}</p>
+            <p className="text-xs text-[var(--color-text-muted)] mb-2 font-mono break-all">{data.url}</p>
           )}
 
           <div className="space-y-1.5 mb-2">
@@ -476,7 +476,7 @@ function SitemapValidationCard({
 
           {hasErrors && data?.errors && (
             <div className="mt-2">
-              <p className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] mb-1 font-medium">Errors</p>
+              <p className="text-xs uppercase tracking-wider text-[var(--color-text-muted)] mb-1 font-medium">Errors</p>
               <ul className="space-y-1">
                 {data.errors.map((err, i) => (
                   <li key={i} className="text-xs text-[var(--color-score-warning)] flex gap-1.5">

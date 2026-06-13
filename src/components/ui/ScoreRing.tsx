@@ -10,7 +10,7 @@ interface ScoreRingProps {
 
 const SIZES = {
   sm: { width: 48, stroke: 4, font: "text-sm", labelFont: "text-[9px]" },
-  md: { width: 64, stroke: 5, font: "text-lg", labelFont: "text-[10px]" },
+  md: { width: 64, stroke: 5, font: "text-lg", labelFont: "text-xs" },
   lg: { width: 80, stroke: 6, font: "text-xl", labelFont: "text-xs" },
   xl: { width: 112, stroke: 7, font: "text-3xl", labelFont: "text-xs" },
 };

@@ -40,7 +40,7 @@ export default function Badge({
     <span
       className={clsx(
         "inline-flex items-center gap-1 border rounded-full font-medium",
-        size === "sm" ? "px-2 py-0.5 text-[11px]" : "px-3 py-1 text-xs",
+        size === "sm" ? "px-2 py-0.5 text-xs" : "px-3 py-1 text-xs",
         VARIANT_CLASSES[variant],
         className,
       )}

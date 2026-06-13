@@ -41,7 +41,7 @@ export default function StatCard({
               {trend.value}%
             </span>
             {trend.label && (
-              <span className="text-[10px] text-[var(--color-text-muted)]">
+              <span className="text-xs text-[var(--color-text-muted)]">
                 {trend.label}
               </span>
             )}

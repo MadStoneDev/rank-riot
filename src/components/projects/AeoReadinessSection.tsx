@@ -164,7 +164,7 @@ export default function AeoReadinessSection({
                         }}
                       />
                     </div>
-                    <span className="text-[10px] text-[var(--color-text-muted)] w-8 text-right">
+                    <span className="text-xs text-[var(--color-text-muted)] w-8 text-right">
                       {entry.percent}%
                     </span>
                   </div>

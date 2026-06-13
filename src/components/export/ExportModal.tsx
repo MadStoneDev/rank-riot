@@ -203,7 +203,7 @@ export default function ExportModal({
                   <Icon className="h-4 w-4" />
                   {fLabel}
                   {proOnly && !hasPdfReports && (
-                    <span className="text-[10px] font-semibold px-1.5 py-0.5 bg-[var(--color-score-warning-muted)] text-[var(--color-score-warning)] rounded-full">
+                    <span className="text-xs font-semibold px-1.5 py-0.5 bg-[var(--color-score-warning-muted)] text-[var(--color-score-warning)] rounded-full">
                       PRO
                     </span>
                   )}

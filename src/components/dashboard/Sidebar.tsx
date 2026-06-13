@@ -133,7 +133,7 @@ export default function Sidebar() {
                 }`}
               >
                 <item.icon className="w-5 h-5" stroke={isActive ? 2 : 1.5} />
-                <span className="text-[10px] font-medium">{item.name}</span>
+                <span className="text-xs font-medium">{item.name}</span>
               </Link>
             );
           })}
@@ -142,7 +142,7 @@ export default function Sidebar() {
             className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] transition-colors"
           >
             <IconLogout className="w-5 h-5" stroke={1.5} />
-            <span className="text-[10px] font-medium">Sign Out</span>
+            <span className="text-xs font-medium">Sign Out</span>
           </button>
         </div>
       </nav>

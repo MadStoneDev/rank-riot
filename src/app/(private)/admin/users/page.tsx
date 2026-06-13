@@ -104,7 +104,7 @@ export default async function AdminUsersPage({
 
         {/* Role Filter */}
         <div className="flex gap-2">
-          <span className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] self-center mr-1">
+          <span className="text-xs uppercase tracking-wider text-[var(--color-text-muted)] self-center mr-1">
             Role:
           </span>
           <Link
@@ -202,7 +202,7 @@ export default async function AdminUsersPage({
                           </Link>
                         ))}
                         {userProjects.length > 3 && (
-                          <span className="text-[10px] text-[var(--color-text-muted)]">
+                          <span className="text-xs text-[var(--color-text-muted)]">
                             +{userProjects.length - 3} more
                           </span>
                         )}
@@ -227,7 +227,7 @@ export default async function AdminUsersPage({
                                 })}
                           </span>
                           {lastScan.status === "failed" && (
-                            <span className="block text-[10px] text-[var(--color-score-critical)]">
+                            <span className="block text-xs text-[var(--color-score-critical)]">
                               failed
                             </span>
                           )}
@@ -277,7 +277,7 @@ function RoleBadge({ role }: { role: string | null }) {
   const color =
     roleConfig[role || "user"] || roleConfig.user;
   return (
-    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${color}`}>
+    <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${color}`}>
       {role || "user"}
     </span>
   );
@@ -304,12 +304,12 @@ function PlanBadge({
   return (
     <div>
       <span
-        className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${color}`}
+        className={`text-xs font-medium px-1.5 py-0.5 rounded ${color}`}
       >
         {tier || "free"}
       </span>
       {status && status !== "active" && (
-        <span className="block text-[10px] text-[var(--color-score-warning)] mt-0.5">
+        <span className="block text-xs text-[var(--color-score-warning)] mt-0.5">
           {status}
         </span>
       )}

@@ -54,7 +54,7 @@ function formatEffort(effort: string): string {
   return effort;
 }
 
-function truncateUrl(url: string, maxLength = 40): string {
+function truncateUrl(url: string, maxLength = 72): string {
   if (!url) return "";
   try {
     const parsed = new URL(url);

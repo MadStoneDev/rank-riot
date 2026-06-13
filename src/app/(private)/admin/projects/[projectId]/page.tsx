@@ -222,7 +222,7 @@ export default async function AdminProjectPage({
             {owner?.email && (
               <Link
                 href={`/admin/users/${project.user_id}`}
-                className="block text-[10px] text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
+                className="block text-xs text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
               >
                 {owner.email}
               </Link>
@@ -364,7 +364,7 @@ export default async function AdminProjectPage({
                     </td>
                     <td className="px-5 py-2.5">
                       {stats && !errorMsg ? (
-                        <div className="text-[10px] text-[var(--color-text-muted)] space-y-0.5">
+                        <div className="text-xs text-[var(--color-text-muted)] space-y-0.5">
                           {(stats.pages_found as number) != null && (
                             <p>
                               {stats.pages_found as number} found
@@ -432,12 +432,12 @@ export default async function AdminProjectPage({
                       {issue.description}
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[10px] text-[var(--color-text-muted)]">
+                      <span className="text-xs text-[var(--color-text-muted)]">
                         {issue.issue_type}
                       </span>
                       {page && (
                         <span
-                          className="text-[10px] text-[var(--color-primary)] truncate max-w-[300px]"
+                          className="text-xs text-[var(--color-primary)] truncate max-w-[300px]"
                           title={page.url}
                         >
                           {page.url}
@@ -445,7 +445,7 @@ export default async function AdminProjectPage({
                       )}
                     </div>
                   </div>
-                  <span className="text-[10px] text-[var(--color-text-muted)] flex-shrink-0">
+                  <span className="text-xs text-[var(--color-text-muted)] flex-shrink-0">
                     {issue.created_at
                       ? formatDistanceToNow(new Date(issue.created_at), {
                           addSuffix: true,
@@ -499,7 +499,7 @@ function StatusBadge({ status }: { status: string }) {
   const c = config[status] || config.completed;
   return (
     <span
-      className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${c.bg} ${c.text}`}
+      className={`text-xs font-medium px-1.5 py-0.5 rounded ${c.bg} ${c.text}`}
     >
       {c.label}
     </span>

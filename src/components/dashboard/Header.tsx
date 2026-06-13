@@ -126,7 +126,7 @@ export default function Header() {
             <p className="text-[13px] font-medium text-[var(--color-text-primary)]">
               {user?.full_name || "User"}
             </p>
-            <p className="text-[11px] text-[var(--color-text-muted)]">
+            <p className="text-xs text-[var(--color-text-muted)]">
               {user?.email}
             </p>
           </div>

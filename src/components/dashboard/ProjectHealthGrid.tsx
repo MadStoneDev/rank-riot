@@ -48,7 +48,7 @@ export default function ProjectHealthGrid({
                   </h4>
                   {project.projectType && (
                     <span
-                      className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium flex-shrink-0 ${
+                      className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium flex-shrink-0 ${
                         project.projectType === "seo"
                           ? "bg-[var(--color-score-good-muted)] text-[var(--color-score-good)]"
                           : "bg-[var(--color-primary-muted)] text-[var(--color-primary)]"

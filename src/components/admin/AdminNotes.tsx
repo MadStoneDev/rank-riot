@@ -175,12 +175,12 @@ export default function AdminNotes({
                 </button>
               </div>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-[10px] text-[var(--color-text-muted)]">
+                <span className="text-xs text-[var(--color-text-muted)]">
                   {note.author_name ||
                     note.author_email ||
                     note.author_id.slice(0, 8)}
                 </span>
-                <span className="text-[10px] text-[var(--color-text-muted)]">
+                <span className="text-xs text-[var(--color-text-muted)]">
                   {note.created_at
                     ? formatDistanceToNow(new Date(note.created_at), {
                         addSuffix: true,

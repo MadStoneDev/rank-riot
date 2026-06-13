@@ -93,7 +93,7 @@ export default async function AdminScanDetailPage({
               {project?.name || scan.project_id.slice(0, 8)}
             </Link>
             {project?.url && (
-              <p className="text-[10px] text-[var(--color-text-muted)] truncate">
+              <p className="text-xs text-[var(--color-text-muted)] truncate">
                 {project.url}
               </p>
             )}
@@ -141,7 +141,7 @@ export default async function AdminScanDetailPage({
           </div>
           <div>
             <p className="text-xs text-[var(--color-text-muted)]">Scan ID</p>
-            <p className="text-[10px] font-mono text-[var(--color-text-muted)] break-all">
+            <p className="text-xs font-mono text-[var(--color-text-muted)] break-all">
               {scanId}
             </p>
           </div>
@@ -212,7 +212,7 @@ export default async function AdminScanDetailPage({
                           <summary className="text-[var(--color-text-muted)] cursor-pointer hover:text-[var(--color-primary)]">
                             metadata
                           </summary>
-                          <pre className="mt-1 p-2 rounded bg-[var(--color-surface-elevated)] text-[10px] overflow-x-auto whitespace-pre-wrap">
+                          <pre className="mt-1 p-2 rounded bg-[var(--color-surface-elevated)] text-xs overflow-x-auto whitespace-pre-wrap">
                             {JSON.stringify(log.metadata, null, 2)}
                           </pre>
                         </details>
@@ -268,7 +268,7 @@ function StageBadge({ stage }: { stage: string }) {
   };
   return (
     <span
-      className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${styles[stage] || "bg-[var(--color-surface-elevated)] text-[var(--color-text-muted)]"}`}
+      className={`px-1.5 py-0.5 rounded text-xs font-medium ${styles[stage] || "bg-[var(--color-surface-elevated)] text-[var(--color-text-muted)]"}`}
     >
       {stage}
     </span>

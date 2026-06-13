@@ -59,7 +59,7 @@ export default function ScanActions({
           <button
             onClick={handleCancel}
             disabled={isPending}
-            className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium bg-[var(--color-score-critical)]/15 text-[var(--color-score-critical)] hover:bg-[var(--color-score-critical)]/25 transition-colors disabled:opacity-40"
+            className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium bg-[var(--color-score-critical)]/15 text-[var(--color-score-critical)] hover:bg-[var(--color-score-critical)]/25 transition-colors disabled:opacity-40"
           >
             <IconPlayerStop className="h-3 w-3" />
             {isPending ? "Cancelling..." : "Cancel"}
@@ -67,7 +67,7 @@ export default function ScanActions({
         )}
 
         {cancelled && (
-          <span className="text-[10px] text-[var(--color-text-muted)]">
+          <span className="text-xs text-[var(--color-text-muted)]">
             Cancelled
           </span>
         )}
@@ -76,7 +76,7 @@ export default function ScanActions({
         {summaryStats && Object.keys(summaryStats).length > 0 && (
           <button
             onClick={() => setShowJson(!showJson)}
-            className="inline-flex items-center gap-0.5 rounded px-2 py-0.5 text-[10px] text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] transition-colors"
+            className="inline-flex items-center gap-0.5 rounded px-2 py-0.5 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] transition-colors"
           >
             {showJson ? (
               <>
@@ -95,20 +95,20 @@ export default function ScanActions({
 
       {/* Full error message for failed scans */}
       {errorMessage && (
-        <p className="text-[10px] text-[var(--color-score-critical)] max-w-[400px] break-words whitespace-pre-wrap">
+        <p className="text-xs text-[var(--color-score-critical)] max-w-[400px] break-words whitespace-pre-wrap">
           {errorMessage}
         </p>
       )}
 
       {/* Expandable JSON viewer */}
       {showJson && summaryStats && (
-        <pre className="mt-1 rounded bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] p-2 text-[10px] text-[var(--color-text-secondary)] max-w-[500px] max-h-[200px] overflow-auto whitespace-pre-wrap">
+        <pre className="mt-1 rounded bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] p-2 text-xs text-[var(--color-text-secondary)] max-w-[500px] max-h-[200px] overflow-auto whitespace-pre-wrap">
           {JSON.stringify(summaryStats, null, 2)}
         </pre>
       )}
 
       {error && (
-        <p className="text-[10px] text-[var(--color-score-critical)]">
+        <p className="text-xs text-[var(--color-score-critical)]">
           {error}
         </p>
       )}

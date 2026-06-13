@@ -194,15 +194,15 @@ export default function SiteMapView({ pages, links, totalPageCount }: SiteMapVie
             <div className="grid grid-cols-3 gap-2 text-center">
               <div className="bg-[var(--color-surface-overlay)] rounded-lg p-2">
                 <div className="text-lg font-bold text-[var(--color-text-primary)]">{selectedPage.depth}</div>
-                <div className="text-[10px] text-[var(--color-text-muted)]">Depth</div>
+                <div className="text-xs text-[var(--color-text-muted)]">Depth</div>
               </div>
               <div className="bg-[var(--color-surface-overlay)] rounded-lg p-2">
                 <div className="text-lg font-bold text-green-400">{selectedPage.inboundCount}</div>
-                <div className="text-[10px] text-[var(--color-text-muted)]">Inbound</div>
+                <div className="text-xs text-[var(--color-text-muted)]">Inbound</div>
               </div>
               <div className="bg-[var(--color-surface-overlay)] rounded-lg p-2">
                 <div className="text-lg font-bold text-[var(--color-primary)]">{selectedPage.outboundCount}</div>
-                <div className="text-[10px] text-[var(--color-text-muted)]">Outbound</div>
+                <div className="text-xs text-[var(--color-text-muted)]">Outbound</div>
               </div>
             </div>
             {selectedPage.isOrphan && (

@@ -15,7 +15,7 @@ export function isUtilityPage(url: string): boolean {
 /**
  * Truncate URL for display, showing pathname only when parseable.
  */
-export function truncateUrl(url: string, maxLength: number = 50): string {
+export function truncateUrl(url: string, maxLength: number = 80): string {
   try {
     const urlObj = new URL(url);
     const path = urlObj.pathname;
