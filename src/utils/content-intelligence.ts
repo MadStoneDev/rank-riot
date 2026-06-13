@@ -39,15 +39,20 @@ export function findDuplicates<T extends PageBasic>(
   pages: T[],
   getValue: (page: T) => string | null | undefined
 ): DuplicateGroup[] {
-  const groups: Record<string, PageBasic[]> = {};
+  // Key groups by the normalised (lowercased) value, but keep the first page's
+  // original-case value for display. Previously this used pages[0].title as the
+  // label, which made duplicate-description groups show a page's title (e.g.
+  // "Collections") instead of the shared description.
+  const groups: Record<string, { original: string; pages: PageBasic[] }> = {};
 
   pages.forEach((page) => {
-    const value = getValue(page)?.trim().toLowerCase();
-    if (value) {
-      if (!groups[value]) {
-        groups[value] = [];
+    const raw = getValue(page)?.trim();
+    if (raw) {
+      const key = raw.toLowerCase();
+      if (!groups[key]) {
+        groups[key] = { original: raw, pages: [] };
       }
-      groups[value].push({
+      groups[key].pages.push({
         id: page.id,
         url: page.url,
         title: page.title,
@@ -56,10 +61,10 @@ export function findDuplicates<T extends PageBasic>(
   });
 
   return Object.entries(groups)
-    .filter(([_, pages]) => pages.length > 1)
-    .map(([value, pages]) => ({
-      value: pages[0].title || value, // Use original case from first page
-      pages,
+    .filter(([_, group]) => group.pages.length > 1)
+    .map(([, group]) => ({
+      value: group.original,
+      pages: group.pages,
     }))
     .sort((a, b) => b.pages.length - a.pages.length);
 }
@@ -122,6 +127,29 @@ export function findSimilarContent(
           });
         }
       }
+    }
+  }
+
+  // Annotate each group with the keywords shared across all its member pages,
+  // so the UI can explain *why* the pages grouped instead of an opaque "Group 1".
+  const keywordsById = new Map<string, Set<string>>(
+    pages.map((p) => [
+      p.id,
+      new Set((p.keywords || []).map((k) => k.word.toLowerCase())),
+    ])
+  );
+
+  for (const group of groups) {
+    const memberSets = group.pages
+      .map((p) => keywordsById.get(p.id))
+      .filter((s): s is Set<string> => !!s && s.size > 0);
+
+    if (memberSets.length > 0) {
+      const [first, ...rest] = memberSets;
+      const shared = [...first].filter((word) =>
+        rest.every((s) => s.has(word))
+      );
+      group.sharedKeywords = shared.slice(0, 6);
     }
   }
 

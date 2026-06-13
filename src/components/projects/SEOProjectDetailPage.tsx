@@ -48,6 +48,7 @@ import {
   findSimilarContent,
   calculateSummary,
 } from "@/utils/content-intelligence";
+import { isUtilityPage } from "@/utils/url";
 import { DEFAULT_SITE_ARCHITECTURE_THRESHOLDS } from "@/types/site-architecture";
 import {
   calculateDepthDistribution,
@@ -198,14 +199,21 @@ export default async function ProjectDetailPage({
     .limit(10);
 
   // Content Intelligence Data (all queries exclude non-HTTP URLs like mailto:, tel:, etc.)
-  // Thin content pages (< 300 words)
-  const { data: thinContentPages } = await supabase
+  // Thin content pages (< 300 words). Exempt noindex pages (DB filter) and
+  // login/cart/account-style utility pages (post-filter) — they're expected to
+  // be sparse, so flagging them is noise. Kept in sync with the crawler's
+  // thin-content exemption in issue-detector.ts.
+  const { data: thinContentPagesRaw } = await supabase
     .from("pages")
     .select("id, url, title, word_count")
     .eq("project_id", projectId)
     .like("url", "http%")
+    .or("has_robots_noindex.is.null,has_robots_noindex.eq.false")
     .lt("word_count", DEFAULT_THRESHOLDS.thinContentWords)
     .order("word_count", { ascending: true });
+  const thinContentPages = (thinContentPagesRaw || []).filter(
+    (p) => !isUtilityPage(p.url),
+  );
 
   // Missing meta descriptions
   const { data: missingMetaPages } = await supabase
@@ -590,6 +598,13 @@ export default async function ProjectDetailPage({
     ? (latestScan.summary_stats as any).bot_protection
     : null;
 
+  // Canonical SEO score persisted by the crawler at scan time. The dashboard
+  // reads the same value, so the two surfaces can never disagree. Older scans
+  // predating this field fall back to the live computation below.
+  const persistedSeoScore = latestScan?.summary_stats && typeof latestScan.summary_stats === 'object' && 'seo_score' in (latestScan.summary_stats as any)
+    ? (latestScan.summary_stats as any).seo_score as { technical: number; content: number; media: number; aeo: number; overall: number }
+    : null;
+
   // Helper to safely flatten schema_types (which may contain arrays due to JSON-LD multi-type)
   const getSchemaTypes = (p: any): string[] =>
     Array.isArray(p.schema_types)
@@ -644,22 +659,32 @@ export default async function ProjectDetailPage({
 
   const exportFilenamePrefix = sanitizeFilename(project.name);
 
-  // Calculate category scores for the overview (proportional to site size)
+  // Category scores for the overview. Prefer the canonical score the crawler
+  // persisted at scan time (shared with the dashboard); fall back to a live
+  // computation for scans that predate persistence. A bot-blocked crawl never
+  // reached the real content, so every score is forced to 0.
+  const crawlBlocked = !!botProtection?.blocked;
   const totalPagesForScoring = Math.max(1, pagesCount || 1);
   const technicalPenalty = (technicalHealthData.summary.critical * 15 + technicalHealthData.summary.warnings * 5) / totalPagesForScoring;
-  const technicalScore = Math.round(Math.max(0, Math.min(100, 100 - technicalPenalty * 6)));
   const contentPenalty = (contentIntelligenceData.summary.critical * 15 + contentIntelligenceData.summary.warnings * 5) / totalPagesForScoring;
-  const contentScore = Math.round(Math.max(0, Math.min(100, 100 - contentPenalty * 6)));
-  const mediaScore = Math.round(
-    mediaAnalysisData.totalImages > 0 ? mediaAnalysisData.altCoveragePercent : 100
-  );
-  const aeoScore = aeoAggregate.averagePercent;
-  const overallScore = Math.round(
-    (Math.max(0, Math.min(100, technicalScore)) +
-     Math.max(0, Math.min(100, contentScore)) +
-     Math.max(0, Math.min(100, mediaScore)) +
-     Math.max(0, Math.min(100, aeoScore))) / 4
-  );
+  const liveTechnicalScore = Math.round(Math.max(0, Math.min(100, 100 - technicalPenalty * 6)));
+  const liveContentScore = Math.round(Math.max(0, Math.min(100, 100 - contentPenalty * 6)));
+  const liveMediaScore = Math.round(mediaAnalysisData.totalImages > 0 ? mediaAnalysisData.altCoveragePercent : 100);
+  const liveAeoScore = aeoAggregate.averagePercent;
+
+  const technicalScore = crawlBlocked ? 0 : persistedSeoScore?.technical ?? liveTechnicalScore;
+  const contentScore = crawlBlocked ? 0 : persistedSeoScore?.content ?? liveContentScore;
+  const mediaScore = crawlBlocked ? 0 : persistedSeoScore?.media ?? liveMediaScore;
+  const aeoScore = crawlBlocked ? 0 : persistedSeoScore?.aeo ?? liveAeoScore;
+  const overallScore = crawlBlocked
+    ? 0
+    : persistedSeoScore?.overall ??
+      Math.round(
+        (Math.max(0, Math.min(100, technicalScore)) +
+         Math.max(0, Math.min(100, contentScore)) +
+         Math.max(0, Math.min(100, mediaScore)) +
+         Math.max(0, Math.min(100, aeoScore))) / 4
+      );
 
   // Build actionable items for category cards
   const technicalItems = [

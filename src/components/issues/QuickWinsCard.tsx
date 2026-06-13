@@ -21,11 +21,13 @@ interface QuickWinsCardProps {
   issues: QuickWinIssue[];
 }
 
-const QUICK_EFFORT_PATTERNS = [
-  /^2 minutes$/i,
-  /^5 minutes$/i,
-  /^10 minutes$/i,
-];
+// A "quick win" is any fix whose lower-bound effort is a small number of
+// minutes. Efforts are free-text ranges like "5 minutes", "10 - 30 minutes",
+// "5 - 15 minutes per link" or "30 minutes - 2 hours", so we read the first
+// number + first time unit rather than matching exact strings (the old exact
+// patterns silently dropped every ranged effort, which is why this card kept
+// showing "All caught up" while issues existed).
+const QUICK_EFFORT_MAX_MINUTES = 15;
 
 const severityBadgeVariant: Record<
   string,
@@ -38,7 +40,12 @@ const severityBadgeVariant: Record<
 };
 
 function isQuickEffort(effort: string): boolean {
-  return QUICK_EFFORT_PATTERNS.some((pattern) => pattern.test(effort));
+  const numMatch = effort.match(/\d+/);
+  const unitMatch = effort.match(/hour|minute|min/i);
+  if (!numMatch || !unitMatch) return false;
+  // An effort quoted in hours is never a quick win, regardless of the number.
+  if (unitMatch[0].toLowerCase().startsWith("hour")) return false;
+  return parseInt(numMatch[0], 10) <= QUICK_EFFORT_MAX_MINUTES;
 }
 
 function formatEffort(effort: string): string {
@@ -65,7 +72,11 @@ export default function QuickWinsCard({ issues }: QuickWinsCardProps) {
   const quickWins = useMemo(() => {
     return issues
       .filter((issue) => {
-        if (issue.severity !== "critical" && issue.severity !== "high")
+        if (
+          issue.severity !== "critical" &&
+          issue.severity !== "high" &&
+          issue.severity !== "medium"
+        )
           return false;
         const advice = getIssueAdvice(issue.issue_type);
         if (!advice) return false;

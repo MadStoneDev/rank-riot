@@ -74,16 +74,20 @@ export default function SimilarContentCard({
                 className="w-full flex items-center justify-between text-left"
               >
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm font-medium text-[var(--color-text-primary)]">
-                      Group {index + 1}
+                      {group.sharedKeywords && group.sharedKeywords.length > 0
+                        ? group.sharedKeywords.slice(0, 4).join(", ")
+                        : `Group ${index + 1}`}
                     </span>
                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[var(--color-primary-muted)] text-[var(--color-primary)]">
                       {group.similarity}% similar
                     </span>
                   </div>
                   <p className="text-xs text-[var(--color-text-muted)]">
-                    {group.pages.length} pages with overlapping content
+                    {group.sharedKeywords && group.sharedKeywords.length > 0
+                      ? `${group.pages.length} pages share these keywords`
+                      : `${group.pages.length} pages with overlapping keywords`}
                   </p>
                 </div>
                 {isGroupExpanded ? (

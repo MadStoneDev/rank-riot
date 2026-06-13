@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Database } from "../../../../database.types";
 
 export const metadata: Metadata = {
   title: "Dashboard | RankRiot",
@@ -14,26 +13,18 @@ import {
   IconClock,
   IconFileSearch,
   IconFiles,
-  IconAlertTriangle,
-  IconActivity,
 } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { createClient } from "@/utils/supabase/server";
 
 import QuickScanInput from "@/components/dashboard/QuickScanInput";
 import ProjectHealthGrid from "@/components/dashboard/ProjectHealthGrid";
-import NeedsAttentionCard from "@/components/dashboard/NeedsAttentionCard";
 import QuickWinsCard from "@/components/issues/QuickWinsCard";
 import QuickActions from "@/components/dashboard/QuickActions";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import StatCard from "@/components/ui/StatCard";
 import Badge from "@/components/ui/Badge";
 import { computeHealthScore } from "@/utils/health-score";
-
-type Issue = Database["public"]["Tables"]["issues"]["Row"] & {
-  pages?: { url: string; title: string | null };
-  projects?: { name: string };
-};
 
 export default async function Dashboard() {
   const supabase = await createClient();
@@ -60,6 +51,7 @@ export default async function Dashboard() {
     { data: allBrokenLinks },
     { data: allLinks },
     { data: allAuditResults },
+    { data: allCompletedScans },
   ] = await Promise.all([
     supabase
       .from("pages")
@@ -85,6 +77,12 @@ export default async function Dashboard() {
       .select("project_id, overall_score, created_at")
       .in("project_id", safeProjectIds)
       .order("created_at", { ascending: false }),
+    supabase
+      .from("scans")
+      .select("project_id, summary_stats, completed_at")
+      .in("project_id", safeProjectIds)
+      .eq("status", "completed")
+      .order("completed_at", { ascending: false }),
   ]);
 
   // Index data by project_id for O(1) lookups
@@ -115,6 +113,24 @@ export default async function Dashboard() {
   (allAuditResults || []).forEach((ar: any) => {
     if (!latestAuditByProject.has(ar.project_id)) {
       latestAuditByProject.set(ar.project_id, ar.overall_score ?? 0);
+    }
+  });
+
+  // Canonical SEO score from each project's LATEST completed scan (the same
+  // value the project page shows). Only the latest scan is consulted, so a
+  // stale older score is never surfaced; projects whose latest scan predates
+  // persistence fall back to the live computation below.
+  const seenLatestScan = new Set<string>();
+  const latestSeoScoreByProject = new Map<string, number>();
+  (allCompletedScans || []).forEach((s: any) => {
+    if (seenLatestScan.has(s.project_id)) return;
+    seenLatestScan.add(s.project_id);
+    const seo =
+      s.summary_stats && typeof s.summary_stats === "object"
+        ? (s.summary_stats as any).seo_score
+        : null;
+    if (seo && typeof seo.overall === "number") {
+      latestSeoScoreByProject.set(s.project_id, seo.overall);
     }
   });
 
@@ -156,11 +172,13 @@ export default async function Dashboard() {
       if (s in sev) sev[s as keyof typeof sev]++;
     });
 
-    const healthScore = computeHealthScore(
-      { total, with200Status, indexable, withTitle, withMetaDescription, withAdequateContent, withH1, slowPages },
-      { totalLinks: totalLinksCount, brokenLinks: brokenLinksCount },
-      sev,
-    );
+    const healthScore =
+      latestSeoScoreByProject.get(project.id) ??
+      computeHealthScore(
+        { total, with200Status, indexable, withTitle, withMetaDescription, withAdequateContent, withH1, slowPages },
+        { totalLinks: totalLinksCount, brokenLinks: brokenLinksCount },
+        sev,
+      );
 
     return {
       id: project.id,
@@ -174,8 +192,10 @@ export default async function Dashboard() {
     };
   });
 
-  // Get top critical/high issues across all projects
-  const { data: criticalIssues } = await supabase
+  // Candidate issues for Quick Wins. Pull a generous set across critical/high/
+  // medium severities so the card's quick-effort filter has enough to surface
+  // (it slices to 5 after filtering).
+  const { data: quickWinCandidates } = await supabase
     .from("issues")
     .select(`
       *,
@@ -184,19 +204,9 @@ export default async function Dashboard() {
     `)
     .in("project_id", projectIds.length > 0 ? projectIds : ["__none__"])
     .eq("is_fixed", false)
-    .in("severity", ["critical", "high"])
+    .in("severity", ["critical", "high", "medium"])
     .order("created_at", { ascending: false })
-    .limit(8);
-
-  const attentionIssues = (criticalIssues || []).map((issue: Issue) => ({
-    id: issue.id,
-    severity: issue.severity,
-    description: issue.description,
-    projectId: issue.project_id,
-    projectName: issue.projects?.name || "",
-    pageId: issue.page_id,
-    pageUrl: issue.pages?.url || "",
-  }));
+    .limit(50);
 
   // Recent scans
   const { data: recentScans } = await supabase
@@ -211,14 +221,6 @@ export default async function Dashboard() {
   // Compute aggregate stats
   const totalProjects = projects?.length || 0;
   const totalPagesCrawled = (allPages || []).length;
-  const totalOpenIssues = (allIssues || []).length;
-  const avgHealthScore =
-    projectHealthData.length > 0
-      ? Math.round(
-          projectHealthData.reduce((sum, p) => sum + p.healthScore, 0) /
-            projectHealthData.length,
-        )
-      : 0;
 
   return (
     <div className="space-y-8">
@@ -262,7 +264,7 @@ export default async function Dashboard() {
       ) : (
         <>
           {/* Stat Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <StatCard
               label="Total Projects"
               value={totalProjects}
@@ -277,20 +279,6 @@ export default async function Dashboard() {
                 <IconFiles className="w-4 h-4 text-[var(--color-primary)]" />
               }
             />
-            <StatCard
-              label="Open Issues"
-              value={totalOpenIssues}
-              icon={
-                <IconAlertTriangle className="w-4 h-4 text-[var(--color-score-warning)]" />
-              }
-            />
-            <StatCard
-              label="Avg Health Score"
-              value={avgHealthScore}
-              icon={
-                <IconActivity className="w-4 h-4 text-[var(--color-score-good)]" />
-              }
-            />
           </div>
 
           {/* Project Health Grid */}
@@ -298,7 +286,7 @@ export default async function Dashboard() {
 
           {/* Quick Wins */}
           <QuickWinsCard
-            issues={(criticalIssues || []).map((issue: any) => ({
+            issues={(quickWinCandidates || []).map((issue: any) => ({
               id: issue.id,
               issue_type: issue.issue_type,
               severity: issue.severity,
@@ -310,12 +298,8 @@ export default async function Dashboard() {
             }))}
           />
 
-          {/* Needs Attention + Recent Scans */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <NeedsAttentionCard issues={attentionIssues} />
-
-            {/* Recent Scans */}
-            <div className="glass-card overflow-hidden">
+          {/* Recent Scans (full width) */}
+          <div className="glass-card overflow-hidden">
               <div className="px-5 py-4 border-b border-[var(--color-border-subtle)]">
                 <h3 className="text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider">
                   Recent Scans
@@ -372,7 +356,6 @@ export default async function Dashboard() {
                 )}
               </div>
             </div>
-          </div>
         </>
       )}
     </div>

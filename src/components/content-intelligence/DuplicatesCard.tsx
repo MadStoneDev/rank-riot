@@ -111,9 +111,11 @@ export default function DuplicatesCard({
       <div className="divide-y divide-[var(--color-border-subtle)]">
         {displayGroups.map((group) => {
           const isGroupExpanded = expandedGroups.has(group.value);
+          const reasonLabel =
+            activeTab === "titles" ? "Same Title" : "Same Meta Description";
           const displayValue =
-            group.value.length > 60
-              ? group.value.substring(0, 60) + "..."
+            group.value.length > 80
+              ? group.value.substring(0, 80) + "..."
               : group.value;
 
           return (
@@ -123,11 +125,14 @@ export default function DuplicatesCard({
                 className="w-full flex items-center justify-between text-left"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-[var(--color-text-primary)] truncate">
-                    &quot;{displayValue}&quot;
+                  <p className="text-sm font-medium text-[var(--color-text-primary)]">
+                    {reasonLabel}{" "}
+                    <span className="text-[var(--color-text-muted)] font-normal">
+                      · {group.pages.length} pages
+                    </span>
                   </p>
-                  <p className="text-xs text-[var(--color-text-muted)]">
-                    Used on {group.pages.length} pages
+                  <p className="text-xs text-[var(--color-text-muted)] truncate mt-0.5">
+                    &quot;{displayValue}&quot;
                   </p>
                 </div>
                 {isGroupExpanded ? (

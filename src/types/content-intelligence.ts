@@ -19,6 +19,8 @@ export interface DuplicateGroup {
 export interface SimilarContentGroup {
   similarity: number;
   pages: PageBasic[];
+  /** Keywords shared across every page in the group (the reason they grouped) */
+  sharedKeywords?: string[];
 }
 
 export interface Keyword {
