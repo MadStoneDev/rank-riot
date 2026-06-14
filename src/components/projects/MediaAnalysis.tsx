@@ -71,29 +71,31 @@ export default function MediaAnalysis({
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="p-6 space-y-6">
         {data.totalImages > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Image Overview */}
-            <ImageOverviewCard
-              totalImages={data.totalImages}
-              imagesWithAlt={data.imagesWithAlt}
-              imagesMissingAlt={data.imagesMissingAlt}
-              altCoveragePercent={data.altCoveragePercent}
-            />
+          <>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Alt Text Overview */}
+              <ImageOverviewCard
+                totalImages={data.totalImages}
+                imagesWithAlt={data.imagesWithAlt}
+                imagesMissingAlt={data.imagesMissingAlt}
+                altCoveragePercent={data.altCoveragePercent}
+              />
 
-            {/* Missing Alt Text */}
-            <MissingAltCard
-              pages={data.pagesWithMissingAlt}
-              projectId={projectId}
-            />
+              {/* Missing Alt Text */}
+              <MissingAltCard
+                pages={data.pagesWithMissingAlt}
+                projectId={projectId}
+              />
+            </div>
 
-            {/* Image Heavy Pages */}
+            {/* Image Heavy Pages — full width for the page list + bars. */}
             <ImageHeavyPagesCard
               pages={data.pagesWithMostImages}
               projectId={projectId}
             />
-          </div>
+          </>
         ) : (
           <div className="text-center py-8">
             <IconPhoto className="h-12 w-12 mx-auto text-[var(--color-text-muted)] mb-3" />

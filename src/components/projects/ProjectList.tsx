@@ -19,6 +19,7 @@ import {
 import { deleteProject } from "@/app/(private)/projects/actions";
 import { toast } from "sonner";
 import { Database } from "../../../database.types";
+import Modal from "@/components/ui/Modal";
 
 type Project = Database["public"]["Tables"]["projects"]["Row"];
 
@@ -136,8 +137,9 @@ export default function ProjectList({
 
   return (
     <div className="space-y-4">
-      {/* Search and Sort Controls */}
-      <div className="flex flex-wrap items-center gap-3 sm:gap-4 glass-card p-3 sm:p-4">
+      {/* Search and Sort Controls — flat row (no nested card) to match the
+          dashboard's cleaner, less boxed-in look. */}
+      <div className="flex flex-wrap items-center gap-3 sm:gap-4">
         <div className="relative flex-1 min-w-[200px]">
           <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-text-muted)]" />
           <input
@@ -171,6 +173,7 @@ export default function ProjectList({
               key={project.id}
               project={project}
               projectType={projectType}
+              sortField={sortField}
               pageCount={pageCount[project.id]}
               issueCount={issueCount[project.id]}
               onDelete={handleDeleteProject}
@@ -189,38 +192,38 @@ export default function ProjectList({
 function ProjectListItem({
   project,
   projectType,
+  sortField,
   pageCount,
   issueCount,
   onDelete,
 }: {
   project: Project;
   projectType: "seo" | "audit";
+  sortField: SortField;
   pageCount?: number;
   issueCount?: number;
   onDelete: (id: string) => void;
 }) {
   const [showActions, setShowActions] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const handleDelete = async (e: React.MouseEvent) => {
+  const openDeleteModal = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    setShowDeleteModal(true);
+  };
 
-    if (!confirmDelete) {
-      setConfirmDelete(true);
-      return;
-    }
-
+  const confirmDelete = async () => {
     setIsDeleting(true);
     const result = await deleteProject(project.id);
     if (result?.error) {
       toast.error(result.error);
       setIsDeleting(false);
-      setConfirmDelete(false);
+      setShowDeleteModal(false);
     } else {
       toast.success("Project removed");
-      onDelete(project.id);
+      onDelete(project.id); // removes this item from the list (unmounts)
     }
   };
 
@@ -264,7 +267,7 @@ function ProjectListItem({
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1 sm:mb-0">
                 <span
-                  className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-medium flex-shrink-0 ${
+                  className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs sm:text-xs font-medium flex-shrink-0 ${
                     projectType === "seo"
                       ? "bg-[var(--color-score-good-muted)] text-[var(--color-score-good)]"
                       : "bg-[var(--color-primary-muted)] text-[var(--color-primary)]"
@@ -273,7 +276,7 @@ function ProjectListItem({
                   {projectType === "seo" ? "SEO" : "Audit"}
                 </span>
                 <span
-                  className={`px-1.5 py-0.5 text-[10px] sm:text-xs font-medium rounded-full flex-shrink-0 ${
+                  className={`px-1.5 py-0.5 text-xs sm:text-xs font-medium rounded-full flex-shrink-0 ${
                     project.last_scan_at
                       ? "bg-[var(--color-score-good-muted)] text-[var(--color-score-good)]"
                       : "bg-[var(--color-score-warning-muted)] text-[var(--color-score-warning)]"
@@ -304,11 +307,18 @@ function ProjectListItem({
                   </span>
                 )}
               </div>
-              <div className="hidden md:block text-sm text-[var(--color-text-muted)] text-right min-w-[100px]">
-                <p>
-                  {project.last_scan_at
-                    ? format(new Date(project.last_scan_at), "MMM d, yyyy")
-                    : "Never scanned"}
+              <div className="hidden md:block text-sm text-right min-w-[110px]">
+                <p className="text-xs text-[var(--color-text-muted)] uppercase tracking-wide">
+                  {sortField === "created" ? "Created on" : "Last scan on"}
+                </p>
+                <p className="text-[var(--color-text-secondary)]">
+                  {sortField === "created"
+                    ? project.created_at
+                      ? format(new Date(project.created_at), "MMM d, yyyy")
+                      : "Unknown"
+                    : project.last_scan_at
+                      ? format(new Date(project.last_scan_at), "MMM d, yyyy")
+                      : "Never scanned"}
                 </p>
               </div>
               <div className="hidden lg:block">
@@ -324,7 +334,6 @@ function ProjectListItem({
         onClick={(e) => {
           e.preventDefault();
           setShowActions(!showActions);
-          setConfirmDelete(false);
         }}
         className="lg:hidden flex-shrink-0 grid place-content-center w-10 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
         aria-label="Toggle actions"
@@ -339,7 +348,6 @@ function ProjectListItem({
           overflow-hidden transition-all duration-300 ease-in-out
           ${showActions ? "max-w-[120px]" : "max-w-0 lg:group-hover/project:max-w-[120px]"}
         `}
-        onMouseLeave={() => setConfirmDelete(false)}
       >
         <div className="flex items-stretch bg-[var(--color-surface-overlay)] w-[120px] border-l border-[var(--color-border-subtle)]">
           <Link
@@ -352,23 +360,55 @@ function ProjectListItem({
           </Link>
 
           <button
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className={`flex-1 grid place-content-center transition-colors ${
-              confirmDelete
-                ? "bg-danger text-white hover:bg-danger-hover"
-                : "text-[var(--color-text-muted)] hover:text-[var(--color-danger)] hover:bg-[var(--color-surface-hover)]"
-            }`}
-            title={confirmDelete ? "Click again to confirm" : "Remove project"}
+            onClick={openDeleteModal}
+            className="flex-1 grid place-content-center transition-colors text-[var(--color-text-muted)] hover:text-[var(--color-danger)] hover:bg-[var(--color-surface-hover)]"
+            title="Remove project"
           >
-            {isDeleting ? (
-              <IconLoader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <IconTrash className="h-5 w-5" />
-            )}
+            <IconTrash className="h-5 w-5" />
           </button>
         </div>
       </div>
+
+      {/* Delete confirmation modal */}
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          if (!isDeleting) setShowDeleteModal(false);
+        }}
+        title="Delete project"
+        subtitle={project.name}
+        maxWidth="max-w-md"
+      >
+        <div className="px-6 py-5">
+          <p className="text-sm text-[var(--color-text-secondary)]">
+            This removes{" "}
+            <span className="font-medium text-[var(--color-text-primary)]">
+              {project.name}
+            </span>{" "}
+            from your dashboard. Crawled data is retained for backlink
+            analysis. This can&apos;t be undone from here.
+          </p>
+          <div className="mt-6 flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => setShowDeleteModal(false)}
+              disabled={isDeleting}
+              className="px-4 py-2 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-surface-hover)] disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white bg-danger hover:bg-danger-hover disabled:opacity-50"
+            >
+              {isDeleting && <IconLoader2 className="h-4 w-4 animate-spin" />}
+              {isDeleting ? "Deleting..." : "Delete project"}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

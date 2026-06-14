@@ -86,7 +86,7 @@ export default function SiteArchitecture({
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="p-6 space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Depth Distribution */}
           <DepthDistributionCard
@@ -99,14 +99,15 @@ export default function SiteArchitecture({
 
           {/* Deep Pages */}
           <DeepPagesCard pages={data.deepPages} projectId={projectId} />
-
-          {/* Internal Linking */}
-          <InternalLinkingCard
-            mostLinked={data.pagesWithMostLinks}
-            leastLinked={data.pagesWithFewestLinks}
-            projectId={projectId}
-          />
         </div>
+
+        {/* Internal Linking — full width: understanding the site's link graph
+            is high-value and benefits from the extra horizontal room. */}
+        <InternalLinkingCard
+          mostLinked={data.pagesWithMostLinks}
+          leastLinked={data.pagesWithFewestLinks}
+          projectId={projectId}
+        />
       </div>
     </div>
   );

@@ -136,7 +136,7 @@ export default async function ProjectsPage({
               </div>
               <div>
                 <h4 className="font-semibold text-lg">Project limit reached</h4>
-                <p className="text-[var(--color-text-muted)] mt-1">
+                <p className="text-white/70 mt-1">
                   Upgrade to{" "}
                   {userPlan === "free"
                     ? "Starter"
@@ -157,8 +157,8 @@ export default async function ProjectsPage({
         </div>
       )}
 
-      {/* Tabs */}
-      <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
+      {/* Tabs — flat, not a boxed surface, to match the dashboard's style. */}
+      <div>
         <div className="border-b border-[var(--color-border-default)]">
           <nav className="flex">
             <Link
@@ -206,7 +206,7 @@ export default async function ProjectsPage({
         </div>
 
         {/* Project Lists */}
-        <div className="p-6">
+        <div className="pt-6">
           {activeTab === "seo" ? (
             <ProjectList
               key="seo"

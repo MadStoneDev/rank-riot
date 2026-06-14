@@ -14,9 +14,7 @@ import HeadingHierarchy from "@/components/page-detail/HeadingHierarchy";
 import EnhancedLinkList from "@/components/page-detail/EnhancedLinkList";
 import EnhancedImageList from "@/components/page-detail/EnhancedImageList";
 import KeywordListClient from "@/components/projects/KeywordListClient";
-import ScoreRing from "@/components/ui/ScoreRing";
 import Badge from "@/components/ui/Badge";
-import { getPageScore } from "@/utils/page-score";
 import IssueAdvicePanel from "@/components/issues/IssueAdvicePanel";
 
 type PageLink = Database["public"]["Tables"]["page_links"]["Row"] & {
@@ -162,23 +160,6 @@ export default async function PageDetailPage({
     images = [],
   } = page;
 
-  // Calculate page score for header display
-  const pageScore = getPageScore({
-    title: page.title,
-    meta_description: page.meta_description,
-    h1s: h1s as string[],
-    h2s: h2s as string[],
-    word_count: page.word_count,
-    canonical_url: page.canonical_url,
-    url: page.url,
-    has_robots_noindex: page.has_robots_noindex,
-    is_indexable: page.is_indexable,
-    http_status: page.http_status,
-    images: images as { src: string; alt: string }[],
-    open_graph: page.open_graph as Record<string, any> | null,
-    twitter_card: page.twitter_card as Record<string, any> | null,
-  });
-
   // HTTP Status badge variant
   const getHttpStatusVariant = (): "good" | "warning" | "critical" => {
     const status = page.http_status;
@@ -190,35 +171,32 @@ export default async function PageDetailPage({
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="glass-card p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-5 min-w-0">
-            <ScoreRing score={pageScore} size="lg" label="SEO Score" />
-            <div className="min-w-0">
-              <h1 className="text-2xl font-bold text-[var(--color-text-primary)] truncate">
-                {page.title || "Untitled Page"}
-              </h1>
-              <p className="mt-1 flex items-center gap-2 text-[var(--color-text-secondary)]">
-                <a
-                  href={page.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 hover:text-[var(--color-primary)] hover:underline transition-colors"
-                >
-                  {page.url}
-                  <IconExternalLink className="h-4 w-4" />
-                </a>
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 sm:flex-shrink-0">
-            {page.http_status && (
-              <Badge variant={getHttpStatusVariant()} size="md">
-                HTTP {page.http_status}
-              </Badge>
-            )}
-          </div>
+      {/* Page Header — a lightweight title block, not a card. The score lives in
+          the SEO Health Score panel below, so it's not repeated here. A bottom
+          border separates it from the rest of the page. */}
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-5 border-b border-[var(--color-border-default)]">
+        <div className="min-w-0">
+          <h1 className="text-3xl font-bold tracking-tight text-[var(--color-text-primary)] truncate">
+            {page.title || "Untitled Page"}
+          </h1>
+          <p className="mt-1.5 flex items-center gap-2 text-[var(--color-text-secondary)]">
+            <a
+              href={page.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 hover:text-[var(--color-primary)] hover:underline transition-colors"
+            >
+              {page.url}
+              <IconExternalLink className="h-4 w-4" />
+            </a>
+          </p>
+        </div>
+        <div className="flex items-center gap-2 sm:flex-shrink-0">
+          {page.http_status && (
+            <Badge variant={getHttpStatusVariant()} size="md">
+              HTTP {page.http_status}
+            </Badge>
+          )}
         </div>
       </div>
 

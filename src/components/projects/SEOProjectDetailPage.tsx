@@ -982,12 +982,10 @@ export default async function ProjectDetailPage({
       <HistoricalTrends projectId={projectId} />
 
       {/* Scan History */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <ScanHistory
-          initialScans={(scanHistory as Scan[]) || []}
-          projectId={projectId}
-        />
-      </div>
+      <ScanHistory
+        initialScans={(scanHistory as Scan[]) || []}
+        projectId={projectId}
+      />
 
       {/* Floating Export Button */}
       <FloatingExportButton

@@ -59,7 +59,7 @@ export default function ImageOverviewCard({
       <div className="px-4 py-3 border-b" style={{ backgroundColor: config.mutedBg, borderColor: `${config.color}33` }}>
         <div className="flex items-center gap-2">
           <IconPhoto className="h-5 w-5" style={{ color: config.color }} />
-          <span className="font-medium" style={{ color: config.color }}>Image Overview</span>
+          <span className="font-medium" style={{ color: config.color }}>Alt Text Overview</span>
         </div>
         <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
           Alt text accessibility analysis

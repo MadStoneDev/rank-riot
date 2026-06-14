@@ -472,6 +472,18 @@ function SitemapValidationCard({
                 {hasLastmod ? "Present" : "Missing"}
               </span>
             </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-[var(--color-text-muted)]">Crawled, not in sitemap</span>
+              <span style={{ color: notInSitemap.length > 0 ? SCORE_COLORS.warning : SCORE_COLORS.good }} className="font-medium text-xs">
+                {notInSitemap.length.toLocaleString()}
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-[var(--color-text-muted)]">In sitemap, not crawled</span>
+              <span style={{ color: notCrawled.length > 0 ? SCORE_COLORS.warning : SCORE_COLORS.good }} className="font-medium text-xs">
+                {notCrawled.length.toLocaleString()}
+              </span>
+            </div>
           </div>
 
           {hasErrors && data?.errors && (
@@ -574,10 +586,11 @@ export default function GeoReadinessSection({ siteLevelData }: GeoReadinessSecti
         </div>
       </div>
 
-      {/* Content — three sub-cards */}
-      <div className="p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <LlmsTxtCard data={siteLevelData.llms_txt} />
+      {/* Content — llms.txt full width (its file contents need room to wrap),
+          the other two in a 2-column row. */}
+      <div className="p-6 space-y-6">
+        <LlmsTxtCard data={siteLevelData.llms_txt} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <AiBotCrawlabilityCard data={siteLevelData.robots_txt} />
           <SitemapValidationCard data={siteLevelData.sitemap_validation} />
         </div>
