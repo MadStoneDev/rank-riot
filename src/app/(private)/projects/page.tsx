@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { IconFileSearch, IconChartBar, IconInfoCircle, IconPlus } from "@tabler/icons-react";
+import { IconFileSearch, IconChartBar, IconInfoCircle, IconPlus, IconLayoutGrid } from "@tabler/icons-react";
 import ProjectList from "@/components/projects/ProjectList";
 import { PlanId } from "@/types/subscription";
 import { PLAN_LIMITS, PLAN_INFO, canCreateProject } from "@/lib/subscription-limits";
@@ -29,7 +29,7 @@ export default async function ProjectsPage({
   }
 
   const params = await searchParams;
-  const activeTab = params.tab || "seo";
+  const activeTab = params.tab || "all";
 
   // Get user's subscription tier
   const { data: profile } = await supabase
@@ -162,6 +162,27 @@ export default async function ProjectsPage({
         <div className="border-b border-[var(--color-border-default)]">
           <nav className="flex">
             <Link
+              href="/projects?tab=all"
+              className={`flex-1 sm:flex-none px-6 py-4 text-sm font-medium border-b-2 transition-colors flex items-center justify-center gap-2 ${
+                activeTab === "all"
+                  ? "border-[var(--color-primary)] text-[var(--color-text-primary)]"
+                  : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+              }`}
+            >
+              <IconLayoutGrid className="w-4 h-4" />
+              All Projects
+              <span
+                className={`py-0.5 px-2 rounded-full text-xs ${
+                  activeTab === "all"
+                    ? "bg-[var(--color-primary)] text-white"
+                    : "bg-[var(--color-surface-overlay)] text-[var(--color-text-secondary)]"
+                }`}
+              >
+                {allProjects.length}
+              </span>
+            </Link>
+
+            <Link
               href="/projects?tab=seo"
               className={`flex-1 sm:flex-none px-6 py-4 text-sm font-medium border-b-2 transition-colors flex items-center justify-center gap-2 ${
                 activeTab === "seo"
@@ -207,21 +228,30 @@ export default async function ProjectsPage({
 
         {/* Project Lists */}
         <div className="pt-6">
-          {activeTab === "seo" ? (
+          {activeTab === "all" ? (
             <ProjectList
-              key="seo"
-              projects={seoProjects || []}
-              projectType="seo"
-              emptyMessage="No SEO projects yet. Create your first SEO project to start comprehensive website analysis."
+              key="all"
+              projects={allProjects}
+              projectType="all"
+              emptyMessage="No projects yet. Create your first project to start analysing your sites."
               pageCount={pageCount}
               issueCount={issueCount}
             />
-          ) : (
+          ) : activeTab === "audit" ? (
             <ProjectList
               key="audit"
               projects={auditProjects || []}
               projectType="audit"
               emptyMessage="No audit projects yet. Create your first audit project for quick website assessments."
+              pageCount={pageCount}
+              issueCount={issueCount}
+            />
+          ) : (
+            <ProjectList
+              key="seo"
+              projects={seoProjects || []}
+              projectType="seo"
+              emptyMessage="No SEO projects yet. Create your first SEO project to start comprehensive website analysis."
               pageCount={pageCount}
               issueCount={issueCount}
             />

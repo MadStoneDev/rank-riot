@@ -15,6 +15,8 @@ import {
   IconLoader2,
   IconDotsVertical,
   IconWorld,
+  IconLayoutGrid,
+  IconLayoutList,
 } from "@tabler/icons-react";
 import { deleteProject } from "@/app/(private)/projects/actions";
 import { toast } from "sonner";
@@ -25,7 +27,7 @@ type Project = Database["public"]["Tables"]["projects"]["Row"];
 
 interface ProjectListProps {
   projects: Project[];
-  projectType: "seo" | "audit";
+  projectType: "seo" | "audit" | "all";
   emptyMessage: string;
   pageCount?: { [projectId: string]: number };
   issueCount?: { [projectId: string]: number };
@@ -45,6 +47,7 @@ export default function ProjectList({
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("created");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
 
   const handleDeleteProject = (id: string) => {
     setProjects((prev) => prev.filter((p) => p.id !== id));
@@ -115,21 +118,21 @@ export default function ProjectList({
     return (
       <div className="glass-card p-12 text-center">
         <div className="mb-4">
-          {projectType === "seo" ? (
-            <IconFileSearch className="w-16 h-16 mx-auto text-[var(--color-text-muted)]" />
-          ) : (
+          {projectType === "audit" ? (
             <IconChartBar className="w-16 h-16 mx-auto text-[var(--color-text-muted)]" />
+          ) : (
+            <IconFileSearch className="w-16 h-16 mx-auto text-[var(--color-text-muted)]" />
           )}
         </div>
         <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-2">
-          No {projectType === "seo" ? "SEO" : "Audit"} Projects Yet
+          No {projectType === "all" ? "" : projectType === "seo" ? "SEO " : "Audit "}Projects Yet
         </h2>
         <p className="text-[var(--color-text-secondary)] mb-6">{emptyMessage}</p>
         <Link
           href="/projects/new"
           className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors"
         >
-          Create Your First {projectType === "seo" ? "SEO" : "Audit"} Project
+          Create Your First {projectType === "all" ? "" : projectType === "seo" ? "SEO " : "Audit "}Project
         </Link>
       </div>
     );
@@ -157,6 +160,34 @@ export default function ProjectList({
           <SortButton field="last_scan" label="Last Scan" />
           <SortButton field="created" label="Created" />
         </div>
+
+        {/* View toggle: list <-> grid */}
+        <div className="flex items-center gap-1 rounded-md bg-[var(--color-surface-overlay)] p-0.5">
+          <button
+            onClick={() => setViewMode("list")}
+            aria-label="List view"
+            aria-pressed={viewMode === "list"}
+            className={`grid place-content-center h-7 w-7 rounded transition-colors ${
+              viewMode === "list"
+                ? "bg-[var(--color-primary)] text-white"
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+            }`}
+          >
+            <IconLayoutList className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => setViewMode("grid")}
+            aria-label="Grid view"
+            aria-pressed={viewMode === "grid"}
+            className={`grid place-content-center h-7 w-7 rounded transition-colors ${
+              viewMode === "grid"
+                ? "bg-[var(--color-primary)] text-white"
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+            }`}
+          >
+            <IconLayoutGrid className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
       {searchQuery && (
@@ -167,19 +198,31 @@ export default function ProjectList({
 
       {/* Project List */}
       {sortedProjects.length > 0 ? (
-        <div className="space-y-2 sm:space-y-3">
-          {sortedProjects.map((project) => (
-            <ProjectListItem
-              key={project.id}
-              project={project}
-              projectType={projectType}
-              sortField={sortField}
-              pageCount={pageCount[project.id]}
-              issueCount={issueCount[project.id]}
-              onDelete={handleDeleteProject}
-            />
-          ))}
-        </div>
+        viewMode === "grid" ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            {sortedProjects.map((project) => (
+              <ProjectGridCard
+                key={project.id}
+                project={project}
+                pageCount={pageCount[project.id]}
+                issueCount={issueCount[project.id]}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-2 sm:space-y-3">
+            {sortedProjects.map((project) => (
+              <ProjectListItem
+                key={project.id}
+                project={project}
+                sortField={sortField}
+                pageCount={pageCount[project.id]}
+                issueCount={issueCount[project.id]}
+                onDelete={handleDeleteProject}
+              />
+            ))}
+          </div>
+        )
       ) : (
         <div className="glass-card p-8 text-center">
           <p className="text-[var(--color-text-muted)]">No projects match your search</p>
@@ -191,14 +234,12 @@ export default function ProjectList({
 
 function ProjectListItem({
   project,
-  projectType,
   sortField,
   pageCount,
   issueCount,
   onDelete,
 }: {
   project: Project;
-  projectType: "seo" | "audit";
   sortField: SortField;
   pageCount?: number;
   issueCount?: number;
@@ -268,12 +309,12 @@ function ProjectListItem({
               <div className="flex items-center gap-2 mb-1 sm:mb-0">
                 <span
                   className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs sm:text-xs font-medium flex-shrink-0 ${
-                    projectType === "seo"
+                    project.project_type === "seo"
                       ? "bg-[var(--color-score-good-muted)] text-[var(--color-score-good)]"
                       : "bg-[var(--color-primary-muted)] text-[var(--color-primary)]"
                   }`}
                 >
-                  {projectType === "seo" ? "SEO" : "Audit"}
+                  {project.project_type === "seo" ? "SEO" : "Audit"}
                 </span>
                 <span
                   className={`px-1.5 py-0.5 text-xs sm:text-xs font-medium rounded-full flex-shrink-0 ${
@@ -410,6 +451,81 @@ function ProjectListItem({
         </div>
       </Modal>
     </div>
+  );
+}
+
+function ProjectGridCard({
+  project,
+  pageCount,
+  issueCount,
+}: {
+  project: Project;
+  pageCount?: number;
+  issueCount?: number;
+}) {
+  const faviconUrl = (() => {
+    try {
+      const domain = new URL(project.url).hostname;
+      return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+    } catch {
+      return null;
+    }
+  })();
+
+  return (
+    <Link
+      href={`/projects/${project.id}`}
+      className="glass-card p-4 flex flex-col gap-3 hover:bg-[var(--color-surface-hover)] transition-colors"
+    >
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="h-10 w-10 flex-shrink-0 rounded-lg bg-[var(--color-surface-overlay)] border border-[var(--color-border-subtle)] flex items-center justify-center overflow-hidden">
+          {faviconUrl ? (
+            <img
+              src={faviconUrl}
+              alt=""
+              className="h-6 w-6"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = "none";
+                (e.target as HTMLImageElement).nextElementSibling?.classList.remove("hidden");
+              }}
+            />
+          ) : null}
+          <IconWorld className={`h-5 w-5 text-[var(--color-text-muted)] ${faviconUrl ? "hidden" : ""}`} />
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-[var(--color-text-primary)] truncate">
+            {project.name}
+          </p>
+          <p className="text-xs text-[var(--color-text-muted)] truncate">{project.url}</p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <span
+          className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${
+            project.project_type === "seo"
+              ? "bg-[var(--color-score-good-muted)] text-[var(--color-score-good)]"
+              : "bg-[var(--color-primary-muted)] text-[var(--color-primary)]"
+          }`}
+        >
+          {project.project_type === "seo" ? "SEO" : "Audit"}
+        </span>
+        <span className="text-xs text-[var(--color-text-muted)]">
+          {project.last_scan_at
+            ? `Scanned ${format(new Date(project.last_scan_at), "MMM d, yyyy")}`
+            : "Never scanned"}
+        </span>
+      </div>
+
+      <div className="flex items-center gap-4 text-xs text-[var(--color-text-secondary)] border-t border-[var(--color-border-subtle)] pt-3">
+        <span>
+          <span className="font-medium text-[var(--color-text-primary)]">{pageCount ?? 0}</span> pages
+        </span>
+        <span>
+          <span className="font-medium text-[var(--color-text-primary)]">{issueCount ?? 0}</span> issues
+        </span>
+      </div>
+    </Link>
   );
 }
 
