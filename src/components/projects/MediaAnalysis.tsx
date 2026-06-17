@@ -10,6 +10,7 @@ import { MediaAnalysisData } from "@/types/media-analysis";
 import ImageOverviewCard from "@/components/media-analysis/ImageOverviewCard";
 import MissingAltCard from "@/components/media-analysis/MissingAltCard";
 import ImageHeavyPagesCard from "@/components/media-analysis/ImageHeavyPagesCard";
+import FileSizeCard from "@/components/media-analysis/FileSizeCard";
 
 interface MediaAnalysisProps {
   data: MediaAnalysisData;
@@ -74,21 +75,22 @@ export default function MediaAnalysis({
       <div className="p-6 space-y-6">
         {data.totalImages > 0 ? (
           <>
+            {/* Overview cards: alt-text (accessibility) + file size (performance) */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Alt Text Overview */}
               <ImageOverviewCard
                 totalImages={data.totalImages}
                 imagesWithAlt={data.imagesWithAlt}
                 imagesMissingAlt={data.imagesMissingAlt}
                 altCoveragePercent={data.altCoveragePercent}
               />
-
-              {/* Missing Alt Text */}
-              <MissingAltCard
-                pages={data.pagesWithMissingAlt}
-                projectId={projectId}
-              />
+              <FileSizeCard stats={data.fileSizeStats} />
             </div>
+
+            {/* Missing Alt Text — full width list. */}
+            <MissingAltCard
+              pages={data.pagesWithMissingAlt}
+              projectId={projectId}
+            />
 
             {/* Image Heavy Pages — full width for the page list + bars. */}
             <ImageHeavyPagesCard

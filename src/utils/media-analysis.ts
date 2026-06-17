@@ -3,7 +3,78 @@ import {
   PageWithImages,
   ImageMissingAlt,
   MediaAnalysisData,
+  ImageFileSizeStats,
 } from "@/types/media-analysis";
+
+// Images larger than this are flagged as optimisation candidates.
+const LARGE_IMAGE_THRESHOLD_BYTES = 200 * 1024; // 200 KB
+const NEXT_GEN_FORMATS = new Set(["webp", "avif"]);
+
+function normalizeFormat(img: ImageData): string | null {
+  const raw = (img.format || "").toLowerCase().trim();
+  if (raw) return raw === "jpeg" ? "jpg" : raw;
+  // Fall back to the file extension when the crawler didn't record a format.
+  try {
+    const path = new URL(img.src).pathname;
+    const ext = path.split(".").pop()?.toLowerCase();
+    if (ext && ext.length <= 4 && /^[a-z0-9]+$/.test(ext)) {
+      return ext === "jpeg" ? "jpg" : ext;
+    }
+  } catch {
+    /* ignore unparseable src */
+  }
+  return null;
+}
+
+/**
+ * Aggregate image weight, large-image count, format mix and next-gen adoption
+ * across all crawled pages — the performance side of media, complementing the
+ * alt-text (accessibility) side.
+ */
+export function calculateImageFileSizeStats(
+  pages: PageWithImages[]
+): ImageFileSizeStats {
+  let totalBytes = 0;
+  let sizedCount = 0;
+  let largeCount = 0;
+  let nextGenCount = 0;
+  let formatKnownCount = 0;
+  const formatMap = new Map<string, number>();
+
+  for (const page of pages) {
+    for (const img of page.images) {
+      const size = img.file_size_bytes;
+      if (typeof size === "number" && size > 0) {
+        totalBytes += size;
+        sizedCount++;
+        if (size > LARGE_IMAGE_THRESHOLD_BYTES) largeCount++;
+      }
+      const format = normalizeFormat(img);
+      if (format) {
+        formatKnownCount++;
+        formatMap.set(format, (formatMap.get(format) || 0) + 1);
+        if (NEXT_GEN_FORMATS.has(format)) nextGenCount++;
+      }
+    }
+  }
+
+  const formatCounts = [...formatMap.entries()]
+    .map(([format, count]) => ({ format, count }))
+    .sort((a, b) => b.count - a.count);
+
+  return {
+    totalBytes,
+    sizedCount,
+    largeCount,
+    largeThresholdBytes: LARGE_IMAGE_THRESHOLD_BYTES,
+    formatCounts,
+    nextGenCount,
+    nextGenPercent:
+      formatKnownCount > 0
+        ? Math.round((nextGenCount / formatKnownCount) * 100)
+        : 0,
+  };
+}
 
 /**
  * Parse images from raw page data

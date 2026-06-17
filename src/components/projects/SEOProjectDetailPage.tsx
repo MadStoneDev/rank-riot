@@ -74,6 +74,7 @@ import {
   getPagesByImageCount,
   getPagesWithMissingAlt,
   calculateMediaAnalysisSummary,
+  calculateImageFileSizeStats,
 } from "@/utils/media-analysis";
 
 type Scan = Database["public"]["Tables"]["scans"]["Row"];
@@ -433,6 +434,7 @@ export default async function ProjectDetailPage({
     pagesWithMostImages,
     imagesMissingAltList,
     pagesWithMissingAlt,
+    fileSizeStats: calculateImageFileSizeStats(pagesWithImagesParsed),
     summary: { critical: 0, warnings: 0, passed: 0 },
   };
 

@@ -1,6 +1,18 @@
 export interface ImageData {
   src: string;
   alt: string | null;
+  file_size_bytes?: number | null;
+  format?: string | null;
+}
+
+export interface ImageFileSizeStats {
+  totalBytes: number;
+  sizedCount: number; // images with a known byte size
+  largeCount: number; // images over the "large" threshold
+  largeThresholdBytes: number;
+  formatCounts: { format: string; count: number }[];
+  nextGenCount: number; // webp / avif
+  nextGenPercent: number; // of images with a known format
 }
 
 export interface PageWithImages {
@@ -27,6 +39,7 @@ export interface MediaAnalysisData {
   pagesWithMostImages: PageWithImages[];
   imagesMissingAltList: ImageMissingAlt[];
   pagesWithMissingAlt: PageWithImages[];
+  fileSizeStats: ImageFileSizeStats;
   summary: {
     critical: number;
     warnings: number;
