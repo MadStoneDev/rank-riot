@@ -7,6 +7,7 @@ import Pagination from "@/components/ui/Pagination";
 import ExportTriggerButton from "@/components/export/ExportTriggerButton";
 import { sanitizeFilename } from "@/utils/export";
 import { safeHref } from "@/utils/safe-url";
+import ViewToggle, { ImageViewMode } from "@/components/ui/ViewToggle";
 
 interface ImageRow {
   pageUrl: string;
@@ -29,6 +30,7 @@ export default function ImageAuditView({ images, projectId, projectName }: Image
   const [filter, setFilter] = useState<FilterMode>("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
+  const [viewMode, setViewMode] = useState<ImageViewMode>("list");
 
   const filtered = useMemo(() => {
     if (filter === "missing-alt") return images.filter((i) => !i.hasAlt);
@@ -69,28 +71,82 @@ export default function ImageAuditView({ images, projectId, projectName }: Image
         />
       </div>
 
-      {/* Filter tabs */}
-      <div className="flex gap-2">
-        {([
-          ["all", `All (${images.length})`],
-          ["missing-alt", `Missing Alt (${missingCount})`],
-          ["has-alt", `Has Alt (${hasAltCount})`],
-        ] as [FilterMode, string][]).map(([key, label]) => (
-          <button
-            key={key}
-            onClick={() => { setFilter(key); setPage(1); }}
-            className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
-              filter === key
-                ? "border-primary bg-primary/10 text-primary font-medium"
-                : "border-[var(--color-border-default)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)]"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
+      {/* Filter tabs + view toggle */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex gap-2">
+          {([
+            ["all", `All (${images.length})`],
+            ["missing-alt", `Missing Alt (${missingCount})`],
+            ["has-alt", `Has Alt (${hasAltCount})`],
+          ] as [FilterMode, string][]).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => { setFilter(key); setPage(1); }}
+              className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
+                filter === key
+                  ? "border-primary bg-primary/10 text-primary font-medium"
+                  : "border-[var(--color-border-default)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)]"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <ViewToggle mode={viewMode} onChange={setViewMode} />
       </div>
 
-      {/* Table */}
+      {/* Grid view */}
+      {viewMode === "grid" ? (
+        paginated.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {paginated.map((img, idx) => (
+              <div
+                key={`${img.imageSrc}-${idx}`}
+                className="bg-[var(--color-surface-raised)] rounded-xl border border-[var(--color-border-default)] overflow-hidden"
+              >
+                <div className="aspect-video relative bg-[var(--color-surface-overlay)] overflow-hidden">
+                  {img.imageSrc ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={safeHref(img.imageSrc, "")}
+                      alt={img.alt || ""}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <IconPhoto className="w-6 h-6 text-[var(--color-text-muted)]" />
+                    </div>
+                  )}
+                  <div className="absolute top-2 right-2">
+                    {img.hasAlt ? (
+                      <span className="px-1.5 py-0.5 rounded bg-[var(--color-score-good)] text-white text-xs font-medium">Alt</span>
+                    ) : (
+                      <span className="px-1.5 py-0.5 rounded bg-[var(--color-score-critical)] text-white text-xs font-medium">No alt</span>
+                    )}
+                  </div>
+                </div>
+                <div className="p-3">
+                  <p className="text-xs text-[var(--color-text-secondary)] truncate" title={img.imageSrc}>
+                    {img.imageSrc.split("/").pop() || img.imageSrc}
+                  </p>
+                  <p className="text-xs text-[var(--color-text-muted)] truncate mt-0.5" title={img.pageUrl}>
+                    {img.pageUrl}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] px-4 py-12 text-center text-[var(--color-text-muted)]">
+            No images match the current filter.
+          </div>
+        )
+      ) : (
+      /* Table */
       <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -154,6 +210,7 @@ export default function ImageAuditView({ images, projectId, projectName }: Image
           </table>
         </div>
       </div>
+      )}
 
       {totalPages > 1 && (
         <Pagination

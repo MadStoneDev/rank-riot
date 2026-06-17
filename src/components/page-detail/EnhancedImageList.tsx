@@ -11,6 +11,7 @@ import CollapsibleSection from "@/components/ui/CollapsibleSection";
 import { safeHref } from "@/utils/safe-url";
 import Pagination from "@/components/ui/Pagination";
 import Badge from "@/components/ui/Badge";
+import ViewToggle, { ImageViewMode } from "@/components/ui/ViewToggle";
 
 interface ImageData {
   src: string;
@@ -27,6 +28,7 @@ export default function EnhancedImageList({
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
   const [showOnlyMissingAlt, setShowOnlyMissingAlt] = useState(false);
+  const [viewMode, setViewMode] = useState<ImageViewMode>("grid");
 
   const missingAltCount = images.filter(
     (img) => !img.alt || img.alt.trim() === ""
@@ -117,6 +119,45 @@ export default function EnhancedImageList({
     );
   };
 
+  const ImageRow = ({ image }: { image: ImageData }) => {
+    const hasAlt = image.alt && image.alt.trim() !== "";
+    return (
+      <div className="flex items-center gap-3 py-2.5">
+        <span
+          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium flex-shrink-0 ${
+            hasAlt
+              ? "bg-[var(--color-score-good-muted)] text-[var(--color-score-good)]"
+              : "bg-[var(--color-score-critical-muted)] text-[var(--color-score-critical)]"
+          }`}
+        >
+          {hasAlt ? <IconCheck className="h-3 w-3" /> : <IconAlertTriangle className="h-3 w-3" />}
+          {hasAlt ? "Alt" : "No alt"}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm text-[var(--color-text-primary)] truncate" title={image.src}>
+            {image.src.split("/").pop() || image.src}
+          </p>
+          {hasAlt ? (
+            <p className="text-xs text-[var(--color-text-muted)] truncate" title={image.alt}>
+              {image.alt}
+            </p>
+          ) : (
+            <p className="text-xs text-[var(--color-score-critical)] italic">Missing alt text</p>
+          )}
+        </div>
+        <a
+          href={safeHref(image.src)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-shrink-0 text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
+          aria-label="View full image"
+        >
+          <IconExternalLink className="h-4 w-4" />
+        </a>
+      </div>
+    );
+  };
+
   return (
     <CollapsibleSection
       title="Images"
@@ -135,9 +176,9 @@ export default function EnhancedImageList({
     >
       {images.length > 0 ? (
         <>
-          {/* Filter toggle */}
-          {missingAltCount > 0 && (
-            <div className="px-4 py-3 bg-[var(--color-surface-overlay)] border-b border-[var(--color-border-subtle)]">
+          {/* Controls: missing-alt filter + grid/list toggle */}
+          <div className="px-4 py-3 bg-[var(--color-surface-overlay)] border-b border-[var(--color-border-subtle)] flex items-center justify-between gap-3">
+            {missingAltCount > 0 ? (
               <label className="inline-flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -152,16 +193,27 @@ export default function EnhancedImageList({
                   Show only images missing alt text ({missingAltCount})
                 </span>
               </label>
-            </div>
-          )}
+            ) : (
+              <span />
+            )}
+            <ViewToggle mode={viewMode} onChange={setViewMode} />
+          </div>
 
-          {/* Image grid */}
+          {/* Images: grid or list */}
           <div className="p-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {paginatedImages.map((image, index) => (
-                <ImageCard key={index} image={image} index={index} />
-              ))}
-            </div>
+            {viewMode === "grid" ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {paginatedImages.map((image, index) => (
+                  <ImageCard key={index} image={image} index={index} />
+                ))}
+              </div>
+            ) : (
+              <div className="divide-y divide-[var(--color-border-subtle)]">
+                {paginatedImages.map((image, index) => (
+                  <ImageRow key={index} image={image} />
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Pagination */}
