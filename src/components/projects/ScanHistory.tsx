@@ -15,10 +15,11 @@ type Scan = Database["public"]["Tables"]["scans"]["Row"];
 
 interface ScanHistoryItemProps {
   scan: Scan;
+  projectId: string;
   onDelete: (id: string) => void;
 }
 
-const ScanHistoryItem = ({ scan, onDelete }: ScanHistoryItemProps) => {
+const ScanHistoryItem = ({ scan, projectId, onDelete }: ScanHistoryItemProps) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = (id: string) => {
@@ -43,8 +44,18 @@ const ScanHistoryItem = ({ scan, onDelete }: ScanHistoryItemProps) => {
       <div
         className={`flex items-center lg:items-stretch justify-between overflow-hidden`}
       >
-        <div
-          className={`flex-grow p-4 flex items-stretch justify-between gap-1 z-10 transition duration-300 ease-in-out`}
+        <Link
+          href={
+            scan.status === "completed"
+              ? `/projects/${projectId}/compare?scan2=${scan.id}`
+              : "#"
+          }
+          aria-disabled={scan.status !== "completed"}
+          className={`flex-grow p-4 flex items-stretch justify-between gap-1 z-10 transition duration-300 ease-in-out ${
+            scan.status === "completed"
+              ? "cursor-pointer"
+              : "pointer-events-none"
+          }`}
         >
           <div className={`flex-grow`}>
             <div className="flex items-center">
@@ -100,7 +111,7 @@ const ScanHistoryItem = ({ scan, onDelete }: ScanHistoryItemProps) => {
               <p className="mt-1 text-xs text-[var(--color-severity-critical)]">Scan failed</p>
             )}
           </div>
-        </div>
+        </Link>
 
         {/* The key part - we pass the handleDelete function to the DeleteScanButton */}
         <DeleteScanButton id={scan.id} onDelete={handleDelete} />
@@ -291,6 +302,7 @@ export default function ScanHistory({
             <ScanHistoryItem
               key={scan.id}
               scan={scan}
+              projectId={projectId}
               onDelete={handleDeleteScan}
             />
           ))}
