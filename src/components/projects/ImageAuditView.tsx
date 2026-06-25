@@ -2,7 +2,14 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { IconArrowLeft, IconPhoto, IconDownload } from "@tabler/icons-react";
+import {
+  IconArrowLeft,
+  IconPhoto,
+  IconDownload,
+  IconChevronUp,
+  IconChevronDown,
+  IconSelector,
+} from "@tabler/icons-react";
 import Pagination from "@/components/ui/Pagination";
 import ExportTriggerButton from "@/components/export/ExportTriggerButton";
 import { sanitizeFilename } from "@/utils/export";
@@ -16,6 +23,7 @@ interface ImageRow {
   imageSrc: string;
   alt: string;
   hasAlt: boolean;
+  fileSizeBytes?: number | null;
 }
 
 interface ImageAuditViewProps {
@@ -25,12 +33,34 @@ interface ImageAuditViewProps {
 }
 
 type FilterMode = "all" | "missing-alt" | "has-alt";
+type SortKey = "source" | "alt" | "size" | "page";
+type SortDir = "asc" | "desc";
+
+function formatBytes(bytes?: number | null): string {
+  if (bytes == null) return "—";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 export default function ImageAuditView({ images, projectId, projectName }: ImageAuditViewProps) {
   const [filter, setFilter] = useState<FilterMode>("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [viewMode, setViewMode] = useState<ImageViewMode>("list");
+  const [sortKey, setSortKey] = useState<SortKey | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
+
+  const toggleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      // Size is most useful largest-first; text columns default A→Z.
+      setSortDir(key === "size" ? "desc" : "asc");
+    }
+    setPage(1);
+  };
 
   const filtered = useMemo(() => {
     if (filter === "missing-alt") return images.filter((i) => !i.hasAlt);
@@ -38,11 +68,56 @@ export default function ImageAuditView({ images, projectId, projectName }: Image
     return images;
   }, [images, filter]);
 
-  const totalPages = Math.ceil(filtered.length / pageSize);
-  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
+  const sorted = useMemo(() => {
+    if (!sortKey) return filtered;
+    const arr = [...filtered];
+    arr.sort((a, b) => {
+      let cmp = 0;
+      switch (sortKey) {
+        case "size":
+          // Unknown sizes sort to the bottom regardless of direction.
+          cmp = (a.fileSizeBytes ?? -1) - (b.fileSizeBytes ?? -1);
+          break;
+        case "alt":
+          cmp = Number(a.hasAlt) - Number(b.hasAlt);
+          break;
+        case "source":
+          cmp = a.imageSrc.localeCompare(b.imageSrc);
+          break;
+        case "page":
+          cmp = a.pageUrl.localeCompare(b.pageUrl);
+          break;
+      }
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+    return arr;
+  }, [filtered, sortKey, sortDir]);
+
+  const totalPages = Math.ceil(sorted.length / pageSize);
+  const paginated = sorted.slice((page - 1) * pageSize, page * pageSize);
 
   const missingCount = images.filter((i) => !i.hasAlt).length;
   const hasAltCount = images.length - missingCount;
+
+  const SortTh = ({ label, colKey }: { label: string; colKey: SortKey }) => (
+    <th className="text-left px-4 py-3 font-medium text-[var(--color-text-secondary)]">
+      <button
+        onClick={() => toggleSort(colKey)}
+        className="flex items-center gap-1 hover:text-[var(--color-text-primary)] transition-colors"
+      >
+        {label}
+        {sortKey === colKey ? (
+          sortDir === "asc" ? (
+            <IconChevronUp className="h-3 w-3" />
+          ) : (
+            <IconChevronDown className="h-3 w-3" />
+          )
+        ) : (
+          <IconSelector className="h-3 w-3 opacity-40" />
+        )}
+      </button>
+    </th>
+  );
 
   return (
     <div className="space-y-6">
@@ -92,7 +167,33 @@ export default function ImageAuditView({ images, projectId, projectName }: Image
             </button>
           ))}
         </div>
-        <ViewToggle mode={viewMode} onChange={setViewMode} />
+        <div className="flex items-center gap-2">
+          {/* Grid view has no column headers, so offer an explicit sort there. */}
+          {viewMode === "grid" && (
+            <select
+              value={sortKey ?? ""}
+              onChange={(e) => {
+                const v = e.target.value;
+                if (!v) {
+                  setSortKey(null);
+                } else {
+                  setSortKey(v as SortKey);
+                  setSortDir(v === "size" ? "desc" : "asc");
+                }
+                setPage(1);
+              }}
+              className="text-sm rounded-lg border border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] text-[var(--color-text-secondary)] px-2 py-1.5"
+              aria-label="Sort images"
+            >
+              <option value="">Sort: Default</option>
+              <option value="size">Size (largest)</option>
+              <option value="alt">Alt status</option>
+              <option value="source">Source</option>
+              <option value="page">Page</option>
+            </select>
+          )}
+          <ViewToggle mode={viewMode} onChange={setViewMode} />
+        </div>
       </div>
 
       {/* Grid view */}
@@ -130,9 +231,14 @@ export default function ImageAuditView({ images, projectId, projectName }: Image
                   </div>
                 </div>
                 <div className="p-3">
-                  <p className="text-xs text-[var(--color-text-secondary)] truncate" title={img.imageSrc}>
-                    {img.imageSrc.split("/").pop() || img.imageSrc}
-                  </p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs text-[var(--color-text-secondary)] truncate" title={img.imageSrc}>
+                      {img.imageSrc.split("/").pop() || img.imageSrc}
+                    </p>
+                    <span className="text-xs text-[var(--color-text-muted)] whitespace-nowrap flex-shrink-0">
+                      {formatBytes(img.fileSizeBytes)}
+                    </span>
+                  </div>
                   <p className="text-xs text-[var(--color-text-muted)] truncate mt-0.5" title={img.pageUrl}>
                     {img.pageUrl}
                   </p>
@@ -153,9 +259,10 @@ export default function ImageAuditView({ images, projectId, projectName }: Image
             <thead>
               <tr className="border-b border-[var(--color-border-default)] bg-[var(--color-surface-overlay)]">
                 <th className="text-left px-4 py-3 font-medium text-[var(--color-text-secondary)]">Preview</th>
-                <th className="text-left px-4 py-3 font-medium text-[var(--color-text-secondary)]">Source</th>
-                <th className="text-left px-4 py-3 font-medium text-[var(--color-text-secondary)]">Alt Text</th>
-                <th className="text-left px-4 py-3 font-medium text-[var(--color-text-secondary)]">Page</th>
+                <SortTh label="Source" colKey="source" />
+                <SortTh label="Alt Text" colKey="alt" />
+                <SortTh label="Size" colKey="size" />
+                <SortTh label="Page" colKey="page" />
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--color-border-subtle)]">
@@ -192,6 +299,11 @@ export default function ImageAuditView({ images, projectId, projectName }: Image
                       </span>
                     )}
                   </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <span className="text-sm text-[var(--color-text-secondary)]">
+                      {formatBytes(img.fileSizeBytes)}
+                    </span>
+                  </td>
                   <td className="px-4 py-3">
                     <p className="text-xs text-[var(--color-text-muted)] truncate max-w-xs" title={img.pageUrl}>
                       {img.pageUrl}
@@ -201,7 +313,7 @@ export default function ImageAuditView({ images, projectId, projectName }: Image
               ))}
               {paginated.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-4 py-12 text-center text-[var(--color-text-muted)]">
+                  <td colSpan={5} className="px-4 py-12 text-center text-[var(--color-text-muted)]">
                     No images match the current filter.
                   </td>
                 </tr>
