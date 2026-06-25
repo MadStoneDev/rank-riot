@@ -14,6 +14,16 @@ const csp = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  async rewrites() {
+    return [
+      {
+        // Web Bot Auth key directory. Served from an /api route handler so it
+        // doesn't depend on dot-folder app routing.
+        source: "/.well-known/http-message-signatures-directory",
+        destination: "/api/web-bot-auth-directory",
+      },
+    ];
+  },
   async headers() {
     return [
       {
