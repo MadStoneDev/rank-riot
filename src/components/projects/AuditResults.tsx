@@ -282,7 +282,7 @@ export default function AuditResults({ results }: AuditResultsProps) {
               <div className="p-4 bg-[var(--color-surface-overlay)] rounded">
                 <p className="text-sm text-[var(--color-text-secondary)]">Time to First Byte</p>
                 <p className="text-2xl font-bold text-[var(--color-text-primary)]">
-                  {results.performance_metrics.avgFirstByteTime}ms
+                  {Number(results.performance_metrics.avgFirstByteTime).toFixed(2)}ms
                 </p>
               </div>
             )}
