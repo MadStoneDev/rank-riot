@@ -34,6 +34,7 @@ interface GeoReadinessSectionProps {
       url?: string;
       valid: boolean;
       url_count?: number;
+      sub_sitemaps_scanned?: number;
       errors: string[];
       has_lastmod: boolean;
       urls_in_sitemap_not_crawled: string[];
@@ -394,6 +395,7 @@ function SitemapValidationCard({
     url?: string;
     valid: boolean;
     url_count?: number;
+    sub_sitemaps_scanned?: number;
     errors: string[];
     has_lastmod: boolean;
     urls_in_sitemap_not_crawled: string[];
@@ -404,6 +406,7 @@ function SitemapValidationCard({
   const valid = data?.valid ?? false;
   const hasErrors = (data?.errors?.length ?? 0) > 0;
   const urlCount = data?.url_count;
+  const subSitemaps = data?.sub_sitemaps_scanned;
   const hasLastmod = data?.has_lastmod ?? false;
   const notCrawled = data?.urls_in_sitemap_not_crawled ?? [];
   const notInSitemap = data?.crawled_not_in_sitemap ?? [];
@@ -464,6 +467,12 @@ function SitemapValidationCard({
               <div className="flex items-center justify-between text-xs">
                 <span className="text-[var(--color-text-muted)]">URLs in sitemap</span>
                 <span className="text-[var(--color-text-secondary)] font-medium">{urlCount.toLocaleString()}</span>
+              </div>
+            )}
+            {subSitemaps !== undefined && subSitemaps > 0 && (
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-[var(--color-text-muted)]">Sub-sitemaps scanned</span>
+                <span className="text-[var(--color-text-secondary)] font-medium">{subSitemaps.toLocaleString()}</span>
               </div>
             )}
             <div className="flex items-center justify-between text-xs">
