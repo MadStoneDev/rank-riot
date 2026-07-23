@@ -24,7 +24,7 @@ import QuickActions from "@/components/dashboard/QuickActions";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import StatCard from "@/components/ui/StatCard";
 import Badge from "@/components/ui/Badge";
-import { computeHealthScore } from "@/utils/health-score";
+import { computeFallbackSeoScore } from "@/utils/fallback-score";
 
 export default async function Dashboard() {
   const supabase = await createClient();
@@ -49,13 +49,12 @@ export default async function Dashboard() {
     { data: allPages },
     { data: allIssues },
     { data: allBrokenLinks },
-    { data: allLinks },
     { data: allAuditResults },
     { data: allCompletedScans },
   ] = await Promise.all([
     supabase
       .from("pages")
-      .select("project_id, http_status, is_indexable, has_robots_noindex, title, meta_description, word_count, h1s, load_time_ms, canonical_url")
+      .select("project_id, http_status, is_indexable, has_robots_noindex, title, meta_description, word_count, h1s, load_time_ms, canonical_url, images, structured_data, schema_types, open_graph")
       .in("project_id", safeProjectIds)
       .like("url", "http%"),
     supabase
@@ -68,10 +67,6 @@ export default async function Dashboard() {
       .select("project_id")
       .in("project_id", safeProjectIds)
       .eq("is_broken", true),
-    supabase
-      .from("page_links")
-      .select("project_id")
-      .in("project_id", safeProjectIds),
     supabase
       .from("audit_results")
       .select("project_id, overall_score, created_at")
@@ -101,11 +96,6 @@ export default async function Dashboard() {
   const brokenLinkCountByProject = new Map<string, number>();
   (allBrokenLinks || []).forEach((l: any) => {
     brokenLinkCountByProject.set(l.project_id, (brokenLinkCountByProject.get(l.project_id) || 0) + 1);
-  });
-
-  const totalLinkCountByProject = new Map<string, number>();
-  (allLinks || []).forEach((l: any) => {
-    totalLinkCountByProject.set(l.project_id, (totalLinkCountByProject.get(l.project_id) || 0) + 1);
   });
 
   // Latest audit result per project
@@ -153,39 +143,20 @@ export default async function Dashboard() {
     const pages = pagesByProject.get(project.id) || [];
     const issues = issuesByProject.get(project.id) || [];
     const brokenLinksCount = brokenLinkCountByProject.get(project.id) || 0;
-    const totalLinksCount = totalLinkCountByProject.get(project.id) || 0;
 
-    // Compute page-level signals
-    const total = pages.length;
-    const with200Status = pages.filter((p: any) => p.http_status >= 200 && p.http_status < 300).length;
-    const indexable = pages.filter((p: any) => p.is_indexable === true).length;
-    const withTitle = pages.filter((p: any) => p.title && p.title.trim().length > 0).length;
-    const withMetaDescription = pages.filter((p: any) => p.meta_description && p.meta_description.trim().length > 0).length;
-    const withAdequateContent = pages.filter((p: any) => (p.word_count || 0) >= 300).length;
-    const withH1 = pages.filter((p: any) => Array.isArray(p.h1s) && p.h1s.length > 0).length;
-    const slowPages = pages.filter((p: any) => (p.load_time_ms || 0) > 3000).length;
-
-    // Issue severity breakdown
-    const sev = { critical: 0, high: 0, medium: 0, low: 0 };
-    issues.forEach((i: any) => {
-      const s = i.severity?.toLowerCase();
-      if (s in sev) sev[s as keyof typeof sev]++;
-    });
-
+    // Canonical persisted score when available; otherwise the ONE shared
+    // fallback that the project detail page also uses, so the two surfaces can
+    // never disagree on a project's number.
     const healthScore =
       latestSeoScoreByProject.get(project.id) ??
-      computeHealthScore(
-        { total, with200Status, indexable, withTitle, withMetaDescription, withAdequateContent, withH1, slowPages },
-        { totalLinks: totalLinksCount, brokenLinks: brokenLinksCount },
-        sev,
-      );
+      computeFallbackSeoScore(pages).overall;
 
     return {
       id: project.id,
       name: project.name,
       url: project.url,
       projectType: project.project_type as string,
-      pagesCount: total,
+      pagesCount: pages.length,
       issuesCount: issues.length,
       brokenLinksCount,
       healthScore,

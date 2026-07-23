@@ -38,6 +38,7 @@ import GeoReadinessSection from "@/components/projects/GeoReadinessSection";
 import ChecklistView from "@/components/projects/ChecklistView";
 import Backlinks, { BacklinksData, BacklinkItem } from "@/components/projects/Backlinks";
 import { calculateAggregateAeo, AeoPageInput } from "@/utils/aeo-readiness";
+import { computeFallbackSeoScore } from "@/utils/fallback-score";
 import { sanitizeFilename } from "@/utils/export";
 import { ChecklistScanData } from "@/utils/checklist";
 
@@ -662,31 +663,19 @@ export default async function ProjectDetailPage({
   const exportFilenamePrefix = sanitizeFilename(project.name);
 
   // Category scores for the overview. Prefer the canonical score the crawler
-  // persisted at scan time (shared with the dashboard); fall back to a live
-  // computation for scans that predate persistence. A bot-blocked crawl never
-  // reached the real content, so every score is forced to 0.
+  // persisted at scan time (shared with the dashboard). For scans that predate
+  // persistence, fall back to the SAME shared fallback the dashboard uses
+  // (computeFallbackSeoScore over the page rows), so the two surfaces can never
+  // disagree. A bot-blocked crawl never reached the real content, so every
+  // score is forced to 0.
   const crawlBlocked = !!botProtection?.blocked;
-  const totalPagesForScoring = Math.max(1, pagesCount || 1);
-  const technicalPenalty = (technicalHealthData.summary.critical * 15 + technicalHealthData.summary.warnings * 5) / totalPagesForScoring;
-  const contentPenalty = (contentIntelligenceData.summary.critical * 15 + contentIntelligenceData.summary.warnings * 5) / totalPagesForScoring;
-  const liveTechnicalScore = Math.round(Math.max(0, Math.min(100, 100 - technicalPenalty * 6)));
-  const liveContentScore = Math.round(Math.max(0, Math.min(100, 100 - contentPenalty * 6)));
-  const liveMediaScore = Math.round(mediaAnalysisData.totalImages > 0 ? mediaAnalysisData.altCoveragePercent : 100);
-  const liveAeoScore = aeoAggregate.averagePercent;
+  const fallbackScore = computeFallbackSeoScore(allExportPages);
 
-  const technicalScore = crawlBlocked ? 0 : persistedSeoScore?.technical ?? liveTechnicalScore;
-  const contentScore = crawlBlocked ? 0 : persistedSeoScore?.content ?? liveContentScore;
-  const mediaScore = crawlBlocked ? 0 : persistedSeoScore?.media ?? liveMediaScore;
-  const aeoScore = crawlBlocked ? 0 : persistedSeoScore?.aeo ?? liveAeoScore;
-  const overallScore = crawlBlocked
-    ? 0
-    : persistedSeoScore?.overall ??
-      Math.round(
-        (Math.max(0, Math.min(100, technicalScore)) +
-         Math.max(0, Math.min(100, contentScore)) +
-         Math.max(0, Math.min(100, mediaScore)) +
-         Math.max(0, Math.min(100, aeoScore))) / 4
-      );
+  const technicalScore = crawlBlocked ? 0 : persistedSeoScore?.technical ?? fallbackScore.technical;
+  const contentScore = crawlBlocked ? 0 : persistedSeoScore?.content ?? fallbackScore.content;
+  const mediaScore = crawlBlocked ? 0 : persistedSeoScore?.media ?? fallbackScore.media;
+  const aeoScore = crawlBlocked ? 0 : persistedSeoScore?.aeo ?? fallbackScore.aeo;
+  const overallScore = crawlBlocked ? 0 : persistedSeoScore?.overall ?? fallbackScore.overall;
 
   // Build actionable items for category cards
   const technicalItems = [
