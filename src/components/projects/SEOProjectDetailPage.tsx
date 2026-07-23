@@ -284,7 +284,7 @@ export default async function ProjectDetailPage({
     duplicateTitles,
     duplicateDescriptions,
     similarContent,
-    summary: { critical: 0, warnings: 0, passed: 0, total: 0 },
+    summary: { critical: 0, warnings: 0 },
   };
 
   // Calculate summary
@@ -400,7 +400,7 @@ export default async function ProjectDetailPage({
     slowPages,
     largePages,
     nonIndexablePages,
-    summary: { critical: 0, warnings: 0, passed: 0 },
+    summary: { critical: 0, warnings: 0 },
   };
 
   // Calculate technical health summary
@@ -435,7 +435,7 @@ export default async function ProjectDetailPage({
     imagesMissingAltList,
     pagesWithMissingAlt,
     fileSizeStats: calculateImageFileSizeStats(pagesWithImagesParsed),
-    summary: { critical: 0, warnings: 0, passed: 0 },
+    summary: { critical: 0, warnings: 0 },
   };
 
   // Calculate media analysis summary

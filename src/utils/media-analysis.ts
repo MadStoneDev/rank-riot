@@ -200,9 +200,7 @@ export function calculateMediaAnalysisSummary(
     warnings += Math.floor((80 - data.altCoveragePercent) / 10);
   }
 
-  const passed = Math.max(0, data.pagesWithMostImages.length - critical - warnings);
-
-  return { critical, warnings, passed };
+  return { critical, warnings };
 }
 
 export { truncateUrl } from "@/utils/url";

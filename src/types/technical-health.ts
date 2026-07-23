@@ -62,7 +62,6 @@ export interface TechnicalHealthData {
   summary: {
     critical: number;
     warnings: number;
-    passed: number;
   };
 }
 

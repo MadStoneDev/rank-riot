@@ -218,9 +218,7 @@ export function calculateTechnicalHealthSummary(
   warnings += data.slowPages.length;
   warnings += data.largePages.length;
 
-  const passed = Math.max(0, 100 - critical - warnings); // Rough estimate
-
-  return { critical, warnings, passed };
+  return { critical, warnings };
 }
 
 export { truncateUrl } from "@/utils/url";
