@@ -1,7 +1,7 @@
 import { ExportColumn, ExportableData, ExportFormat } from "@/types/export";
-import { toast } from "sonner";
 import { generatePdfReport, PdfBranding } from "@/utils/pdf-report";
 import { generateHtmlReport } from "@/utils/html-report";
+import { buildCommentLine, buildGeneratorMeta } from "@/utils/export-attribution";
 
 /**
  * Sanitize a string for use as a filename.
@@ -45,7 +45,8 @@ export function escapeCSVValue(value: any): string {
  */
 export function generateCSV(
   data: ExportableData,
-  columns: ExportColumn[]
+  columns: ExportColumn[],
+  commentLine?: string,
 ): string {
   // Header row
   const header = columns.map((col) => escapeCSVValue(col.header)).join(",");
@@ -61,7 +62,9 @@ export function generateCSV(
       .join(",")
   );
 
-  return [header, ...rows].join("\n");
+  // Optional leading `# ...` attribution comment (skippable by most parsers).
+  const lines = commentLine ? [commentLine, header, ...rows] : [header, ...rows];
+  return lines.join("\n");
 }
 
 /**
@@ -121,7 +124,8 @@ export function formatBooleanForExport(value: boolean | null): string {
  */
 export function generateJSON(
   data: ExportableData,
-  columns: ExportColumn[]
+  columns: ExportColumn[],
+  meta?: Record<string, any>,
 ): string {
   const mapped = data.map((row) => {
     const obj: Record<string, any> = {};
@@ -131,6 +135,11 @@ export function generateJSON(
     }
     return obj;
   });
+  // With attribution, wrap in an object carrying a machine-readable `generator`
+  // block; without, keep the plain array for backward compatibility.
+  if (meta) {
+    return JSON.stringify({ ...meta, data: mapped }, null, 2);
+  }
   return JSON.stringify(mapped, null, 2);
 }
 
@@ -160,14 +169,16 @@ export function exportToJSON(
 export function generatePlainText(
   data: ExportableData,
   key: string,
-  formatter?: (value: any) => string
+  formatter?: (value: any) => string,
+  commentLine?: string,
 ): string {
-  return data
+  const body = data
     .map((row) => {
       const value = row[key];
       return formatter ? formatter(value) : (value ?? "");
     })
     .join("\n");
+  return commentLine ? `${commentLine}\n${body}` : body;
 }
 
 /**
@@ -202,18 +213,28 @@ export function executeExport(
   pdfBranding?: PdfBranding,
   projectName?: string,
   projectUrl?: string,
+  dataType?: string,
 ): void {
   switch (format) {
-    case "csv":
-      exportToCSV(data, columns, filename);
+    case "csv": {
+      const content = generateCSV(data, columns, buildCommentLine(projectName, projectUrl));
+      downloadCSV(content, filename);
       break;
-    case "json":
-      exportToJSON(data, columns, filename);
+    }
+    case "json": {
+      const content = generateJSON(
+        data,
+        columns,
+        buildGeneratorMeta(projectName, projectUrl, dataType),
+      );
+      downloadJSON(content, filename);
       break;
+    }
     case "text": {
       const key = columns[0]?.key || "url";
       const col = columns.find((c) => c.key === key);
-      exportToPlainText(data, key, filename, col?.formatter);
+      const content = generatePlainText(data, key, col?.formatter, buildCommentLine(projectName, projectUrl));
+      downloadPlainText(content, filename);
       break;
     }
     case "pdf":
