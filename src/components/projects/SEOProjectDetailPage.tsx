@@ -616,6 +616,14 @@ export default async function ProjectDetailPage({
 
   // Build checklist scan data from all available data
   const allExportPages = allPagesForExport || [];
+
+  // Pages that redirect — exported as a dedicated dataset so the full chain
+  // (source, hops, path, final target) is available, not just a filter.
+  const redirectsForExport = allExportPages.filter(
+    (p: any) =>
+      (p.redirect_url && p.redirect_url.length > 0) ||
+      (Array.isArray(p.redirect_chain) && p.redirect_chain.length > 0),
+  );
   const checklistScanData: ChecklistScanData = {
     totalPages: allExportPages.length,
     pagesWithTitle: allExportPages.filter((p: any) => p.title && p.title.trim()).length,
@@ -787,6 +795,7 @@ export default async function ProjectDetailPage({
               { dataType: "internal-links", data: internalLinksWithSource, label: "Internal Links" },
               { dataType: "external-links", data: externalLinksWithSource, label: "External Links" },
               { dataType: "broken-links", data: brokenLinksWithSource, label: "Broken Links" },
+              { dataType: "redirects", data: redirectsForExport, label: "Redirects" },
               { dataType: "issues", data: formattedIssuesForExport, label: "Issues" },
               { dataType: "backlinks", data: backlinksEnriched, label: "Backlinks" },
             ]}
@@ -993,6 +1002,7 @@ export default async function ProjectDetailPage({
           { dataType: "internal-links", data: internalLinksWithSource, label: "Internal Links" },
           { dataType: "external-links", data: externalLinksWithSource, label: "External Links" },
           { dataType: "broken-links", data: brokenLinksWithSource, label: "Broken Links" },
+          { dataType: "redirects", data: redirectsForExport, label: "Redirects" },
           { dataType: "issues", data: formattedIssuesForExport, label: "Issues" },
         ]}
       />

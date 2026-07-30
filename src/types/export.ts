@@ -23,6 +23,7 @@ export type ExportDataType =
   | "schema-data"
   | "images-alt"
   | "broken-links"
+  | "redirects"
   | "headings"
   | "performance"
   | "internal-links"
@@ -84,10 +85,24 @@ const dateFormatter = (value: any): string => {
   }
 };
 
+/** Render a redirect chain (array of URLs) as "a -> b -> c". */
+const chainFormatter = (value: any): string => {
+  if (!value) return "";
+  if (Array.isArray(value)) return value.join(" -> ");
+  return String(value);
+};
+
+/** Number of hops in a redirect chain. */
+const hopsFormatter = (value: any): string => {
+  if (Array.isArray(value)) return String(value.length);
+  return "";
+};
+
 export const PAGE_URLS_COLUMNS: ExportColumnDefinition[] = [
   { key: "url", header: "URL", defaultSelected: true },
   { key: "http_status", header: "HTTP Status", defaultSelected: true },
   { key: "is_indexable", header: "Indexable", defaultSelected: true, formatter: booleanFormatter },
+  { key: "depth", header: "Crawl Depth", defaultSelected: true },
   { key: "canonical_url", header: "Canonical URL", defaultSelected: true },
 ];
 
@@ -125,6 +140,14 @@ export const BROKEN_LINKS_COLUMNS: ExportColumnDefinition[] = [
   { key: "http_status", header: "HTTP Status", defaultSelected: true },
   { key: "anchor_text", header: "Anchor Text", defaultSelected: true },
   { key: "source_title", header: "Source Title", defaultSelected: false },
+];
+
+export const REDIRECTS_COLUMNS: ExportColumnDefinition[] = [
+  { key: "url", header: "Source URL", defaultSelected: true },
+  { key: "http_status", header: "Status", defaultSelected: true },
+  { key: "redirect_url", header: "Redirects To", defaultSelected: true },
+  { key: "redirect_chain", header: "Hops", defaultSelected: true, formatter: hopsFormatter },
+  { key: "redirect_chain", header: "Chain", defaultSelected: true, formatter: chainFormatter },
 ];
 
 export const HEADINGS_COLUMNS: ExportColumnDefinition[] = [
@@ -191,6 +214,7 @@ export const EXPORT_COLUMN_REGISTRY: Record<ExportDataType, ExportColumnDefiniti
   "schema-data": SCHEMA_DATA_COLUMNS,
   "images-alt": IMAGES_ALT_COLUMNS,
   "broken-links": BROKEN_LINKS_COLUMNS,
+  "redirects": REDIRECTS_COLUMNS,
   "headings": HEADINGS_COLUMNS,
   "performance": PERFORMANCE_COLUMNS,
   "internal-links": INTERNAL_LINKS_COLUMNS,
@@ -229,6 +253,12 @@ export const EXPORT_FILTERS: Record<ExportDataType, ExportFilter[]> = {
     { key: "all", label: "All Broken Links", predicate: () => true },
     { key: "404", label: "404 Not Found", predicate: (r) => r.http_status === 404 },
     { key: "5xx", label: "Server Errors (5xx)", predicate: (r) => r.http_status >= 500 },
+  ],
+  "redirects": [
+    { key: "all", label: "All Redirects", predicate: () => true },
+    { key: "chains", label: "Redirect Chains (2+ hops)", predicate: (r) => Array.isArray(r.redirect_chain) && r.redirect_chain.length >= 2 },
+    { key: "permanent", label: "Permanent (301/308)", predicate: (r) => r.http_status === 301 || r.http_status === 308 },
+    { key: "temporary", label: "Temporary (302/307)", predicate: (r) => r.http_status === 302 || r.http_status === 307 },
   ],
   "headings": [
     { key: "all", label: "All Pages", predicate: () => true },
@@ -271,6 +301,7 @@ export const EXPORT_DATA_TYPE_LABELS: Record<ExportDataType, string> = {
   "schema-data": "Schema & Structured Data",
   "images-alt": "Images & Alt Text",
   "broken-links": "Broken Links",
+  "redirects": "Redirects",
   "headings": "Headings Structure",
   "performance": "Performance Metrics",
   "internal-links": "Internal Links",

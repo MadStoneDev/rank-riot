@@ -139,6 +139,7 @@ export default function ExportModal({
       (selectedFormat === "pdf" || selectedFormat === "html") ? pdfBranding : undefined,
       projectName,
       projectUrl,
+      dataType,
     );
 
     toast.success(
