@@ -15,29 +15,40 @@ export type Database = {
       admin_notes: {
         Row: {
           id: string
-          author_id: string | null
+          author_id: string
           target_type: string
           target_id: string
           content: string
           created_at: string | null
+          updated_at: string | null
         }
         Insert: {
           id?: string
-          author_id?: string | null
+          author_id: string
           target_type: string
           target_id: string
           content: string
           created_at?: string | null
+          updated_at?: string | null
         }
         Update: {
           id?: string
-          author_id?: string | null
+          author_id?: string
           target_type?: string
           target_id?: string
           content?: string
           created_at?: string | null
+          updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "admin_notes_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       audit_results: {
         Row: {
@@ -591,12 +602,12 @@ export type Database = {
           paddle_customer_id: string | null
           subscription_status: string | null
           subscription_tier: string | null
-          role: string | null
           settings: Json | null
           created_at: string | null
           updated_at: string | null
           paddle_subscription_id: string | null
           subscription_period_end: string | null
+          role: string | null
         }
         Insert: {
           id: string
@@ -606,12 +617,12 @@ export type Database = {
           paddle_customer_id?: string | null
           subscription_status?: string | null
           subscription_tier?: string | null
-          role?: string | null
           settings?: Json | null
           created_at?: string | null
           updated_at?: string | null
           paddle_subscription_id?: string | null
           subscription_period_end?: string | null
+          role?: string | null
         }
         Update: {
           id?: string
@@ -621,12 +632,12 @@ export type Database = {
           paddle_customer_id?: string | null
           subscription_status?: string | null
           subscription_tier?: string | null
-          role?: string | null
           settings?: Json | null
           created_at?: string | null
           updated_at?: string | null
           paddle_subscription_id?: string | null
           subscription_period_end?: string | null
+          role?: string | null
         }
         Relationships: []
       }
@@ -685,6 +696,107 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scan_logs: {
+        Row: {
+          id: number
+          scan_id: string
+          timestamp: string
+          level: string
+          stage: string
+          message: string
+          metadata: Json | null
+        }
+        Insert: {
+          id?: number
+          scan_id: string
+          timestamp?: string
+          level?: string
+          stage: string
+          message: string
+          metadata?: Json | null
+        }
+        Update: {
+          id?: number
+          scan_id?: string
+          timestamp?: string
+          level?: string
+          stage?: string
+          message?: string
+          metadata?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scan_logs_scan_id_fkey"
+            columns: ["scan_id"]
+            isOneToOne: false
+            referencedRelation: "scans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scan_scores: {
+        Row: {
+          id: string
+          scan_id: string
+          project_id: string
+          version: number
+          overall: number
+          technical: number | null
+          content: number | null
+          media: number | null
+          aeo: number | null
+          geo: number | null
+          blocked: boolean
+          report: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          scan_id: string
+          project_id: string
+          version: number
+          overall: number
+          technical?: number | null
+          content?: number | null
+          media?: number | null
+          aeo?: number | null
+          geo?: number | null
+          blocked?: boolean
+          report: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          scan_id?: string
+          project_id?: string
+          version?: number
+          overall?: number
+          technical?: number | null
+          content?: number | null
+          media?: number | null
+          aeo?: number | null
+          geo?: number | null
+          blocked?: boolean
+          report?: Json
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scan_scores_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scan_scores_scan_id_fkey"
+            columns: ["scan_id"]
+            isOneToOne: true
+            referencedRelation: "scans"
             referencedColumns: ["id"]
           },
         ]
