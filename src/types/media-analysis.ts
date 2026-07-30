@@ -43,6 +43,5 @@ export interface MediaAnalysisData {
   summary: {
     critical: number;
     warnings: number;
-    passed: number;
   };
 }

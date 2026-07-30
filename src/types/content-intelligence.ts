@@ -42,8 +42,6 @@ export interface ContentIntelligenceData {
   summary: {
     critical: number;
     warnings: number;
-    passed: number;
-    total: number;
   };
 }
 

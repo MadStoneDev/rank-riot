@@ -231,20 +231,6 @@ export default function AuditResults({ results }: AuditResultsProps) {
               </div>
             )}
 
-          {results.design_analysis.copyrightYear && (
-            <div className="mt-4 p-3 bg-[var(--color-surface-overlay)] rounded">
-              <p className="text-sm">
-                <span className="font-semibold">Copyright Year:</span>{" "}
-                {results.design_analysis.copyrightYear}
-                {results.design_analysis.copyrightYear <
-                  new Date().getFullYear() && (
-                  <span className="ml-2 text-orange-600 text-xs">
-                    (Outdated - consider updating)
-                  </span>
-                )}
-              </p>
-            </div>
-          )}
         </div>
       )}
 

@@ -188,21 +188,9 @@ export function calculateSummary(
   // Similar content is informational (counted as warnings for now)
   warnings += data.similarContent.reduce((acc, g) => acc + g.pages.length - 1, 0);
 
-  // Calculate total checks and passed
-  const totalPages =
-    data.thinContent.length +
-    data.missingMetaDescriptions.length +
-    data.missingTitles.length;
-
-  // Rough estimate of passed checks (this would need real page count for accuracy)
-  const total = critical + warnings;
-  const passed = Math.max(0, total); // Placeholder - will be calculated from total pages
-
   return {
     critical,
     warnings,
-    passed,
-    total,
   };
 }
 

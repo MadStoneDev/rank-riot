@@ -6,7 +6,9 @@
     "dev": "next dev --port 3123 --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1048.0",
@@ -30,7 +32,7 @@
     "recharts": "^3.7.0",
     "resend": "^6.8.0",
     "sonner": "^2.0.3",
-    "supatypes": "^1.2.0",
+    "supatypes": "^1.3.0",
     "tailwind-merge": "^3.2.0",
     "tw-animate-css": "^1.2.5"
   },
@@ -41,7 +43,8 @@
     "@types/react-dom": "^19",
     "supabase": "^2.20.12",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^2"
   },
   "overrides": {
     "tar": "^7.5.4"
