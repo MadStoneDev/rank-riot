@@ -135,6 +135,13 @@ export const IMAGES_ALT_COLUMNS: ExportColumnDefinition[] = [
   { key: "imageSrc", header: "Image Source", defaultSelected: true },
   { key: "alt", header: "Alt Text", defaultSelected: true },
   { key: "hasAlt", header: "Has Alt", defaultSelected: true, formatter: booleanFormatter },
+  { key: "altQuality", header: "Alt Quality", defaultSelected: true },
+  { key: "width", header: "Width", defaultSelected: false },
+  { key: "height", header: "Height", defaultSelected: false },
+  { key: "missingDimensions", header: "Missing Dimensions (CLS risk)", defaultSelected: true, formatter: booleanFormatter },
+  { key: "fileSizeBytes", header: "File Size (bytes)", defaultSelected: true },
+  { key: "format", header: "Format", defaultSelected: false },
+  { key: "loading", header: "Loading", defaultSelected: false },
   { key: "pageTitle", header: "Page Title", defaultSelected: false },
 ];
 

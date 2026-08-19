@@ -532,15 +532,52 @@ export default async function ProjectDetailPage({
     };
   });
 
-  // Flatten images for per-image export
+  // Flatten images for per-image export. The crawler captures far more per
+  // image than presence-of-alt (dimensions, byte size, format, loading, srcset)
+  // plus we grade alt-text quality here rather than only whether it exists.
+  const GENERIC_ALT = new Set([
+    "image", "photo", "picture", "img", "logo", "icon", "graphic",
+    "untitled", "banner", "spacer",
+  ]);
   const flattenedImages = (allPagesForExport || []).flatMap((page: any) =>
-    (Array.isArray(page.images) ? page.images : []).map((img: any) => ({
-      pageUrl: page.url,
-      pageTitle: page.title || "",
-      imageSrc: img.src || "",
-      alt: img.alt || "",
-      hasAlt: !!(img.alt && img.alt.trim()),
-    }))
+    (Array.isArray(page.images) ? page.images : []).map((img: any) => {
+      const alt = (img.alt || "").trim();
+      const hasAlt = alt.length > 0;
+      const width = img.dimensions?.width ?? 0;
+      const height = img.dimensions?.height ?? 0;
+      const fileBase =
+        (img.src || "").split("/").pop()?.split("?")[0]?.toLowerCase() || "";
+
+      // Alt-quality read. Note: empty alt is *correct* for decorative images,
+      // so "missing" is a candidate issue, not a certainty — see roadmap #10
+      // (decorative-vs-meaningful) before treating it as a hard error.
+      let altQuality: string;
+      if (!hasAlt) altQuality = "missing";
+      else if (alt.length < 5) altQuality = "too short";
+      else if (alt.length > 125) altQuality = "too long";
+      else if (
+        /\.(jpe?g|png|gif|webp|avif|svg)$/i.test(alt) ||
+        alt.toLowerCase() === fileBase
+      )
+        altQuality = "filename";
+      else if (GENERIC_ALT.has(alt.toLowerCase())) altQuality = "generic";
+      else altQuality = "ok";
+
+      return {
+        pageUrl: page.url,
+        pageTitle: page.title || "",
+        imageSrc: img.src || "",
+        alt: img.alt || "",
+        hasAlt,
+        altQuality,
+        width,
+        height,
+        missingDimensions: !(width && height),
+        fileSizeBytes: img.file_size_bytes ?? null,
+        format: img.format || "",
+        loading: img.loading || "",
+      };
+    })
   );
 
   // Backlinks Data
