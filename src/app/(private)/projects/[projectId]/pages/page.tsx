@@ -61,13 +61,26 @@ export default async function ProjectPagesPage({
   }
 
   // Get all pages with relevant fields (filter out non-HTTP URLs like mailto:, tel:, etc.)
-  const { data: allPages } = await supabase
+  const PAGE_BASE_COLS =
+    "id, url, title, http_status, is_indexable, has_robots_noindex, word_count, meta_description, h1s, h2s, canonical_url, images, open_graph, twitter_card";
+  // inlink_count / outlink_count are added by migration 20260819. Select them
+  // when present, but fall back gracefully so the page still renders against a
+  // database where the migration hasn't been applied yet (counts show as 0
+  // until then). Safe to simplify to a single select once the migration is live.
+  let { data: allPages } = await supabase
     .from("pages")
-    .select(
-      "id, url, title, http_status, is_indexable, has_robots_noindex, word_count, meta_description, h1s, h2s, canonical_url, images, open_graph, twitter_card, inlink_count, outlink_count"
-    )
+    .select(`${PAGE_BASE_COLS}, inlink_count, outlink_count`)
     .eq("project_id", projectId)
     .order("url", { ascending: true });
+
+  if (!allPages) {
+    const fallback = await supabase
+      .from("pages")
+      .select(PAGE_BASE_COLS)
+      .eq("project_id", projectId)
+      .order("url", { ascending: true });
+    allPages = fallback.data as typeof allPages;
+  }
 
   if (!allPages) {
     notFound();

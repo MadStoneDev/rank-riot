@@ -444,21 +444,36 @@ export default async function ProjectDetailPage({
 
   // Export Data Preparation
   // Get all pages for export (expanded fields for all export types)
-  const { data: allPagesForExport } = await supabase
-    .from("pages")
-    .select(`id, url, title, title_length, meta_description, meta_description_length,
+  const EXPORT_BASE_COLS = `id, url, title, title_length, meta_description, meta_description_length,
       word_count, http_status, load_time_ms, depth, is_indexable,
-      inlink_count, unique_inlink_count, outlink_count, unique_outlink_count,
       first_byte_time_ms, size_bytes, canonical_url,
       has_robots_noindex, has_robots_nofollow, redirect_url,
       h1s, h2s, h3s, h4s, h5s, h6s,
       images, schema_types, structured_data, open_graph, twitter_card,
       js_count, css_count, content_type,
       has_viewport_meta, has_mixed_content, heading_hierarchy_valid,
-      security_headers, redirect_chain`)
+      security_headers, redirect_chain`;
+  // Link-count columns come from migration 20260819. Select them when present,
+  // otherwise fall back so exports still work pre-migration (link counts blank
+  // until then). Collapse to a single select once the migration is applied.
+  let { data: allPagesForExport } = await supabase
+    .from("pages")
+    .select(
+      `${EXPORT_BASE_COLS}, inlink_count, unique_inlink_count, outlink_count, unique_outlink_count`,
+    )
     .eq("project_id", projectId)
     .like("url", "http%")
     .order("url");
+
+  if (!allPagesForExport) {
+    const fallback = await supabase
+      .from("pages")
+      .select(EXPORT_BASE_COLS)
+      .eq("project_id", projectId)
+      .like("url", "http%")
+      .order("url");
+    allPagesForExport = fallback.data as typeof allPagesForExport;
+  }
 
   // Get all issues for export — scoped to latest completed scan if available
   let allIssuesForExportQuery = supabase
