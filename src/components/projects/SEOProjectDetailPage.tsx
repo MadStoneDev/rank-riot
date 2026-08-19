@@ -448,6 +448,7 @@ export default async function ProjectDetailPage({
     .from("pages")
     .select(`id, url, title, title_length, meta_description, meta_description_length,
       word_count, http_status, load_time_ms, depth, is_indexable,
+      inlink_count, unique_inlink_count, outlink_count, unique_outlink_count,
       first_byte_time_ms, size_bytes, canonical_url,
       has_robots_noindex, has_robots_nofollow, redirect_url,
       h1s, h2s, h3s, h4s, h5s, h6s,

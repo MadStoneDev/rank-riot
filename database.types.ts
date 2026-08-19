@@ -457,6 +457,10 @@ export type Database = {
           has_robots_noindex: boolean | null
           has_robots_nofollow: boolean | null
           depth: number | null
+          inlink_count: number | null
+          unique_inlink_count: number | null
+          outlink_count: number | null
+          unique_outlink_count: number | null
           crawl_priority: number | null
           redirect_url: string | null
           content_type: string | null
@@ -507,6 +511,10 @@ export type Database = {
           has_robots_noindex?: boolean | null
           has_robots_nofollow?: boolean | null
           depth?: number | null
+          inlink_count?: number | null
+          unique_inlink_count?: number | null
+          outlink_count?: number | null
+          unique_outlink_count?: number | null
           crawl_priority?: number | null
           redirect_url?: string | null
           content_type?: string | null
@@ -557,6 +565,10 @@ export type Database = {
           has_robots_noindex?: boolean | null
           has_robots_nofollow?: boolean | null
           depth?: number | null
+          inlink_count?: number | null
+          unique_inlink_count?: number | null
+          outlink_count?: number | null
+          unique_outlink_count?: number | null
           crawl_priority?: number | null
           redirect_url?: string | null
           content_type?: string | null

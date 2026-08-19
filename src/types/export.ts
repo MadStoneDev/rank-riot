@@ -103,6 +103,10 @@ export const PAGE_URLS_COLUMNS: ExportColumnDefinition[] = [
   { key: "http_status", header: "HTTP Status", defaultSelected: true },
   { key: "is_indexable", header: "Indexable", defaultSelected: true, formatter: booleanFormatter },
   { key: "depth", header: "Crawl Depth", defaultSelected: true },
+  { key: "inlink_count", header: "Inlinks", defaultSelected: true },
+  { key: "unique_inlink_count", header: "Unique Inlinks", defaultSelected: true },
+  { key: "outlink_count", header: "Outlinks", defaultSelected: true },
+  { key: "unique_outlink_count", header: "Unique Outlinks", defaultSelected: false },
   { key: "canonical_url", header: "Canonical URL", defaultSelected: true },
 ];
 

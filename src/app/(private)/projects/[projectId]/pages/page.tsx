@@ -64,7 +64,7 @@ export default async function ProjectPagesPage({
   const { data: allPages } = await supabase
     .from("pages")
     .select(
-      "id, url, title, http_status, is_indexable, has_robots_noindex, word_count, meta_description, h1s, h2s, canonical_url, images, open_graph, twitter_card"
+      "id, url, title, http_status, is_indexable, has_robots_noindex, word_count, meta_description, h1s, h2s, canonical_url, images, open_graph, twitter_card, inlink_count, outlink_count"
     )
     .eq("project_id", projectId)
     .order("url", { ascending: true });
@@ -89,19 +89,16 @@ export default async function ProjectPagesPage({
     });
   }
 
-  // Get link counts per page (outbound links)
-  const { data: links } = await supabase
-    .from("page_links")
-    .select("source_page_id")
-    .eq("project_id", projectId);
-
+  // Link counts per page come from the crawler-computed columns on `pages`
+  // (inlink_count / outlink_count). Reading them here — rather than counting
+  // page_links rows in JS — avoids the PostgREST 1000-row read cap that would
+  // silently undercount links on larger sites.
   const linkCounts: { [pageId: string]: number } = {};
-  if (links) {
-    links.forEach((link) => {
-      linkCounts[link.source_page_id] =
-        (linkCounts[link.source_page_id] || 0) + 1;
-    });
-  }
+  const inlinkCounts: { [pageId: string]: number } = {};
+  pages.forEach((page) => {
+    linkCounts[page.id] = page.outlink_count ?? 0;
+    inlinkCounts[page.id] = page.inlink_count ?? 0;
+  });
 
   return (
     <div className="space-y-6">
@@ -140,6 +137,7 @@ export default async function ProjectPagesPage({
           projectName={project.name}
           issueCounts={issueCounts}
           linkCounts={linkCounts}
+          inlinkCounts={inlinkCounts}
         />
       </div>
     </div>

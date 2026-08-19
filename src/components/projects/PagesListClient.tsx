@@ -53,9 +53,10 @@ interface PagesListClientProps {
   projectName?: string;
   issueCounts?: PageIssueCount;
   linkCounts?: PageLinkCount;
+  inlinkCounts?: PageLinkCount;
 }
 
-type SortField = "url" | "title" | "score" | "issues" | "links";
+type SortField = "url" | "title" | "score" | "issues" | "links" | "inlinks";
 type SortDirection = "asc" | "desc";
 type FilterType = "all" | "with-issues" | "indexable" | "non-indexable";
 
@@ -69,6 +70,7 @@ export default function PagesListClient({
   projectName,
   issueCounts = {},
   linkCounts = {},
+  inlinkCounts = {},
 }: PagesListClientProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("url");
@@ -84,8 +86,9 @@ export default function PagesListClient({
       score: calculatePageScoreLocal(page),
       issueCount: issueCounts[page.id] || 0,
       linkCount: linkCounts[page.id] || 0,
+      inlinkCount: inlinkCounts[page.id] || 0,
     }));
-  }, [pages, issueCounts, linkCounts]);
+  }, [pages, issueCounts, linkCounts, inlinkCounts]);
 
   // Filter pages
   const filteredPages = useMemo(() => {
@@ -141,6 +144,9 @@ export default function PagesListClient({
           break;
         case "links":
           comparison = a.linkCount - b.linkCount;
+          break;
+        case "inlinks":
+          comparison = a.inlinkCount - b.inlinkCount;
           break;
       }
 
@@ -268,6 +274,8 @@ export default function PagesListClient({
             <SortButton field="url" label="URL" />
             <SortButton field="score" label="Score" />
             <SortButton field="issues" label="Issues" />
+            <SortButton field="inlinks" label="Inlinks" />
+            <SortButton field="links" label="Outlinks" />
           </div>
         </div>
       </div>
@@ -307,10 +315,18 @@ export default function PagesListClient({
                           {page.issueCount}
                         </Badge>
                       )}
-                      <Badge variant="neutral">
-                        <IconLink className="h-3 w-3" />
-                        {page.linkCount}
-                      </Badge>
+                      <span title="Inbound internal links (inlinks)">
+                        <Badge variant="neutral">
+                          <IconLink className="h-3 w-3" />
+                          In {page.inlinkCount}
+                        </Badge>
+                      </span>
+                      <span title="Outbound internal links (outlinks)">
+                        <Badge variant="neutral">
+                          <IconLink className="h-3 w-3" />
+                          Out {page.linkCount}
+                        </Badge>
+                      </span>
                       {page.http_status && (
                         <Badge
                           variant={
