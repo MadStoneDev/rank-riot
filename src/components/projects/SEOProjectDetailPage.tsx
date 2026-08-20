@@ -538,6 +538,53 @@ export default async function ProjectDetailPage({
     };
   });
 
+  // Anchor-text distribution: for each destination, which anchor texts point at
+  // it and how often. Surfaces over-optimised or empty anchor text and how link
+  // equity is described across the site.
+  const anchorDistMap = new Map<
+    string,
+    { destination_url: string; anchor_text: string; count: number }
+  >();
+  for (const link of internalLinksForExport || []) {
+    const dest = (link as any).destination_url || "";
+    const anchor = ((link as any).anchor_text || "").trim();
+    const key = `${dest}\n${anchor.toLowerCase()}`;
+    const existing = anchorDistMap.get(key);
+    if (existing) {
+      existing.count += 1;
+    } else {
+      anchorDistMap.set(key, {
+        destination_url: dest,
+        anchor_text: anchor || "(empty)",
+        count: 1,
+      });
+    }
+  }
+  const anchorDistribution = Array.from(anchorDistMap.values()).sort(
+    (a, b) =>
+      a.destination_url.localeCompare(b.destination_url) || b.count - a.count,
+  );
+
+  // Per-page image weight + rough compressible savings (for the Performance
+  // export). file_size_bytes is captured per image; legacy raster formats can
+  // usually shed ~30% converting to WebP/AVIF.
+  for (const p of (allPagesForExport as any[]) || []) {
+    const imgs = Array.isArray(p.images) ? p.images : [];
+    let total = 0;
+    let compressible = 0;
+    for (const img of imgs) {
+      const bytes =
+        typeof img.file_size_bytes === "number" ? img.file_size_bytes : 0;
+      total += bytes;
+      const fmt = (img.format || "").toLowerCase();
+      if (fmt === "jpg" || fmt === "jpeg" || fmt === "png" || fmt === "gif") {
+        compressible += Math.round(bytes * 0.3);
+      }
+    }
+    p.image_total_bytes = total;
+    p.image_compressible_bytes = compressible;
+  }
+
   // Flatten images for per-image export. The crawler captures far more per
   // image than presence-of-alt (dimensions, byte size, format, loading, srcset)
   // plus we grade alt-text quality here rather than only whether it exists.
@@ -838,6 +885,7 @@ export default async function ProjectDetailPage({
               { dataType: "images-alt", data: flattenedImages, label: "Images & Alt Text" },
               { dataType: "internal-links", data: internalLinksWithSource, label: "Internal Links" },
               { dataType: "external-links", data: externalLinksWithSource, label: "External Links" },
+              { dataType: "anchor-distribution", data: anchorDistribution, label: "Anchor Distribution" },
               { dataType: "technical-health", data: allPagesForExport || [], label: "Technical Health" },
               { dataType: "broken-links", data: brokenLinksWithSource, label: "Broken Links" },
               { dataType: "redirects", data: redirectsForExport, label: "Redirects" },
@@ -1046,6 +1094,7 @@ export default async function ProjectDetailPage({
           { dataType: "images-alt", data: flattenedImages, label: "Images & Alt Text" },
           { dataType: "internal-links", data: internalLinksWithSource, label: "Internal Links" },
           { dataType: "external-links", data: externalLinksWithSource, label: "External Links" },
+          { dataType: "anchor-distribution", data: anchorDistribution, label: "Anchor Distribution" },
           { dataType: "technical-health", data: allPagesForExport || [], label: "Technical Health" },
           { dataType: "broken-links", data: brokenLinksWithSource, label: "Broken Links" },
           { dataType: "redirects", data: redirectsForExport, label: "Redirects" },

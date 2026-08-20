@@ -28,6 +28,7 @@ export type ExportDataType =
   | "performance"
   | "internal-links"
   | "external-links"
+  | "anchor-distribution"
   | "technical-health"
   | "issues"
   | "backlinks";
@@ -182,6 +183,8 @@ export const PERFORMANCE_COLUMNS: ExportColumnDefinition[] = [
   { key: "load_time_ms", header: "Load Time (ms)", defaultSelected: true },
   { key: "first_byte_time_ms", header: "First Byte Time (ms)", defaultSelected: true },
   { key: "size_bytes", header: "Size (bytes)", defaultSelected: true },
+  { key: "image_total_bytes", header: "Image Weight (bytes)", defaultSelected: true },
+  { key: "image_compressible_bytes", header: "Compressible (bytes)", defaultSelected: true },
   { key: "word_count", header: "Word Count", defaultSelected: true },
   { key: "js_count", header: "JS Files", defaultSelected: true },
   { key: "css_count", header: "CSS Files", defaultSelected: true },
@@ -201,6 +204,12 @@ export const EXTERNAL_LINKS_COLUMNS: ExportColumnDefinition[] = [
   { key: "anchor_text", header: "Anchor Text", defaultSelected: true },
   { key: "is_followed", header: "Followed", defaultSelected: true, formatter: booleanFormatter },
   { key: "rel_attributes", header: "Rel Attributes", defaultSelected: false, formatter: jsonFormatter },
+];
+
+export const ANCHOR_DISTRIBUTION_COLUMNS: ExportColumnDefinition[] = [
+  { key: "destination_url", header: "Destination URL", defaultSelected: true },
+  { key: "anchor_text", header: "Anchor Text", defaultSelected: true },
+  { key: "count", header: "Links", defaultSelected: true },
 ];
 
 export const TECHNICAL_HEALTH_COLUMNS: ExportColumnDefinition[] = [
@@ -252,6 +261,7 @@ export const EXPORT_COLUMN_REGISTRY: Record<ExportDataType, ExportColumnDefiniti
   "performance": PERFORMANCE_COLUMNS,
   "internal-links": INTERNAL_LINKS_COLUMNS,
   "external-links": EXTERNAL_LINKS_COLUMNS,
+  "anchor-distribution": ANCHOR_DISTRIBUTION_COLUMNS,
   "technical-health": TECHNICAL_HEALTH_COLUMNS,
   "issues": ISSUES_FULL_COLUMNS,
   "backlinks": BACKLINKS_COLUMNS,
@@ -314,6 +324,11 @@ export const EXPORT_FILTERS: Record<ExportDataType, ExportFilter[]> = {
     { key: "followed", label: "Followed Only", predicate: (r) => r.is_followed !== false },
     { key: "nofollowed", label: "NoFollowed Only", predicate: (r) => r.is_followed === false },
   ],
+  "anchor-distribution": [
+    { key: "all", label: "All Anchors", predicate: () => true },
+    { key: "empty", label: "Empty Anchors", predicate: (r) => r.anchor_text === "(empty)" },
+    { key: "repeated", label: "Repeated (2+)", predicate: (r) => r.count >= 2 },
+  ],
   "technical-health": [
     { key: "all", label: "All Pages", predicate: () => true },
     { key: "mixed-content", label: "Has Mixed Content", predicate: (r) => r.has_mixed_content === true },
@@ -346,6 +361,7 @@ export const EXPORT_DATA_TYPE_LABELS: Record<ExportDataType, string> = {
   "performance": "Performance Metrics",
   "internal-links": "Internal Links",
   "external-links": "External Links",
+  "anchor-distribution": "Anchor Distribution",
   "technical-health": "Technical Health",
   "issues": "Issues",
   "backlinks": "Backlinks",
