@@ -28,6 +28,7 @@ export type ExportDataType =
   | "performance"
   | "internal-links"
   | "external-links"
+  | "technical-health"
   | "issues"
   | "backlinks";
 
@@ -107,6 +108,8 @@ export const PAGE_URLS_COLUMNS: ExportColumnDefinition[] = [
   { key: "unique_inlink_count", header: "Unique Inlinks", defaultSelected: true },
   { key: "outlink_count", header: "Outlinks", defaultSelected: true },
   { key: "unique_outlink_count", header: "Unique Outlinks", defaultSelected: false },
+  { key: "has_mixed_content", header: "Mixed Content", defaultSelected: true, formatter: booleanFormatter },
+  { key: "security_headers", header: "Security Headers", defaultSelected: false, formatter: jsonFormatter },
   { key: "canonical_url", header: "Canonical URL", defaultSelected: true },
 ];
 
@@ -198,6 +201,19 @@ export const EXTERNAL_LINKS_COLUMNS: ExportColumnDefinition[] = [
   { key: "rel_attributes", header: "Rel Attributes", defaultSelected: false, formatter: jsonFormatter },
 ];
 
+export const TECHNICAL_HEALTH_COLUMNS: ExportColumnDefinition[] = [
+  { key: "url", header: "URL", defaultSelected: true },
+  { key: "security_headers", header: "Security Headers", defaultSelected: true, formatter: jsonFormatter },
+  { key: "has_mixed_content", header: "Mixed Content", defaultSelected: true, formatter: booleanFormatter },
+  { key: "has_viewport_meta", header: "Viewport Meta", defaultSelected: true, formatter: booleanFormatter },
+  { key: "heading_hierarchy_valid", header: "Heading Hierarchy Valid", defaultSelected: true, formatter: booleanFormatter },
+  { key: "heading_hierarchy_issues", header: "Heading Hierarchy Issues", defaultSelected: false, formatter: pipeDelimitedFormatter },
+  { key: "readability_score", header: "Readability Score", defaultSelected: true },
+  { key: "canonical_is_self", header: "Canonical Is Self", defaultSelected: true, formatter: booleanFormatter },
+  { key: "hreflang_tags", header: "Hreflang Tags", defaultSelected: false, formatter: jsonFormatter },
+  { key: "url_issues", header: "URL Issues", defaultSelected: false, formatter: pipeDelimitedFormatter },
+];
+
 export const ISSUES_FULL_COLUMNS: ExportColumnDefinition[] = [
   { key: "page_url", header: "Page URL", defaultSelected: true },
   { key: "issue_type", header: "Issue Type", defaultSelected: true },
@@ -230,6 +246,7 @@ export const EXPORT_COLUMN_REGISTRY: Record<ExportDataType, ExportColumnDefiniti
   "performance": PERFORMANCE_COLUMNS,
   "internal-links": INTERNAL_LINKS_COLUMNS,
   "external-links": EXTERNAL_LINKS_COLUMNS,
+  "technical-health": TECHNICAL_HEALTH_COLUMNS,
   "issues": ISSUES_FULL_COLUMNS,
   "backlinks": BACKLINKS_COLUMNS,
 };
@@ -291,6 +308,12 @@ export const EXPORT_FILTERS: Record<ExportDataType, ExportFilter[]> = {
     { key: "followed", label: "Followed Only", predicate: (r) => r.is_followed !== false },
     { key: "nofollowed", label: "NoFollowed Only", predicate: (r) => r.is_followed === false },
   ],
+  "technical-health": [
+    { key: "all", label: "All Pages", predicate: () => true },
+    { key: "mixed-content", label: "Has Mixed Content", predicate: (r) => r.has_mixed_content === true },
+    { key: "no-viewport", label: "Missing Viewport", predicate: (r) => r.has_viewport_meta === false },
+    { key: "bad-headings", label: "Invalid Heading Hierarchy", predicate: (r) => r.heading_hierarchy_valid === false },
+  ],
   "issues": [
     { key: "all", label: "All Issues", predicate: () => true },
     { key: "critical", label: "Critical", predicate: (r) => r.severity === "critical" },
@@ -317,6 +340,7 @@ export const EXPORT_DATA_TYPE_LABELS: Record<ExportDataType, string> = {
   "performance": "Performance Metrics",
   "internal-links": "Internal Links",
   "external-links": "External Links",
+  "technical-health": "Technical Health",
   "issues": "Issues",
   "backlinks": "Backlinks",
 };

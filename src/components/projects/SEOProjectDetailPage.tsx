@@ -452,6 +452,8 @@ export default async function ProjectDetailPage({
       images, schema_types, structured_data, open_graph, twitter_card,
       js_count, css_count, content_type,
       has_viewport_meta, has_mixed_content, heading_hierarchy_valid,
+      heading_hierarchy_issues, canonical_is_self, readability_score,
+      hreflang_tags, url_issues,
       security_headers, redirect_chain`;
   // Link-count columns come from migration 20260819. Select them when present,
   // otherwise fall back so exports still work pre-migration (link counts blank
@@ -847,6 +849,7 @@ export default async function ProjectDetailPage({
               { dataType: "images-alt", data: flattenedImages, label: "Images & Alt Text" },
               { dataType: "internal-links", data: internalLinksWithSource, label: "Internal Links" },
               { dataType: "external-links", data: externalLinksWithSource, label: "External Links" },
+              { dataType: "technical-health", data: allPagesForExport || [], label: "Technical Health" },
               { dataType: "broken-links", data: brokenLinksWithSource, label: "Broken Links" },
               { dataType: "redirects", data: redirectsForExport, label: "Redirects" },
               { dataType: "issues", data: formattedIssuesForExport, label: "Issues" },
@@ -1054,6 +1057,7 @@ export default async function ProjectDetailPage({
           { dataType: "images-alt", data: flattenedImages, label: "Images & Alt Text" },
           { dataType: "internal-links", data: internalLinksWithSource, label: "Internal Links" },
           { dataType: "external-links", data: externalLinksWithSource, label: "External Links" },
+          { dataType: "technical-health", data: allPagesForExport || [], label: "Technical Health" },
           { dataType: "broken-links", data: brokenLinksWithSource, label: "Broken Links" },
           { dataType: "redirects", data: redirectsForExport, label: "Redirects" },
           { dataType: "issues", data: formattedIssuesForExport, label: "Issues" },
