@@ -160,6 +160,27 @@ export default async function PageDetailPage({
     images = [],
   } = page;
 
+  // Render-transparency fields (present once migration 20260820 is applied).
+  const jsGap = page.js_rendering_gap as {
+    http_word_count: number;
+    headless_word_count: number;
+    delta_percent: number;
+  } | null;
+  const schemaSourceLabel = (s: string | null | undefined): string => {
+    switch (s) {
+      case "server": return "In server HTML";
+      case "client": return "Only after JS render";
+      case "both": return "Server HTML + client";
+      case "none": return "No schema found";
+      default: return "Not recorded";
+    }
+  };
+  const schemaSourceVariant = (s: string | null | undefined): "good" | "warning" | "neutral" => {
+    if (s === "server" || s === "both") return "good";
+    if (s === "client") return "warning";
+    return "neutral";
+  };
+
   // HTTP Status badge variant
   const getHttpStatusVariant = (): "good" | "warning" | "critical" => {
     const status = page.http_status;
@@ -219,6 +240,73 @@ export default async function PageDetailPage({
           structured_data: page.structured_data,
         }}
       />
+
+      {/* Rendering transparency — how RankRiot saw this page */}
+      <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] p-5">
+        <h2 className="text-lg font-semibold text-[var(--color-text-primary)] mb-1">
+          How RankRiot rendered this page
+        </h2>
+        <p className="text-sm text-[var(--color-text-muted)] mb-4">
+          Whether we executed JavaScript, and where your structured data actually lives.
+        </p>
+        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <dt className="text-xs uppercase tracking-wide text-[var(--color-text-muted)]">
+              Render method
+            </dt>
+            <dd className="mt-1.5">
+              <Badge variant={page.scan_method === "headless" ? "good" : "neutral"}>
+                {page.scan_method === "headless"
+                  ? "Headless — JavaScript executed"
+                  : page.scan_method === "http"
+                    ? "HTTP only — no JS execution"
+                    : "Not recorded"}
+              </Badge>
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs uppercase tracking-wide text-[var(--color-text-muted)]">
+              Schema visibility
+            </dt>
+            <dd className="mt-1.5">
+              <Badge variant={schemaSourceVariant(page.schema_source)}>
+                {schemaSourceLabel(page.schema_source)}
+              </Badge>
+            </dd>
+          </div>
+          {page.detected_platform && (
+            <div>
+              <dt className="text-xs uppercase tracking-wide text-[var(--color-text-muted)]">
+                Detected platform
+              </dt>
+              <dd className="mt-1.5 text-sm text-[var(--color-text-primary)] capitalize">
+                {page.detected_platform}
+              </dd>
+            </div>
+          )}
+          {jsGap && (
+            <div>
+              <dt className="text-xs uppercase tracking-wide text-[var(--color-text-muted)]">
+                JS content gap
+              </dt>
+              <dd className="mt-1.5 text-sm text-[var(--color-text-primary)]">
+                +{jsGap.delta_percent}% content after render{" "}
+                <span className="text-[var(--color-text-muted)]">
+                  ({jsGap.http_word_count} → {jsGap.headless_word_count} words)
+                </span>
+              </dd>
+            </div>
+          )}
+        </dl>
+        {page.schema_source === "client" && (
+          <div className="mt-4 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-surface-overlay)] p-3 text-sm text-[var(--color-text-secondary)]">
+            <span className="font-medium text-[var(--color-text-primary)]">Heads up:</span>{" "}
+            your structured data only appears after JavaScript runs. Search engines
+            and AI crawlers that don&apos;t fully render JS may not see it — consider
+            server-rendering the JSON-LD.
+          </div>
+        )}
+      </div>
 
       {/* Issue Advice Panel */}
       {pageIssues && pageIssues.length > 0 && (

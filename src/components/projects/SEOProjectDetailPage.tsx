@@ -455,26 +455,38 @@ export default async function ProjectDetailPage({
       heading_hierarchy_issues, canonical_is_self, readability_score,
       hreflang_tags, url_issues,
       security_headers, redirect_chain`;
-  // Link-count columns come from migration 20260819. Select them when present,
-  // otherwise fall back so exports still work pre-migration (link counts blank
-  // until then). Collapse to a single select once the migration is applied.
+  // Optional columns come from later migrations (20260819 link counts,
+  // 20260820 render transparency). Try the fullest select, then degrade so
+  // exports keep working whichever migrations are applied. Collapse to one
+  // select once both are live everywhere.
+  const EXPORT_LINK_COLS =
+    "inlink_count, unique_inlink_count, outlink_count, unique_outlink_count";
+  const EXPORT_RENDER_COLS =
+    "scan_method, detected_platform, js_rendering_gap, schema_source";
   let { data: allPagesForExport } = await supabase
     .from("pages")
-    .select(
-      `${EXPORT_BASE_COLS}, inlink_count, unique_inlink_count, outlink_count, unique_outlink_count`,
-    )
+    .select(`${EXPORT_BASE_COLS}, ${EXPORT_LINK_COLS}, ${EXPORT_RENDER_COLS}`)
     .eq("project_id", projectId)
     .like("url", "http%")
     .order("url");
 
   if (!allPagesForExport) {
-    const fallback = await supabase
+    const t2 = await supabase
+      .from("pages")
+      .select(`${EXPORT_BASE_COLS}, ${EXPORT_LINK_COLS}`)
+      .eq("project_id", projectId)
+      .like("url", "http%")
+      .order("url");
+    allPagesForExport = t2.data as typeof allPagesForExport;
+  }
+  if (!allPagesForExport) {
+    const t3 = await supabase
       .from("pages")
       .select(EXPORT_BASE_COLS)
       .eq("project_id", projectId)
       .like("url", "http%")
       .order("url");
-    allPagesForExport = fallback.data as typeof allPagesForExport;
+    allPagesForExport = t3.data as typeof allPagesForExport;
   }
 
   // Get all issues for export — scoped to latest completed scan if available

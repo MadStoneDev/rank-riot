@@ -486,6 +486,10 @@ export type Database = {
           url_issues: Json | null
           content_hash: string | null
           readability_score: number | null
+          scan_method: string | null
+          detected_platform: string | null
+          js_rendering_gap: Json | null
+          schema_source: string | null
         }
         Insert: {
           id?: string
@@ -540,6 +544,10 @@ export type Database = {
           url_issues?: Json | null
           content_hash?: string | null
           readability_score?: number | null
+          scan_method?: string | null
+          detected_platform?: string | null
+          js_rendering_gap?: Json | null
+          schema_source?: string | null
         }
         Update: {
           id?: string
@@ -594,6 +602,10 @@ export type Database = {
           url_issues?: Json | null
           content_hash?: string | null
           readability_score?: number | null
+          scan_method?: string | null
+          detected_platform?: string | null
+          js_rendering_gap?: Json | null
+          schema_source?: string | null
         }
         Relationships: [
           {

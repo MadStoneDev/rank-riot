@@ -104,6 +104,8 @@ export const PAGE_URLS_COLUMNS: ExportColumnDefinition[] = [
   { key: "http_status", header: "HTTP Status", defaultSelected: true },
   { key: "is_indexable", header: "Indexable", defaultSelected: true, formatter: booleanFormatter },
   { key: "depth", header: "Crawl Depth", defaultSelected: true },
+  { key: "scan_method", header: "Render Method", defaultSelected: true },
+  { key: "schema_source", header: "Schema Source", defaultSelected: true },
   { key: "inlink_count", header: "Inlinks", defaultSelected: true },
   { key: "unique_inlink_count", header: "Unique Inlinks", defaultSelected: true },
   { key: "outlink_count", header: "Outlinks", defaultSelected: true },
@@ -203,6 +205,10 @@ export const EXTERNAL_LINKS_COLUMNS: ExportColumnDefinition[] = [
 
 export const TECHNICAL_HEALTH_COLUMNS: ExportColumnDefinition[] = [
   { key: "url", header: "URL", defaultSelected: true },
+  { key: "scan_method", header: "Render Method", defaultSelected: true },
+  { key: "schema_source", header: "Schema Source", defaultSelected: true },
+  { key: "detected_platform", header: "Detected Platform", defaultSelected: true },
+  { key: "js_rendering_gap", header: "JS Content Gap", defaultSelected: true, formatter: jsonFormatter },
   { key: "security_headers", header: "Security Headers", defaultSelected: true, formatter: jsonFormatter },
   { key: "has_mixed_content", header: "Mixed Content", defaultSelected: true, formatter: booleanFormatter },
   { key: "has_viewport_meta", header: "Viewport Meta", defaultSelected: true, formatter: booleanFormatter },
