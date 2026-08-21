@@ -14,13 +14,31 @@ export function validateOrigin(request: Request): NextResponse | null {
   // Browser-initiated cross-origin requests always include Origin.
   if (!origin) return null;
 
-  const allowedOrigin = process.env.NEXT_PUBLIC_BASE_URL || "";
+  // Preferred: an explicitly configured origin. Falls back to the origin the
+  // request was actually served on (via the proxy's forwarded host) so a missing
+  // NEXT_PUBLIC_BASE_URL can't 500 every POST. This is still a valid same-origin
+  // CSRF check: a cross-site attacker controls neither the browser's Origin
+  // header nor the proxy-set forwarded host.
+  const configured = process.env.NEXT_PUBLIC_BASE_URL || "";
+  const forwardedHost =
+    request.headers.get("x-forwarded-host") ||
+    request.headers.get("host") ||
+    "";
+  const forwardedProto = request.headers.get("x-forwarded-proto") || "https";
+  const derived = forwardedHost ? `${forwardedProto}://${forwardedHost}` : "";
+
+  const allowedOrigin = configured || derived;
   if (!allowedOrigin) {
-    // Fail closed: without a configured origin we cannot verify the request.
-    console.error("CSRF check failed: NEXT_PUBLIC_BASE_URL is not configured");
+    // Fail closed only if we have neither a configured nor a derivable origin.
+    console.error("CSRF check failed: no configured or derivable origin");
     return NextResponse.json(
       { error: "Server configuration error" },
       { status: 500 },
+    );
+  }
+  if (!configured) {
+    console.warn(
+      "NEXT_PUBLIC_BASE_URL not set — validating Origin against forwarded host",
     );
   }
 
