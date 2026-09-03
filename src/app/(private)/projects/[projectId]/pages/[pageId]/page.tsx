@@ -126,27 +126,15 @@ export default async function PageDetailPage({
       return normalizeUrl(link.destination_url) === normalizedPageUrl;
     }) || [];
 
-  // Get latest completed scan for issue scoping
-  const { data: latestPageScan } = await supabase
-    .from("scans")
-    .select("id")
-    .eq("project_id", projectId)
-    .eq("status", "completed")
-    .order("started_at", { ascending: false })
-    .limit(1)
-    .single();
-
-  // Get issues for this page — scoped to latest scan if available
-  let pageIssuesQuery = supabase
+  // Open issues for this page. Issues are reconciled by fingerprint and persist
+  // across scans, so we show all currently-open ones rather than pinning to the
+  // latest scan (which would drop carried-over issues after a partial crawl).
+  const { data: pageIssues } = await supabase
     .from("issues")
     .select("*")
     .eq("page_id", pageId)
     .eq("is_fixed", false)
     .order("created_at", { ascending: false });
-  if (latestPageScan) {
-    pageIssuesQuery = pageIssuesQuery.eq("scan_id", latestPageScan.id);
-  }
-  const { data: pageIssues } = await pageIssuesQuery;
 
   // Extract data from page
   const {
@@ -317,6 +305,9 @@ export default async function PageDetailPage({
             severity: issue.severity,
             description: issue.description,
             details: issue.details,
+            dismissed: issue.dismissed,
+            created_at: issue.created_at,
+            seen_count: issue.seen_count,
           }))}
           title="Issues on This Page"
           showPageLink={false}

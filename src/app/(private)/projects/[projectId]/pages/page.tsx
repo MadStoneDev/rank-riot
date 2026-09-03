@@ -80,7 +80,8 @@ export default async function ProjectPagesPage({
     .from("issues")
     .select("page_id")
     .eq("project_id", projectId)
-    .eq("is_fixed", false);
+    .eq("is_fixed", false)
+    .eq("dismissed", false);
 
   const issueCounts: { [pageId: string]: number } = {};
   if (issues) {

@@ -102,7 +102,11 @@ export default async function AdminProjectPage({
     await Promise.all([
       getCount(admin, "pages", { project_id: projectId }),
       getCount(admin, "page_links", { project_id: projectId }),
-      getCount(admin, "issues", { project_id: projectId, is_fixed: false }),
+      getCount(admin, "issues", {
+        project_id: projectId,
+        is_fixed: false,
+        dismissed: false,
+      }),
       getCount(admin, "page_links", {
         project_id: projectId,
         is_broken: true,
@@ -125,6 +129,7 @@ export default async function AdminProjectPage({
     .select("id, issue_type, severity, description, page_id, created_at")
     .eq("project_id", projectId)
     .eq("is_fixed", false)
+    .eq("dismissed", false)
     .order("created_at", { ascending: false })
     .limit(20);
 

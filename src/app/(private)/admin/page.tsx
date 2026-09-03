@@ -67,7 +67,8 @@ export default async function AdminOverviewPage() {
     admin
       .from("issues")
       .select("*", { count: "exact", head: true })
-      .eq("is_fixed", false),
+      .eq("is_fixed", false)
+      .eq("dismissed", false),
   ]);
 
   // Get project info for recent scans

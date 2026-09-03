@@ -61,7 +61,8 @@ export default async function Dashboard() {
       .from("issues")
       .select("project_id, severity")
       .in("project_id", safeProjectIds)
-      .eq("is_fixed", false),
+      .eq("is_fixed", false)
+      .eq("dismissed", false),
     supabase
       .from("page_links")
       .select("project_id")
@@ -175,6 +176,7 @@ export default async function Dashboard() {
     `)
     .in("project_id", projectIds.length > 0 ? projectIds : ["__none__"])
     .eq("is_fixed", false)
+    .eq("dismissed", false)
     .in("severity", ["critical", "high", "medium"])
     .order("created_at", { ascending: false })
     .limit(50);

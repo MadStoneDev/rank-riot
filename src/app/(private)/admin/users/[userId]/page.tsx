@@ -73,7 +73,8 @@ export default async function AdminUserDetailPage({
               .from("issues")
               .select("*", { count: "exact", head: true })
               .eq("project_id", pid)
-              .eq("is_fixed", false);
+              .eq("is_fixed", false)
+              .eq("dismissed", false);
             return [pid, count || 0] as const;
           }),
         )

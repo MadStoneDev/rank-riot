@@ -34,6 +34,7 @@ import ExportDropdown from "@/components/export/ExportDropdown";
 import FloatingExportButton from "@/components/export/FloatingExportButton";
 import AeoReadinessSection from "@/components/projects/AeoReadinessSection";
 import IssueAdvicePanel from "@/components/issues/IssueAdvicePanel";
+import IssueChangePanel from "@/components/issues/IssueChangePanel";
 import GeoReadinessSection from "@/components/projects/GeoReadinessSection";
 import ChecklistView from "@/components/projects/ChecklistView";
 import Backlinks, { BacklinksData, BacklinkItem } from "@/components/projects/Backlinks";
@@ -156,24 +157,20 @@ export default async function ProjectDetailPage({
     .limit(1)
     .single();
 
-  // Find the latest completed scan to scope issues
-  const latestCompletedScanId = latestScan?.status === "completed"
-    ? latestScan.id
-    : null;
-
-  // Get issues count — scoped to latest completed scan if available
-  let issuesCountQuery = supabase
+  // Open issues are reconciled by fingerprint and persist across scans (see the
+  // crawler's issue-detector). We no longer pin to the latest scan_id: after a
+  // partial crawl, carried-over open issues keep an older scan_id, so pinning
+  // would wrongly hide them. "Open" = not fixed, not dismissed.
+  const { count: issuesCount } = await supabase
     .from("issues")
     .select("*", { count: "exact", head: true })
     .eq("project_id", projectId)
-    .eq("is_fixed", false);
-  if (latestCompletedScanId) {
-    issuesCountQuery = issuesCountQuery.eq("scan_id", latestCompletedScanId);
-  }
-  const { count: issuesCount } = await issuesCountQuery;
+    .eq("is_fixed", false)
+    .eq("dismissed", false);
 
-  // Get recent issues — scoped to latest completed scan if available
-  let recentIssuesQuery = supabase
+  // Recent open issues for the advice panel (dismissed rows included so the
+  // panel's "show dismissed" toggle can reveal them).
+  const { data: recentIssues } = await supabase
     .from("issues")
     .select(
       `
@@ -185,10 +182,52 @@ export default async function ProjectDetailPage({
     .eq("is_fixed", false)
     .order("created_at", { ascending: false })
     .limit(50);
-  if (latestCompletedScanId) {
-    recentIssuesQuery = recentIssuesQuery.eq("scan_id", latestCompletedScanId);
+
+  // "What changed since last scan" — compare the two most recent completed
+  // scans. New = first seen during the latest scan window; Resolved =
+  // auto-resolved during it; Unchanged = open but carried over from before.
+  const { data: completedScans } = await supabase
+    .from("scans")
+    .select("id, started_at, completed_at")
+    .eq("project_id", projectId)
+    .eq("status", "completed")
+    .order("started_at", { ascending: false })
+    .limit(2);
+  const latestCompletedScan = completedScans?.[0] ?? null;
+  const previousCompletedScan = completedScans?.[1] ?? null;
+  const changeWindowStart = latestCompletedScan?.started_at ?? null;
+  const hasChangeData = Boolean(changeWindowStart && previousCompletedScan);
+
+  let newIssueCount = 0;
+  let resolvedIssues: any[] = [];
+  let resolvedIssueCount = 0;
+  if (hasChangeData && changeWindowStart) {
+    const { count: newCount } = await supabase
+      .from("issues")
+      .select("*", { count: "exact", head: true })
+      .eq("project_id", projectId)
+      .eq("is_fixed", false)
+      .eq("dismissed", false)
+      .gte("created_at", changeWindowStart);
+    newIssueCount = newCount ?? 0;
+
+    const { data: resolved, count: resolvedCount } = await supabase
+      .from("issues")
+      .select("id, issue_type, severity, fixed_at, pages(url, title)", {
+        count: "exact",
+      })
+      .eq("project_id", projectId)
+      .eq("is_fixed", true)
+      .gte("fixed_at", changeWindowStart)
+      .order("fixed_at", { ascending: false })
+      .limit(8);
+    resolvedIssues = resolved ?? [];
+    resolvedIssueCount = resolvedCount ?? 0;
   }
-  const { data: recentIssues } = await recentIssuesQuery;
+  const unchangedIssueCount = Math.max(
+    0,
+    (issuesCount ?? 0) - newIssueCount,
+  );
 
   // Get scan history
   const { data: scanHistory } = await supabase
@@ -466,8 +505,8 @@ export default async function ProjectDetailPage({
     .like("url", "http%")
     .order("url");
 
-  // Get all issues for export — scoped to latest completed scan if available
-  let allIssuesForExportQuery = supabase
+  // Export all currently-open issues (reconciled across scans, not pinned).
+  const { data: allIssuesForExport } = await supabase
     .from("issues")
     .select(`
       issue_type,
@@ -480,11 +519,8 @@ export default async function ProjectDetailPage({
     `)
     .eq("project_id", projectId)
     .eq("is_fixed", false)
+    .eq("dismissed", false)
     .order("created_at", { ascending: false });
-  if (latestCompletedScanId) {
-    allIssuesForExportQuery = allIssuesForExportQuery.eq("scan_id", latestCompletedScanId);
-  }
-  const { data: allIssuesForExport } = await allIssuesForExportQuery;
 
   // Format issues for export
   const formattedIssuesForExport = (allIssuesForExport || []).map((issue: any) => ({
@@ -1015,6 +1051,17 @@ export default async function ProjectDetailPage({
       </div>
 
       {/* Issue Advice Panel */}
+      {hasChangeData && (
+        <IssueChangePanel
+          projectId={projectId}
+          newCount={newIssueCount}
+          resolvedCount={resolvedIssueCount}
+          unchangedCount={unchangedIssueCount}
+          resolvedIssues={resolvedIssues}
+          sinceDate={previousCompletedScan?.completed_at}
+        />
+      )}
+
       {recentIssues && recentIssues.length > 0 && (
         <IssueAdvicePanel
           issues={recentIssues.map((issue: any) => ({
@@ -1025,6 +1072,9 @@ export default async function ProjectDetailPage({
             details: issue.details,
             page_url: issue.pages?.url,
             page_title: issue.pages?.title,
+            dismissed: issue.dismissed,
+            created_at: issue.created_at,
+            seen_count: issue.seen_count,
           }))}
           title="All Issues"
           maxItems={10}
