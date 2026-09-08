@@ -114,6 +114,10 @@ export const PAGE_URLS_COLUMNS: ExportColumnDefinition[] = [
   { key: "has_mixed_content", header: "Mixed Content", defaultSelected: true, formatter: booleanFormatter },
   { key: "security_headers", header: "Security Headers", defaultSelected: false, formatter: jsonFormatter },
   { key: "canonical_url", header: "Canonical URL", defaultSelected: true },
+  // Normalised (trailing-slash/host/case-insensitive) self-canonical flag, so
+  // consumers don't read a raw canonical_url != url trailing-slash diff as a
+  // mismatch. This is the same truth the issues/technical-health side uses.
+  { key: "canonical_is_self", header: "Canonical Matches URL", defaultSelected: true, formatter: booleanFormatter },
 ];
 
 export const SEO_METADATA_COLUMNS: ExportColumnDefinition[] = [

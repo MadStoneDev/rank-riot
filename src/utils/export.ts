@@ -62,8 +62,12 @@ export function generateCSV(
       .join(",")
   );
 
-  // Optional leading `# ...` attribution comment (skippable by most parsers).
-  const lines = commentLine ? [commentLine, header, ...rows] : [header, ...rows];
+  // Optional leading `# ...` attribution comment. Escaped as a single CSV cell
+  // so its commas (long-form date, project names) don't make the row parse as
+  // multiple columns — the whole line reads as one quoted field.
+  const lines = commentLine
+    ? [escapeCSVValue(commentLine), header, ...rows]
+    : [header, ...rows];
   return lines.join("\n");
 }
 

@@ -533,12 +533,36 @@ export default async function ProjectDetailPage({
     is_fixed: issue.is_fixed,
   }));
 
-  // Get internal links for export
-  const { data: internalLinksForExport } = await supabase
-    .from("page_links")
-    .select("source_page_id, destination_url, anchor_text, is_followed, http_status")
-    .eq("project_id", projectId)
-    .eq("link_type", "internal");
+  // Fetch ALL page_links of a type, paginating past PostgREST's 1000-row cap
+  // (a large site's link graph runs to many thousands of edges, so a single
+  // request silently truncated the exported graph — breaking orphan/inlink
+  // analysis downstream).
+  const fetchAllPageLinks = async (
+    linkType: "internal" | "external",
+    columns: string,
+  ): Promise<any[]> => {
+    const pageSize = 1000;
+    const all: any[] = [];
+    for (let from = 0; ; from += pageSize) {
+      const { data, error } = await supabase
+        .from("page_links")
+        .select(columns)
+        .eq("project_id", projectId)
+        .eq("link_type", linkType)
+        .order("id", { ascending: true })
+        .range(from, from + pageSize - 1);
+      if (error || !data || data.length === 0) break;
+      all.push(...data);
+      if (data.length < pageSize) break;
+    }
+    return all;
+  };
+
+  // Get internal links for export (full graph, not capped at 1000).
+  const internalLinksForExport = await fetchAllPageLinks(
+    "internal",
+    "source_page_id, destination_url, anchor_text, is_followed, http_status",
+  );
 
   const pagesById = new Map(
     (allPagesForExport || []).map((p: any) => [p.id, p])
@@ -555,12 +579,11 @@ export default async function ProjectDetailPage({
     };
   });
 
-  // Get external links for export
-  const { data: externalLinksForExport } = await supabase
-    .from("page_links")
-    .select("source_page_id, destination_url, anchor_text, is_followed, http_status, rel_attributes")
-    .eq("project_id", projectId)
-    .eq("link_type", "external");
+  // Get external links for export (full set, not capped at 1000).
+  const externalLinksForExport = await fetchAllPageLinks(
+    "external",
+    "source_page_id, destination_url, anchor_text, is_followed, http_status, rel_attributes",
+  );
 
   const externalLinksWithSource = (externalLinksForExport || []).map((link: any) => {
     const sourcePage = pagesById.get(link.source_page_id);
@@ -744,13 +767,24 @@ export default async function ProjectDetailPage({
   // Build checklist scan data from all available data
   const allExportPages = allPagesForExport || [];
 
-  // Pages that redirect — exported as a dedicated dataset so the full chain
-  // (source, hops, path, final target) is available, not just a filter.
-  const redirectsForExport = allExportPages.filter(
-    (p: any) =>
-      (p.redirect_url && p.redirect_url.length > 0) ||
-      (Array.isArray(p.redirect_chain) && p.redirect_chain.length > 0),
-  );
+  // Pages that ACTUALLY redirect — exported as a dedicated dataset so the full
+  // chain (source, hops, path, final target) is available. A page whose
+  // redirect_url just echoes its own URL at status 200 is not a redirect; only
+  // include genuine 3xx, a target that points elsewhere, or a real multi-hop
+  // chain — otherwise the file fills with self-redirect noise.
+  const normalizeForCompare = (u: string): string =>
+    (u || "").replace(/^https?:\/\//i, "").replace(/\/+$/, "").toLowerCase();
+  const redirectsForExport = allExportPages.filter((p: any) => {
+    const status = typeof p.http_status === "number" ? p.http_status : 0;
+    const is3xx = status >= 300 && status < 400;
+    const chain = Array.isArray(p.redirect_chain) ? p.redirect_chain : [];
+    const hasMultiHopChain = chain.length >= 2;
+    const pointsElsewhere =
+      !!p.redirect_url &&
+      p.redirect_url.length > 0 &&
+      normalizeForCompare(p.redirect_url) !== normalizeForCompare(p.url);
+    return is3xx || hasMultiHopChain || pointsElsewhere;
+  });
   const checklistScanData: ChecklistScanData = {
     totalPages: allExportPages.length,
     pagesWithTitle: allExportPages.filter((p: any) => p.title && p.title.trim()).length,
