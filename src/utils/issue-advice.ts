@@ -44,6 +44,25 @@ const adviceDatabase: Record<string, IssueAdvice> = {
     codeExample: '<title>Your Primary Keyword - Brand Name</title>',
     estimatedEffort: "5 minutes",
   },
+  empty_page_title: {
+    title: "Empty Page Title (Site Name Only)",
+    description:
+      "This page's <title> contains only the site name behind a separator (for example \"- Brand Name\"), with no page-specific text. This usually happens when a CMS title template runs but the page's title field is left empty. To search engines and AI answer engines it reads almost like a missing title.",
+    impact: "high",
+    howToFix:
+      "Set a unique, descriptive title for this page in your CMS. In WordPress with Yoast or Rank Math, fill in the SEO Title field for this page. It should describe this page's content, not just repeat the site name.",
+    codeExample: "<title>Bookkeeping Services for Tradies - Brand Name</title>",
+    estimatedEffort: "5 minutes",
+  },
+  slow_server_response: {
+    title: "Slow Server Response (TTFB)",
+    description:
+      "The site's median server response time (time to first byte) is slow across many pages. TTFB measures how long the server takes to start sending a page, separate from page weight or image size. A slow site-wide TTFB points to hosting, caching, or backend work rather than any single page's content.",
+    impact: "medium",
+    howToFix:
+      "1. Enable full-page and object caching (a caching plugin, or a reverse proxy / CDN).\n2. Put a CDN in front of the site so responses are served from the edge.\n3. Review server resources and slow database queries.\n4. Reduce heavy plugins or middleware that run on every request.\n5. Re-test TTFB after each change; aim for under 600ms.",
+    estimatedEffort: "1 - 4 hours (infrastructure)",
+  },
   missing_meta_description: {
     title: "Missing Meta Description",
     description:
