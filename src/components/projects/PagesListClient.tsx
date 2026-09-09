@@ -37,6 +37,7 @@ interface Page {
   images: { src: string; alt: string }[] | null;
   open_graph: Record<string, any> | null;
   twitter_card: Record<string, any> | null;
+  page_type?: string | null;
 }
 
 interface PageIssueCount {
@@ -58,10 +59,30 @@ interface PagesListClientProps {
 
 type SortField = "url" | "title" | "score" | "issues" | "links" | "inlinks";
 type SortDirection = "asc" | "desc";
-type FilterType = "all" | "with-issues" | "indexable" | "non-indexable";
+type FilterType =
+  | "all"
+  | "content"
+  | "archive"
+  | "with-issues"
+  | "indexable"
+  | "non-indexable";
 
 function calculatePageScoreLocal(page: Page): number {
   return getPageScore(page);
+}
+
+// A page is "archive/system" if the crawler classified it as anything other
+// than content (tag, category, author, pagination, feed, etc.). Legacy pages
+// crawled before page_type shipped are null and treated as content.
+function isArchivePage(pageType?: string | null): boolean {
+  return !!pageType && pageType !== "content";
+}
+
+// Human label for a non-content page_type badge.
+function pageTypeLabel(pageType?: string | null): string {
+  if (!pageType || pageType === "content") return "";
+  if (pageType === "date_archive") return "archive";
+  return pageType;
 }
 
 export default function PagesListClient({
@@ -90,6 +111,18 @@ export default function PagesListClient({
     }));
   }, [pages, issueCounts, linkCounts, inlinkCounts]);
 
+  // Content vs archive/system split, so the count reflects that most of a WP
+  // site's URLs (tags, pagination) are not content pages.
+  const segmentCounts = useMemo(() => {
+    let content = 0;
+    let archive = 0;
+    for (const page of pages) {
+      if (isArchivePage(page.page_type)) archive++;
+      else content++;
+    }
+    return { content, archive };
+  }, [pages]);
+
   // Filter pages
   const filteredPages = useMemo(() => {
     let result = pagesWithScores;
@@ -106,6 +139,12 @@ export default function PagesListClient({
 
     // Type filter
     switch (filter) {
+      case "content":
+        result = result.filter((page) => !isArchivePage(page.page_type));
+        break;
+      case "archive":
+        result = result.filter((page) => isArchivePage(page.page_type));
+        break;
       case "with-issues":
         result = result.filter((page) => page.issueCount > 0 || page.score < 80);
         break;
@@ -230,6 +269,13 @@ export default function PagesListClient({
           </h3>
           <p className="text-sm text-[var(--color-text-muted)] mt-1">
             Showing {filteredPages.length} of {pages.length} pages
+            {segmentCounts.archive > 0 && (
+              <>
+                {" · "}
+                {segmentCounts.content} content, {segmentCounts.archive}{" "}
+                archive/system
+              </>
+            )}
           </p>
         </div>
         <ExportTriggerButton
@@ -264,6 +310,8 @@ export default function PagesListClient({
             <IconFilter className="h-4 w-4 text-[var(--color-text-muted)]" />
             <span className="text-xs text-[var(--color-text-muted)]">Filter:</span>
             <FilterButton filterValue="all" label="All" />
+            <FilterButton filterValue="content" label="Content" />
+            <FilterButton filterValue="archive" label="Archive / System" />
             <FilterButton filterValue="with-issues" label="With Issues" />
             <FilterButton filterValue="indexable" label="Indexable" />
             <FilterButton filterValue="non-indexable" label="Non-Indexable" />
@@ -309,6 +357,11 @@ export default function PagesListClient({
 
                     {/* Status badges */}
                     <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 sm:flex-shrink-0">
+                      {isArchivePage(page.page_type) && (
+                        <Badge variant="neutral">
+                          {pageTypeLabel(page.page_type)}
+                        </Badge>
+                      )}
                       {page.issueCount > 0 && (
                         <Badge variant="critical">
                           <IconAlertCircle className="h-3 w-3" />

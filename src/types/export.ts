@@ -102,6 +102,7 @@ const hopsFormatter = (value: any): string => {
 
 export const PAGE_URLS_COLUMNS: ExportColumnDefinition[] = [
   { key: "url", header: "URL", defaultSelected: true },
+  { key: "page_type", header: "Page Type", defaultSelected: true, formatter: (v) => (v == null ? "" : String(v)) },
   { key: "http_status", header: "HTTP Status", defaultSelected: true },
   { key: "is_indexable", header: "Indexable", defaultSelected: true, formatter: booleanFormatter },
   { key: "depth", header: "Crawl Depth", defaultSelected: true },

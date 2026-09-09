@@ -232,12 +232,12 @@ export type Database = {
           details: Json | null
           is_fixed: boolean | null
           fixed_at: string | null
+          created_at: string | null
+          updated_at: string | null
           fingerprint: string | null
           dismissed: boolean
           dismissed_at: string | null
           seen_count: number
-          created_at: string | null
-          updated_at: string | null
         }
         Insert: {
           id?: string
@@ -250,12 +250,12 @@ export type Database = {
           details?: Json | null
           is_fixed?: boolean | null
           fixed_at?: string | null
+          created_at?: string | null
+          updated_at?: string | null
           fingerprint?: string | null
           dismissed?: boolean
           dismissed_at?: string | null
           seen_count?: number
-          created_at?: string | null
-          updated_at?: string | null
         }
         Update: {
           id?: string
@@ -268,12 +268,12 @@ export type Database = {
           details?: Json | null
           is_fixed?: boolean | null
           fixed_at?: string | null
+          created_at?: string | null
+          updated_at?: string | null
           fingerprint?: string | null
           dismissed?: boolean
           dismissed_at?: string | null
           seen_count?: number
-          created_at?: string | null
-          updated_at?: string | null
         }
         Relationships: [
           {
@@ -469,10 +469,6 @@ export type Database = {
           has_robots_noindex: boolean | null
           has_robots_nofollow: boolean | null
           depth: number | null
-          inlink_count: number | null
-          unique_inlink_count: number | null
-          outlink_count: number | null
-          unique_outlink_count: number | null
           crawl_priority: number | null
           redirect_url: string | null
           content_type: string | null
@@ -498,10 +494,15 @@ export type Database = {
           url_issues: Json | null
           content_hash: string | null
           readability_score: number | null
+          inlink_count: number | null
+          unique_inlink_count: number | null
+          outlink_count: number | null
+          unique_outlink_count: number | null
           scan_method: string | null
           detected_platform: string | null
           js_rendering_gap: Json | null
           schema_source: string | null
+          page_type: string | null
         }
         Insert: {
           id?: string
@@ -527,10 +528,6 @@ export type Database = {
           has_robots_noindex?: boolean | null
           has_robots_nofollow?: boolean | null
           depth?: number | null
-          inlink_count?: number | null
-          unique_inlink_count?: number | null
-          outlink_count?: number | null
-          unique_outlink_count?: number | null
           crawl_priority?: number | null
           redirect_url?: string | null
           content_type?: string | null
@@ -556,10 +553,15 @@ export type Database = {
           url_issues?: Json | null
           content_hash?: string | null
           readability_score?: number | null
+          inlink_count?: number | null
+          unique_inlink_count?: number | null
+          outlink_count?: number | null
+          unique_outlink_count?: number | null
           scan_method?: string | null
           detected_platform?: string | null
           js_rendering_gap?: Json | null
           schema_source?: string | null
+          page_type?: string | null
         }
         Update: {
           id?: string
@@ -585,10 +587,6 @@ export type Database = {
           has_robots_noindex?: boolean | null
           has_robots_nofollow?: boolean | null
           depth?: number | null
-          inlink_count?: number | null
-          unique_inlink_count?: number | null
-          outlink_count?: number | null
-          unique_outlink_count?: number | null
           crawl_priority?: number | null
           redirect_url?: string | null
           content_type?: string | null
@@ -614,10 +612,15 @@ export type Database = {
           url_issues?: Json | null
           content_hash?: string | null
           readability_score?: number | null
+          inlink_count?: number | null
+          unique_inlink_count?: number | null
+          outlink_count?: number | null
+          unique_outlink_count?: number | null
           scan_method?: string | null
           detected_platform?: string | null
           js_rendering_gap?: Json | null
           schema_source?: string | null
+          page_type?: string | null
         }
         Relationships: [
           {
@@ -1035,6 +1038,12 @@ export type Database = {
           p_user_id: string
           p_scans: number
           p_pages: number
+        }
+        Returns: undefined
+      }
+      update_page_link_counts: {
+        Args: {
+          p_project_id: string
         }
         Returns: undefined
       }

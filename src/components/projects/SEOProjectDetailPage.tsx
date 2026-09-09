@@ -483,7 +483,7 @@ export default async function ProjectDetailPage({
 
   // Export Data Preparation
   // Get all pages for export (expanded fields for all export types)
-  const EXPORT_BASE_COLS = `id, url, title, title_length, meta_description, meta_description_length,
+  const EXPORT_BASE_COLS = `id, url, page_type, title, title_length, meta_description, meta_description_length,
       word_count, http_status, load_time_ms, depth, is_indexable,
       first_byte_time_ms, size_bytes, canonical_url,
       has_robots_noindex, has_robots_nofollow, redirect_url,
