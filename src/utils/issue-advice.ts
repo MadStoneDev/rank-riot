@@ -222,6 +222,37 @@ const adviceDatabase: Record<string, IssueAdvice> = {
       '<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "Organization",\n  "name": "Your Business",\n  "url": "https://yoursite.com",\n  "logo": "https://yoursite.com/logo.png"\n}\n</script>',
     estimatedEffort: "15 - 30 minutes",
   },
+  incomplete_open_graph: {
+    title: "Open Graph Missing an Image",
+    description:
+      "This page has Open Graph tags but no og:image. When the page is shared on social platforms or previewed by an AI assistant, it will show without an image, which badly hurts click-through.",
+    impact: "low",
+    howToFix:
+      "Add an og:image tag pointing to a representative image (ideally at least 1200×630px). In WordPress with Yoast or Rank Math, set the page's social image.",
+    codeExample:
+      '<meta property="og:image" content="https://yoursite.com/share-image.jpg">',
+    estimatedEffort: "5 minutes",
+  },
+  faq_without_schema: {
+    title: "FAQ Content Without FAQPage Schema",
+    description:
+      "This page has FAQ-style content (a 'Frequently Asked Questions' heading or several question headings) but no FAQPage structured data. Marking it up makes it eligible for FAQ rich results and makes it much easier for AI answer engines to extract and cite the answers.",
+    impact: "low",
+    howToFix:
+      "Add FAQPage JSON-LD listing each question and its answer. Many SEO plugins (Yoast, Rank Math) include an FAQ block that emits this automatically.",
+    codeExample:
+      '<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "FAQPage",\n  "mainEntity": [{\n    "@type": "Question",\n    "name": "How much does bookkeeping cost?",\n    "acceptedAnswer": { "@type": "Answer", "text": "..." }\n  }]\n}\n</script>',
+    estimatedEffort: "15 - 30 minutes",
+  },
+  poor_readability: {
+    title: "Hard-to-Read Content",
+    description:
+      "This page's content scores low on readability (long sentences, complex words). Hard-to-read copy loses visitors and is harder for AI answer engines to summarise and cite.",
+    impact: "low",
+    howToFix:
+      "Shorten sentences, prefer plain words, break text into short paragraphs, and add descriptive subheadings and bullet lists. Aim for a Flesch reading ease around 60+ (roughly grade 8–9).",
+    estimatedEffort: "20 - 40 minutes",
+  },
   large_page_size: {
     title: "Large Page Size",
     description:
