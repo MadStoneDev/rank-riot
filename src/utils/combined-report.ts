@@ -96,6 +96,15 @@ export async function downloadCombinedCsvZip(
     "",
     "Files:",
     ...nonEmpty(datasets).map((d) => `  ${d.dataType}.csv — ${d.label} (${d.data.length} rows)`),
+    "",
+    "Column notes (semantics that aren't obvious from the header):",
+    "  Page Type — content vs archive/taxonomy/pagination/system, classified from the URL. Archive/taxonomy pages are excluded from thin-content / missing-H1 / missing-meta / orphan / duplicate-title counts.",
+    "  Canonical Matches URL — normalised (ignores trailing slash / case), so it is the true self-canonical signal; the raw Canonical URL column is not normalised.",
+    "  Image Weight (bytes) — per-page sum of every <img> on that page (what a visitor downloads); the same file reused across pages is counted on each page.",
+    "  Inlinks / Outlinks — link counts including repeated anchors from the same source page; Unique variants count distinct sources/destinations.",
+    "  Word Count — main content area only (nav/header/footer boilerplate excluded).",
+    "  Render Method — 'headless' means JavaScript was executed; 'http' means server HTML only.",
+    "  Redirects file — only actual redirects (3xx, a target elsewhere, or a multi-hop chain), not every URL.",
   ].filter(Boolean);
   zip.file("_about.txt", readmeLines.join("\n"));
 

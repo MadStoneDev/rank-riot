@@ -253,6 +253,17 @@ const adviceDatabase: Record<string, IssueAdvice> = {
       "Shorten sentences, prefer plain words, break text into short paragraphs, and add descriptive subheadings and bullet lists. Aim for a Flesch reading ease around 60+ (roughly grade 8–9).",
     estimatedEffort: "20 - 40 minutes",
   },
+  empty_llms_txt: {
+    title: "llms.txt Present but Empty",
+    description:
+      "An llms.txt file exists but links to no pages. Its purpose is to point AI models at your priority content, so an empty one provides no benefit.",
+    impact: "low",
+    howToFix:
+      "List your key pages as markdown links under clear headings in /llms.txt (e.g. an About, top services, and cornerstone articles), each as [Title](https://yoursite.com/page).",
+    codeExample:
+      "# Your Business\n\n## Core pages\n- [Services](https://yoursite.com/services)\n- [About](https://yoursite.com/about)",
+    estimatedEffort: "15 - 30 minutes",
+  },
   large_page_size: {
     title: "Large Page Size",
     description:
