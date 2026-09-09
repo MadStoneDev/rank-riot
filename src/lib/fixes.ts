@@ -166,10 +166,54 @@ const FIX_RECIPES: Record<string, Recipe> = {
   },
 };
 
-function toFixSeverity(sev: string): FixSeverity {
+export function toFixSeverity(sev: string): FixSeverity {
   if (sev === "critical" || sev === "high") return "critical";
   if (sev === "medium") return "warning";
   return "low";
+}
+
+// Short flag labels for the Pages tab — name the fault, never the type name.
+const FLAG_LABELS: Record<string, string> = {
+  missing_title: "No title",
+  empty_page_title: "Site-name title",
+  missing_meta_description: "No meta description",
+  missing_h1: "No H1",
+  multiple_h1: "Multiple H1",
+  heading_hierarchy_invalid: "Heading order",
+  thin_content: "Thin content",
+  orphan_page: "Orphan",
+  broken_internal_link: "Broken link",
+  canonical_mismatch: "Canonical mismatch",
+  missing_structured_data: "No schema",
+  faq_without_schema: "FAQ without schema",
+  missing_podcast_schema: "No podcast schema",
+  missing_answer_block: "No answer block",
+  missing_open_graph: "No Open Graph",
+  incomplete_open_graph: "No share image",
+  missing_twitter_card: "No Twitter card",
+  missing_viewport_meta: "No viewport",
+  mixed_content: "Mixed content",
+  missing_image_dimensions: "Layout shift risk",
+  non_modern_image_format: "Legacy images",
+  large_page_size: "Heavy page",
+  slow_page: "Slow",
+  not_found: "404",
+  server_error: "5xx",
+  url_structure_issues: "URL issues",
+  missing_hreflang: "No hreflang",
+  poor_readability: "Hard to read",
+};
+
+export interface PageFlag {
+  label: string;
+  severity: FixSeverity;
+}
+
+export function flagFor(issueType: string, severity: string): PageFlag {
+  const label =
+    FLAG_LABELS[issueType] ??
+    issueType.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase());
+  return { label, severity: toFixSeverity(severity) };
 }
 
 const SEV_RANK: Record<FixSeverity, number> = {

@@ -3,9 +3,13 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { plexSans, plexMono } from "@/lib/redesign-fonts";
-import { MetricCard, MetricStrip } from "@/components/redesign/primitives";
+import {
+  MetricCard,
+  MetricStrip,
+  SeverityDot,
+} from "@/components/redesign/primitives";
 import { computeFixes } from "@/lib/fixes";
-import { FixesView } from "./FixesView";
+import { ReportTabs } from "@/components/redesign/ReportTabs";
 
 function median(values: number[]): number {
   if (values.length === 0) return 0;
@@ -175,9 +179,71 @@ export default async function FixesPage({
           </MetricStrip>
         </div>
 
-        {/* Tabs + fixes list */}
+        {/* Section nav + fixes list */}
         <div style={{ padding: "22px 32px 64px" }}>
-          <FixesView fixes={fixes} />
+          <ReportTabs projectId={projectId} />
+          {fixes.length === 0 ? (
+            <div
+              style={{
+                padding: "48px 0",
+                textAlign: "center",
+                color: "var(--rr-text-3)",
+                fontSize: 13,
+              }}
+            >
+              No open fixes — everything&rsquo;s clean.
+            </div>
+          ) : (
+            <div>
+              {fixes.map((fix) => (
+                <div
+                  key={fix.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 16,
+                    padding: "16px 12px 15px",
+                    borderBottom: "1px solid var(--rr-hairline)",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <SeverityDot severity={fix.severity} />
+                  <div
+                    style={{
+                      flex: "0 1 330px",
+                      minWidth: 0,
+                      fontSize: 14,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {fix.title}
+                  </div>
+                  <div
+                    style={{
+                      flex: "1 1 240px",
+                      minWidth: 0,
+                      fontSize: 13,
+                      color: "var(--rr-text-2)",
+                    }}
+                  >
+                    {fix.impact}
+                  </div>
+                  <div
+                    className="rr-mono"
+                    style={{
+                      flex: "none",
+                      marginLeft: "auto",
+                      textAlign: "right",
+                      fontSize: 12,
+                      color: "var(--rr-text-3)",
+                    }}
+                  >
+                    {fix.effort}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
