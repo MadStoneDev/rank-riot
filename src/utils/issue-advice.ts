@@ -253,6 +253,15 @@ const adviceDatabase: Record<string, IssueAdvice> = {
       "Shorten sentences, prefer plain words, break text into short paragraphs, and add descriptive subheadings and bullet lists. Aim for a Flesch reading ease around 60+ (roughly grade 8–9).",
     estimatedEffort: "20 - 40 minutes",
   },
+  missing_answer_block: {
+    title: "No Answer Block Under the H1",
+    description:
+      "This page has real content but doesn't open with a lead paragraph directly under its H1. AI answer engines (and readers) look for a concise, direct answer near the top; leading with navigation, images, or headings instead makes the page harder to quote and cite.",
+    impact: "low",
+    howToFix:
+      "Add a short paragraph (roughly 40–60 words) immediately after the H1 that directly answers the question the title implies, then expand below it. Front-load the key facts.",
+    estimatedEffort: "15 - 30 minutes",
+  },
   missing_podcast_schema: {
     title: "Podcast Episode Without PodcastEpisode Schema",
     description:
