@@ -253,6 +253,17 @@ const adviceDatabase: Record<string, IssueAdvice> = {
       "Shorten sentences, prefer plain words, break text into short paragraphs, and add descriptive subheadings and bullet lists. Aim for a Flesch reading ease around 60+ (roughly grade 8–9).",
     estimatedEffort: "20 - 40 minutes",
   },
+  missing_podcast_schema: {
+    title: "Podcast Episode Without PodcastEpisode Schema",
+    description:
+      "This looks like a podcast episode page but carries only generic (or no) schema. PodcastEpisode structured data helps podcast directories, search engines, and AI assistants recognise and surface the episode.",
+    impact: "low",
+    howToFix:
+      "Add PodcastEpisode JSON-LD with the episode name, description, the audio file (associatedMedia/contentUrl), duration, and a link to the parent PodcastSeries.",
+    codeExample:
+      '<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "PodcastEpisode",\n  "name": "Episode title",\n  "associatedMedia": { "@type": "MediaObject", "contentUrl": "https://…/episode.mp3" },\n  "partOfSeries": { "@type": "PodcastSeries", "name": "Your Podcast" }\n}\n</script>',
+    estimatedEffort: "15 - 30 minutes",
+  },
   empty_llms_txt: {
     title: "llms.txt Present but Empty",
     description:
