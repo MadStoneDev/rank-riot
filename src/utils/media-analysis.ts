@@ -40,6 +40,9 @@ export function calculateImageFileSizeStats(
   let nextGenCount = 0;
   let formatKnownCount = 0;
   const formatMap = new Map<string, number>();
+  // Dedupe by image URL: the same file reused across many pages should count
+  // once for "what needs optimising" (first known size wins).
+  const uniqueSizeBySrc = new Map<string, number>();
 
   for (const page of pages) {
     for (const img of page.images) {
@@ -48,6 +51,9 @@ export function calculateImageFileSizeStats(
         totalBytes += size;
         sizedCount++;
         if (size > LARGE_IMAGE_THRESHOLD_BYTES) largeCount++;
+        if (img.src && !uniqueSizeBySrc.has(img.src)) {
+          uniqueSizeBySrc.set(img.src, size);
+        }
       }
       const format = normalizeFormat(img);
       if (format) {
@@ -56,6 +62,13 @@ export function calculateImageFileSizeStats(
         if (NEXT_GEN_FORMATS.has(format)) nextGenCount++;
       }
     }
+  }
+
+  let uniqueTotalBytes = 0;
+  let uniqueLargeCount = 0;
+  for (const size of uniqueSizeBySrc.values()) {
+    uniqueTotalBytes += size;
+    if (size > LARGE_IMAGE_THRESHOLD_BYTES) uniqueLargeCount++;
   }
 
   const formatCounts = [...formatMap.entries()]
@@ -73,6 +86,9 @@ export function calculateImageFileSizeStats(
       formatKnownCount > 0
         ? Math.round((nextGenCount / formatKnownCount) * 100)
         : 0,
+    uniqueTotalBytes,
+    uniqueSizedCount: uniqueSizeBySrc.size,
+    uniqueLargeCount,
   };
 }
 

@@ -40,10 +40,13 @@ export default function FileSizeCard({ stats }: { stats?: ImageFileSizeStats }) 
     );
   }
 
-  const hasLarge = stats.largeCount > 0;
+  const hasLarge = stats.uniqueLargeCount > 0;
   const statusColor = hasLarge ? SCORE_COLORS.warning : SCORE_COLORS.good;
   const StatusIcon = hasLarge ? IconAlertTriangle : IconCircleCheck;
-  const avgBytes = Math.round(stats.totalBytes / stats.sizedCount);
+  const avgUnique =
+    stats.uniqueSizedCount > 0
+      ? Math.round(stats.uniqueTotalBytes / stats.uniqueSizedCount)
+      : 0;
 
   return (
     <div className="glass-card overflow-hidden">
@@ -61,12 +64,12 @@ export default function FileSizeCard({ stats }: { stats?: ImageFileSizeStats }) 
       <div className="p-4 space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-lg bg-[var(--color-surface-overlay)] p-3">
-            <p className="text-xs text-[var(--color-text-muted)]">Total weight</p>
+            <p className="text-xs text-[var(--color-text-muted)]">Unique image weight</p>
             <p className="text-lg font-semibold text-[var(--color-text-primary)]">
-              {formatBytes(stats.totalBytes)}
+              {formatBytes(stats.uniqueTotalBytes)}
             </p>
             <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-              {formatBytes(avgBytes)} avg
+              {stats.uniqueSizedCount} files · {formatBytes(avgUnique)} avg
             </p>
           </div>
           <div className="rounded-lg bg-[var(--color-surface-overlay)] p-3">
@@ -74,12 +77,21 @@ export default function FileSizeCard({ stats }: { stats?: ImageFileSizeStats }) 
               Large ({Math.round(stats.largeThresholdBytes / 1024)} KB+)
             </p>
             <p className="text-lg font-semibold" style={{ color: statusColor }}>
-              {stats.largeCount}
+              {stats.uniqueLargeCount}
             </p>
             <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-              of {stats.sizedCount} sized
+              of {stats.uniqueSizedCount} unique files
             </p>
           </div>
+        </div>
+
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-[var(--color-text-muted)]">
+            Downloaded per full crawl (all references)
+          </span>
+          <span className="font-medium text-[var(--color-text-secondary)]">
+            {formatBytes(stats.totalBytes)} · {stats.sizedCount} refs
+          </span>
         </div>
 
         <div className="flex items-center justify-between text-xs">

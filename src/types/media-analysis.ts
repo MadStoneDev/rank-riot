@@ -6,6 +6,8 @@ export interface ImageData {
 }
 
 export interface ImageFileSizeStats {
+  // Per-instance totals — every <img> reference counted, i.e. what visitors
+  // actually download across the site.
   totalBytes: number;
   sizedCount: number; // images with a known byte size
   largeCount: number; // images over the "large" threshold
@@ -13,6 +15,11 @@ export interface ImageFileSizeStats {
   formatCounts: { format: string; count: number }[];
   nextGenCount: number; // webp / avif
   nextGenPercent: number; // of images with a known format
+  // Unique totals — deduplicated by image URL, i.e. the actual files the client
+  // needs to optimise (one 800KB banner on 30 pages counts once here).
+  uniqueTotalBytes: number;
+  uniqueSizedCount: number;
+  uniqueLargeCount: number;
 }
 
 export interface PageWithImages {
