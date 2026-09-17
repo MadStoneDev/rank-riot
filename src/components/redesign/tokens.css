@@ -119,3 +119,54 @@
     padding-bottom: 78px;
   }
 }
+
+/* ── Projects table (Screen 1): dense 4-col grid on desktop, 2-col on phone ── */
+.rr-proj-head,
+.rr-proj-row {
+  display: grid;
+  grid-template-columns: 1fr 92px 120px 150px;
+  grid-template-areas: "main health fixes scanned";
+  gap: 24px;
+  align-items: center;
+}
+.rr-proj-main {
+  grid-area: main;
+  min-width: 0;
+}
+.rr-proj-health {
+  grid-area: health;
+  text-align: right;
+}
+.rr-proj-fixes {
+  grid-area: fixes;
+  text-align: right;
+}
+.rr-proj-scanned {
+  grid-area: scanned;
+  text-align: right;
+}
+@media (max-width: 719px) {
+  .rr-proj-head {
+    display: none;
+  }
+  .rr-proj-row {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "main health" "main fixes";
+    gap: 2px 12px;
+    align-items: start;
+  }
+  .rr-proj-scanned {
+    display: none;
+  }
+}
+
+/* Scan box: input grows, button fixed. */
+.rr-scanbox {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.rr-scanbox input {
+  flex: 1;
+  min-width: 0;
+}

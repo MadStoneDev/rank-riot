@@ -36,7 +36,7 @@ export function Sidebar({ email }: { email: string }) {
   const projectId = projectIdFrom(pathname);
 
   const nav: Item[] = [
-    { label: "Projects", href: "/projects", icon: FolderOpen },
+    { label: "Projects", href: "/overview", icon: FolderOpen },
     { label: "Fixes", href: null, icon: Wrench },
     { label: "Search", href: null, icon: Search },
     { label: "Settings", href: "/dashboard/settings", icon: Settings },
@@ -49,6 +49,11 @@ export function Sidebar({ email }: { email: string }) {
           label: "Pages",
           href: `/projects/${projectId}/pages-redesign`,
           icon: FileText,
+        },
+        {
+          label: "Settings",
+          href: `/projects/${projectId}/settings-redesign`,
+          icon: Settings,
         },
       ]
     : [];

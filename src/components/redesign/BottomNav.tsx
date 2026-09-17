@@ -16,7 +16,7 @@ type Item = {
 export function BottomNav() {
   const pathname = usePathname();
   const items: Item[] = [
-    { label: "Projects", href: "/projects", icon: FolderOpen },
+    { label: "Projects", href: "/overview", icon: FolderOpen },
     { label: "Fixes", href: null, icon: Wrench },
     { label: "Search", href: null, icon: Search },
     { label: "Settings", href: "/dashboard/settings", icon: Settings },

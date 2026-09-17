@@ -12,6 +12,7 @@ import {
   IconSettings,
   IconLogout,
   IconBolt,
+  IconSparkles,
 } from "@tabler/icons-react";
 import AdminNavLink from "@/components/dashboard/AdminNavLink";
 
@@ -34,6 +35,11 @@ export default function Sidebar() {
       name: "Projects",
       href: "/projects",
       icon: IconFolder,
+    },
+    {
+      name: "New UI (beta)",
+      href: "/overview",
+      icon: IconSparkles,
     },
     {
       name: "Settings",

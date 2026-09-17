@@ -7,6 +7,15 @@ import {
 } from "@/components/redesign/primitives";
 import { computeFixes } from "@/lib/fixes";
 import { ReportTabs } from "@/components/redesign/ReportTabs";
+import { ScanInProgress } from "@/components/redesign/ScanInProgress";
+
+function hostOf(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+}
 
 function median(values: number[]): number {
   if (values.length === 0) return 0;
@@ -59,7 +68,17 @@ export default async function FixesPage({
     .eq("status", "completed")
     .order("started_at", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
+
+  // A scan currently running takes over the whole screen (Screen 6).
+  const { data: runningScan } = await supabase
+    .from("scans")
+    .select("id, started_at, pages_scanned, links_scanned, issues_found, summary_stats")
+    .eq("project_id", projectId)
+    .in("status", ["in_progress", "pending"])
+    .order("started_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
   // Open issues (not fixed, not dismissed) → fixes.
   const { data: issueRows } = await supabase
@@ -101,6 +120,51 @@ export default async function FixesPage({
   const metaLine = `${project.url} · scanned ${formatScanned(
     latestScan?.completed_at,
   )} · ${pagesCount ?? 0} pages`;
+
+  if (runningScan) {
+    const stats = (runningScan.summary_stats ?? {}) as {
+      current_progress?: number;
+      estimated_total?: number;
+      queue_size?: number;
+    };
+    const pages = runningScan.pages_scanned ?? 0;
+    const percent =
+      typeof stats.current_progress === "number"
+        ? Math.min(100, Math.round(stats.current_progress))
+        : stats.estimated_total && stats.estimated_total > 0
+          ? Math.min(95, Math.round((pages / stats.estimated_total) * 100))
+          : Math.min(90, Math.round((pages / Math.max(1, pages * 1.3)) * 100)) || 5;
+
+    return (
+      <ScanInProgress
+        projectId={projectId}
+        scanId={runningScan.id}
+        projectName={project.name}
+        domain={hostOf(project.url)}
+        startedAt={runningScan.started_at}
+        initial={{
+          pagesScanned: pages,
+          linksScanned: runningScan.links_scanned ?? 0,
+          issuesFound: runningScan.issues_found ?? 0,
+          percent,
+          queueSize: stats.queue_size ?? null,
+        }}
+        previous={{
+          health,
+          openFixes: fixes.length,
+          medianResponse: medianTtfb,
+          orphanCount,
+          lastScanned: latestScan?.completed_at ?? null,
+          fixes: fixes.map((f) => ({
+            id: f.id,
+            severity: f.severity,
+            title: f.title,
+            effort: f.effort,
+          })),
+        }}
+      />
+    );
+  }
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto" }}>

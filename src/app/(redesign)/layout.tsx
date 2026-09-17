@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { plexSans, plexMono } from "@/lib/redesign-fonts";
+import { Toaster } from "sonner";
 import { Sidebar } from "@/components/redesign/Sidebar";
 import { BottomNav } from "@/components/redesign/BottomNav";
 
@@ -28,6 +29,16 @@ export default async function RedesignLayout({
       <Sidebar email={user.email ?? ""} />
       <main className="rr-main">{children}</main>
       <BottomNav />
+      <Toaster
+        theme="dark"
+        toastOptions={{
+          style: {
+            background: "var(--rr-surface-raised)",
+            border: "1px solid var(--rr-border)",
+            color: "var(--rr-text)",
+          },
+        }}
+      />
     </div>
   );
 }
