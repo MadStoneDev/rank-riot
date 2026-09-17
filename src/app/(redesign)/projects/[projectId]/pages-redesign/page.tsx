@@ -1,8 +1,5 @@
-import "@/components/redesign/tokens.css";
 import { notFound, redirect } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
-import { plexSans, plexMono } from "@/lib/redesign-fonts";
 import { ReportTabs } from "@/components/redesign/ReportTabs";
 import { getPageScore } from "@/utils/page-score";
 import { flagFor, type PageFlag, type FixSeverity } from "@/lib/fixes";
@@ -84,55 +81,37 @@ export default async function PagesRedesignPage({
   const exceptionCount = rows.filter((r) => r.flags.length > 0).length;
 
   return (
-    <div
-      className={`rr ${plexSans.variable} ${plexMono.variable}`}
-      style={{ minHeight: "100vh" }}
-    >
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        {/* Header */}
+    <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+      {/* Header */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 24,
+          padding: "0 32px",
+          height: 64,
+          borderBottom: "1px solid var(--rr-hairline)",
+        }}
+      >
         <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 24,
-            padding: "0 32px",
-            height: 64,
-            borderBottom: "1px solid var(--rr-hairline)",
-          }}
+          style={{ display: "flex", alignItems: "baseline", gap: 12, minWidth: 0 }}
         >
-          <div style={{ display: "flex", alignItems: "baseline", gap: 12, minWidth: 0 }}>
-            <div style={{ fontSize: 18, fontWeight: 600 }}>{project.name}</div>
-            <div
-              className="rr-mono"
-              style={{ fontSize: 12, color: "var(--rr-text-3)" }}
-            >
-              {rows.length} pages · {exceptionCount} with exceptions
-            </div>
-          </div>
-          <Link
-            href={`/projects/${projectId}`}
-            style={{
-              height: 34,
-              padding: "0 14px",
-              border: "1px solid var(--rr-border)",
-              borderRadius: 7,
-              display: "flex",
-              alignItems: "center",
-              fontSize: 13,
-              color: "var(--rr-text)",
-            }}
+          <div style={{ fontSize: 18, fontWeight: 600 }}>{project.name}</div>
+          <div
+            className="rr-mono"
+            style={{ fontSize: 12, color: "var(--rr-text-3)" }}
           >
-            Classic view
-          </Link>
+            {rows.length} pages · {exceptionCount} with exceptions
+          </div>
         </div>
-
-        <div style={{ padding: "18px 32px 0" }}>
-          <ReportTabs projectId={projectId} />
-        </div>
-
-        <PagesV2View rows={rows} />
       </div>
+
+      <div style={{ padding: "18px 32px 0" }}>
+        <ReportTabs projectId={projectId} />
+      </div>
+
+      <PagesV2View rows={rows} projectId={projectId} />
     </div>
   );
 }

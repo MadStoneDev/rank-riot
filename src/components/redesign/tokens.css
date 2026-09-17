@@ -6,8 +6,11 @@
 .rr {
   --rr-bg: #0c0d10;
   --rr-surface: #101216;
+  --rr-surface-raised: #16181d;
   --rr-hairline: #17191e;
+  --rr-hairline-strong: #1f2227;
   --rr-border: #23262c;
+  --rr-border-button: #2a2e35;
   --rr-text: #edeef0;
   --rr-text-2: #8b9099;
   --rr-text-3: #5f656e;
@@ -28,8 +31,11 @@
 .rr[data-mode="light"] {
   --rr-bg: #fbfbfc;
   --rr-surface: #ffffff;
+  --rr-surface-raised: #f2f3f5;
   --rr-hairline: #ecedef;
-  --rr-border: #dde0e4;
+  --rr-hairline-strong: #e1e3e6;
+  --rr-border: #d6d9dd;
+  --rr-border-button: #cbcfd4;
   --rr-text: #14161a;
   --rr-text-2: #5c626b;
   --rr-text-3: #8a9099;
@@ -61,5 +67,55 @@
   .rr-metric-strip > * {
     flex: 0 0 132px;
     scroll-snap-align: start;
+  }
+}
+
+/* ── App shell: persistent 216px sidebar on desktop, bottom nav on phone ── */
+.rr-shell {
+  min-height: 100vh;
+}
+.rr-sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 216px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--rr-hairline);
+  background: var(--rr-bg);
+  z-index: 40;
+}
+.rr-bottomnav {
+  display: none;
+}
+.rr-main {
+  min-height: 100vh;
+}
+@media (min-width: 720px) {
+  .rr-main {
+    padding-left: 216px;
+  }
+}
+@media (max-width: 719px) {
+  .rr-sidebar {
+    display: none;
+  }
+  .rr-bottomnav {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 78px;
+    padding: 8px 8px 20px;
+    border-top: 1px solid var(--rr-hairline);
+    background: color-mix(in srgb, var(--rr-bg) 88%, transparent);
+    backdrop-filter: blur(12px);
+    z-index: 40;
+  }
+  .rr-main {
+    padding-bottom: 78px;
   }
 }

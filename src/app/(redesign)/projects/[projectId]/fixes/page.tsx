@@ -1,8 +1,5 @@
-import "@/components/redesign/tokens.css";
 import { notFound, redirect } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
-import { plexSans, plexMono } from "@/lib/redesign-fonts";
 import {
   MetricCard,
   MetricStrip,
@@ -106,58 +103,44 @@ export default async function FixesPage({
   )} · ${pagesCount ?? 0} pages`;
 
   return (
-    <div
-      className={`rr ${plexSans.variable} ${plexMono.variable}`}
-      style={{ minHeight: "100vh" }}
-    >
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        {/* Header */}
+    <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+      {/* Header */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 24,
+          padding: "0 32px",
+          height: 72,
+          borderBottom: "1px solid var(--rr-hairline)",
+        }}
+      >
         <div
           style={{
             display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 24,
-            padding: "0 32px",
-            height: 72,
-            borderBottom: "1px solid var(--rr-hairline)",
+            flexDirection: "column",
+            gap: 3,
+            minWidth: 0,
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
-            <div style={{ fontSize: 19, fontWeight: 600 }}>{project.name}</div>
-            <div
-              className="rr-mono"
-              style={{
-                fontSize: 12,
-                color: "var(--rr-text-3)",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {metaLine}
-            </div>
-          </div>
-          <div style={{ display: "flex", gap: 10, flex: "none" }}>
-            <Link
-              href={`/projects/${projectId}`}
-              style={{
-                height: 34,
-                padding: "0 14px",
-                border: "1px solid var(--rr-border)",
-                borderRadius: 7,
-                display: "flex",
-                alignItems: "center",
-                fontSize: 13,
-                color: "var(--rr-text)",
-              }}
-            >
-              Classic view
-            </Link>
+          <div style={{ fontSize: 19, fontWeight: 600 }}>{project.name}</div>
+          <div
+            className="rr-mono"
+            style={{
+              fontSize: 12,
+              color: "var(--rr-text-3)",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {metaLine}
           </div>
         </div>
+      </div>
 
-        {/* Metric strip */}
+      {/* Metric strip */}
         <div style={{ padding: "24px 32px 0" }}>
           <MetricStrip>
             <MetricCard
@@ -246,6 +229,5 @@ export default async function FixesPage({
           )}
         </div>
       </div>
-    </div>
   );
 }

@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import SEOProjectDetailPage from "@/components/projects/SEOProjectDetailPage";
@@ -57,9 +58,24 @@ export default async function ProjectDetailPage({
   }
 
   // Route to appropriate page based on project type
-  if (project.project_type === "audit") {
-    return <AuditProjectDetailPage params={params} />;
-  } else {
-    return <SEOProjectDetailPage params={params} />;
-  }
+  const inner =
+    project.project_type === "audit" ? (
+      <AuditProjectDetailPage params={params} />
+    ) : (
+      <SEOProjectDetailPage params={params} />
+    );
+
+  return (
+    <>
+      <div className="mb-4 flex justify-end">
+        <Link
+          href={`/projects/${projectId}/fixes`}
+          className="text-sm font-medium text-[var(--color-primary)] hover:underline"
+        >
+          Try the new report (beta) →
+        </Link>
+      </div>
+      {inner}
+    </>
+  );
 }

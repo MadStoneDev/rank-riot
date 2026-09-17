@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Flag } from "@/components/redesign/primitives";
 import type { PageFlag } from "@/lib/fixes";
 
@@ -33,7 +34,13 @@ const PILLS: { key: Segment; label: string }[] = [
   { key: "pagination", label: "Pagination" },
 ];
 
-export function PagesV2View({ rows }: { rows: PageRow[] }) {
+export function PagesV2View({
+  rows,
+  projectId,
+}: {
+  rows: PageRow[];
+  projectId: string;
+}) {
   const [segment, setSegment] = useState<Segment>("all");
   const [showAll, setShowAll] = useState(false);
 
@@ -135,8 +142,9 @@ export function PagesV2View({ rows }: { rows: PageRow[] }) {
         </div>
       ) : (
         visible.map((r) => (
-          <div
+          <Link
             key={r.id}
+            href={`/projects/${projectId}/pages-redesign/${r.id}`}
             style={{
               display: "flex",
               gap: 16,
@@ -144,6 +152,8 @@ export function PagesV2View({ rows }: { rows: PageRow[] }) {
               padding: "13px 12px",
               borderBottom: "1px solid var(--rr-hairline)",
               flexWrap: "wrap",
+              color: "inherit",
+              textDecoration: "none",
             }}
           >
             <div style={{ flex: "1 1 260px", minWidth: 0 }}>
@@ -202,7 +212,7 @@ export function PagesV2View({ rows }: { rows: PageRow[] }) {
                 </Flag>
               ))}
             </div>
-          </div>
+          </Link>
         ))
       )}
     </div>
