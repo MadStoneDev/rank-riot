@@ -93,7 +93,9 @@ export function Sidebar({ email }: { email: string }) {
         >
           <Zap size={12} strokeWidth={2} color="var(--rr-accent-ink)" />
         </span>
-        <span style={{ fontSize: 14, fontWeight: 600 }}>RankRiot</span>
+        <span className="rr-brand-text" style={{ fontSize: 14, fontWeight: 600 }}>
+          RankRiot
+        </span>
       </Link>
 
       {/* Primary nav */}
@@ -102,7 +104,7 @@ export function Sidebar({ email }: { email: string }) {
           <div key={it.label}>
             <NavRow item={it} active={isActive(it.href)} />
             {it.label === "Projects" && projectChildren.length > 0 && (
-              <div style={{ margin: "2px 0 6px" }}>
+              <div className="rr-nav-children" style={{ margin: "2px 0 6px" }}>
                 {projectChildren.map((c) => (
                   <NavRow key={c.label} item={c} active={isActive(c.href)} indent />
                 ))}
@@ -164,6 +166,7 @@ export function Sidebar({ email }: { email: string }) {
             {initial}
           </span>
           <span
+            className="rr-side-email"
             style={{
               fontSize: 12,
               overflow: "hidden",
@@ -191,6 +194,7 @@ function NavRow({
   const Icon = item.icon;
   const inner = (
     <span
+      className="rr-nav-row"
       style={{
         height: 32,
         display: "flex",
@@ -210,7 +214,7 @@ function NavRow({
       }}
     >
       <Icon size={16} strokeWidth={1.5} />
-      {item.label}
+      <span className="rr-nav-label">{item.label}</span>
     </span>
   );
   if (!item.href) {

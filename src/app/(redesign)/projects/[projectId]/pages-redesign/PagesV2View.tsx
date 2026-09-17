@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Flag } from "@/components/redesign/primitives";
+import { PageDetailPanel } from "@/components/redesign/PageDetailPanel";
 import type { PageFlag } from "@/lib/fixes";
 
 export interface PageRow {
@@ -43,12 +44,25 @@ export function PagesV2View({
 }) {
   const [segment, setSegment] = useState<Segment>("all");
   const [showAll, setShowAll] = useState(false);
+  const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
 
   const visible = useMemo(() => {
     return rows
       .filter((r) => inSegment(r.pageType, segment))
       .filter((r) => (showAll ? true : r.flags.length > 0));
   }, [rows, segment, showAll]);
+
+  // On wide screens open the detail as a slide-over over the dimmed list;
+  // below 1080 fall through to a full-screen navigation.
+  const openPanel = (e: React.MouseEvent, id: string) => {
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(min-width: 1080px)").matches
+    ) {
+      e.preventDefault();
+      setSelectedPageId(id);
+    }
+  };
 
   return (
     <div style={{ padding: "16px 32px 64px" }}>
@@ -128,7 +142,8 @@ export function PagesV2View({
         <div style={{ flex: "1 1 260px" }}>Flags</div>
       </div>
 
-      {/* Rows */}
+      {/* Rows (dimmed when the slide-over is open) */}
+      <div style={{ opacity: selectedPageId ? 0.55 : 1, transition: "opacity 180ms" }}>
       {visible.length === 0 ? (
         <div
           style={{
@@ -145,6 +160,7 @@ export function PagesV2View({
           <Link
             key={r.id}
             href={`/projects/${projectId}/pages-redesign/${r.id}`}
+            onClick={(e) => openPanel(e, r.id)}
             style={{
               display: "flex",
               gap: 16,
@@ -154,6 +170,8 @@ export function PagesV2View({
               flexWrap: "wrap",
               color: "inherit",
               textDecoration: "none",
+              background:
+                r.id === selectedPageId ? "var(--rr-surface-raised)" : "transparent",
             }}
           >
             <div style={{ flex: "1 1 260px", minWidth: 0 }}>
@@ -215,6 +233,13 @@ export function PagesV2View({
           </Link>
         ))
       )}
+      </div>
+
+      <PageDetailPanel
+        projectId={projectId}
+        pageId={selectedPageId}
+        onClose={() => setSelectedPageId(null)}
+      />
     </div>
   );
 }

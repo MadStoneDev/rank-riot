@@ -8,6 +8,7 @@ import {
 import { computeFixes } from "@/lib/fixes";
 import { ReportTabs } from "@/components/redesign/ReportTabs";
 import { ScanInProgress } from "@/components/redesign/ScanInProgress";
+import { rescanProject } from "@/app/(redesign)/actions";
 
 function hostOf(url: string): string {
   try {
@@ -202,6 +203,25 @@ export default async function FixesPage({
             {metaLine}
           </div>
         </div>
+        <form action={rescanProject} style={{ flex: "none" }}>
+          <input type="hidden" name="projectId" value={projectId} />
+          <button
+            type="submit"
+            style={{
+              height: 34,
+              padding: "0 16px",
+              borderRadius: 7,
+              background: "var(--rr-accent)",
+              color: "var(--rr-accent-ink)",
+              fontSize: 13,
+              fontWeight: 600,
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            Rescan
+          </button>
+        </form>
       </div>
 
       {/* Metric strip */}

@@ -170,3 +170,24 @@
   flex: 1;
   min-width: 0;
 }
+
+/* ── Sidebar icon-rail at 720–1079: icons only, labels hidden ── */
+@media (min-width: 720px) and (max-width: 1079px) {
+  .rr-sidebar {
+    width: 64px;
+  }
+  .rr-main {
+    padding-left: 64px;
+  }
+  .rr-brand-text,
+  .rr-nav-label,
+  .rr-side-email,
+  .rr-nav-children {
+    display: none;
+  }
+  .rr-nav-row {
+    justify-content: center;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+}
