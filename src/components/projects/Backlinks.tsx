@@ -81,13 +81,14 @@ export default function Backlinks({ data, projectId }: BacklinksProps) {
         <IconInfoCircle className="h-5 w-5 text-[var(--color-score-warning)] flex-shrink-0 mt-0.5" />
         <div>
           <p className="text-sm font-medium text-[var(--color-score-warning)]">
-            Backlinks Discovery -- Work in Progress
+            Backlinks -- work in progress
           </p>
           <p className="text-sm text-[var(--color-text-secondary)] mt-0.5">
-            What is shown here is not an exhaustive list. We discover backlinks
-            by scanning external pages your site links to and checking if they
-            link back. A full backlinks database (like Ahrefs or Moz) is planned
-            for a future release.
+            Backlink discovery is on hold. Finding who links to your site means
+            indexing the wider web, which a scan of your own pages can&apos;t do.
+            We plan to surface this from Google Search Console, and later a
+            dedicated backlink index, in a future release. Anything shown here is
+            from an earlier experimental check and is not exhaustive.
           </p>
         </div>
       </div>
@@ -97,10 +98,11 @@ export default function Backlinks({ data, projectId }: BacklinksProps) {
         {data.backlinks.length === 0 ? (
           <div className="text-center py-8 text-[var(--color-text-muted)]">
             <IconExternalLink className="h-12 w-12 mx-auto text-[var(--color-text-muted)] mb-3" />
-            <p className="font-medium">No backlinks discovered yet</p>
+            <p className="font-medium">No backlink data yet</p>
             <p className="text-sm mt-1">
-              Backlinks are detected during scans by checking external pages for
-              links back to your site.
+              Backlink discovery is paused while we build a reliable source for
+              it (Google Search Console, then a dedicated index). It isn&apos;t
+              collected during regular scans.
             </p>
           </div>
         ) : (
