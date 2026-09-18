@@ -11,10 +11,10 @@ export function ReportTabs({ projectId }: { projectId: string }) {
   const items: { label: string; href: string | null }[] = [
     { label: "Fixes", href: `/projects/${projectId}/fixes` },
     { label: "Pages", href: `/projects/${projectId}/pages-redesign` },
-    { label: "Speed", href: null },
-    { label: "Content", href: null },
-    { label: "AEO", href: null },
-    { label: "History", href: null },
+    { label: "Speed", href: `/projects/${projectId}/speed` },
+    { label: "Content", href: `/projects/${projectId}/content` },
+    { label: "AEO", href: `/projects/${projectId}/aeo` },
+    { label: "History", href: `/projects/${projectId}/history` },
   ];
 
   return (
