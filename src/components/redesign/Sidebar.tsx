@@ -15,6 +15,7 @@ import {
 import type { ComponentType } from "react";
 
 import { createClient } from "@/utils/supabase/client";
+import { ThemeToggle } from "@/components/redesign/ThemeToggle";
 
 // Persistent 216px sidebar for the exception-based redesign. Active navigation
 // is indicated by weight + a neutral surface — never the accent colour. When a
@@ -126,6 +127,7 @@ export function Sidebar({ email }: { email: string }) {
           item={{ label: "Billing", href: "/dashboard/billing", icon: CreditCard }}
           active={isActive("/dashboard/billing")}
         />
+        <ThemeToggle />
         <button
           onClick={async () => {
             await supabase.auth.signOut();

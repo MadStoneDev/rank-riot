@@ -26,6 +26,14 @@ export default async function RedesignLayout({
     <div
       className={`rr rr-shell ${plexSans.variable} ${plexMono.variable}`}
     >
+      {/* Apply the saved theme before paint to avoid a flash. Scoped to this
+          .rr root (the token scope), not the document. */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html:
+            "try{if(localStorage.getItem('rr-mode')==='light'&&document.currentScript&&document.currentScript.parentElement){document.currentScript.parentElement.setAttribute('data-mode','light');}}catch(e){}",
+        }}
+      />
       <Sidebar email={user.email ?? ""} />
       <main className="rr-main">{children}</main>
       <BottomNav />

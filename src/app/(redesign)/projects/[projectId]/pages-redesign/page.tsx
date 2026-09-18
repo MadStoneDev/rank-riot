@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { ReportTabs } from "@/components/redesign/ReportTabs";
+import { ReportExport } from "@/components/redesign/ReportExport";
 import { getPageScore } from "@/utils/page-score";
 import { flagFor, type PageFlag, type FixSeverity } from "@/lib/fixes";
 import { PagesV2View, type PageRow } from "./PagesV2View";
@@ -105,6 +106,13 @@ export default async function PagesRedesignPage({
             {rows.length} pages · {exceptionCount} with exceptions
           </div>
         </div>
+        <ReportExport
+          dataType="pages"
+          data={pages ?? []}
+          filenamePrefix={`${project.name}-pages`}
+          projectName={project.name}
+          projectUrl={project.url}
+        />
       </div>
 
       <div style={{ padding: "18px 32px 0" }}>

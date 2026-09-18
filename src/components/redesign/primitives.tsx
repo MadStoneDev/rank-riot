@@ -132,6 +132,31 @@ export function MetricStrip({ children }: { children: ReactNode }) {
   return <div className="rr-metric-strip">{children}</div>;
 }
 
+// Loading placeholder: a flat surface block at text height, no shimmer.
+// Uses surface-raised so it resolves in both light and dark.
+export function Skeleton({
+  width = "100%",
+  height = 12,
+  radius = 4,
+}: {
+  width?: number | string;
+  height?: number;
+  radius?: number;
+}) {
+  return (
+    <div
+      aria-hidden
+      style={{
+        width,
+        height,
+        borderRadius: radius,
+        background: "var(--rr-surface-raised)",
+        flex: "none",
+      }}
+    />
+  );
+}
+
 // Hairline-separated row — never a card. Slots: primary, secondary, metrics,
 // flags. The whole row is the tap target when `href` is set.
 export function Row({
