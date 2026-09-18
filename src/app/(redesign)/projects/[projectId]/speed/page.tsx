@@ -4,6 +4,7 @@ import { ReportTabs } from "@/components/redesign/ReportTabs";
 import { ReportHeader } from "@/components/redesign/ReportHeader";
 import { MetricCard, MetricStrip } from "@/components/redesign/primitives";
 import { PageRows, type PageRowItem } from "@/components/redesign/PageRows";
+import { ReportExport } from "@/components/redesign/ReportExport";
 import type { PageFlag } from "@/lib/fixes";
 
 const TTFB_SLOW_MS = 800;
@@ -54,7 +55,9 @@ export default async function SpeedPage({
 
   const { data: pages } = await supabase
     .from("pages")
-    .select("id, url, title, first_byte_time_ms, load_time_ms, size_bytes")
+    .select(
+      "id, url, title, first_byte_time_ms, load_time_ms, size_bytes, word_count, js_count, css_count",
+    )
     .eq("project_id", projectId)
     .like("url", "http%");
 
@@ -99,6 +102,15 @@ export default async function SpeedPage({
         projectName={project.name}
         meta={`${all.length} pages`}
         projectId={projectId}
+        exportSlot={
+          <ReportExport
+            dataType="performance"
+            data={all}
+            filenamePrefix={`${project.name}-performance`}
+            projectName={project.name}
+            projectUrl={project.url}
+          />
+        }
       />
       <div style={{ padding: "18px 32px 0" }}>
         <ReportTabs projectId={projectId} />

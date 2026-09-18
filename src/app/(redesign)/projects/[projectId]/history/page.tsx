@@ -3,6 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import { ReportTabs } from "@/components/redesign/ReportTabs";
 import { ReportHeader } from "@/components/redesign/ReportHeader";
 import { MetricCard, MetricStrip } from "@/components/redesign/primitives";
+import { ReportExport } from "@/components/redesign/ReportExport";
 
 interface ScanRow {
   id: string;
@@ -69,7 +70,7 @@ export default async function HistoryPage({
 
   const { data: project } = await supabase
     .from("projects")
-    .select("id, name")
+    .select("id, name, url")
     .eq("id", projectId)
     .eq("user_id", user.id)
     .is("deleted_at", null)
@@ -101,6 +102,16 @@ export default async function HistoryPage({
     .map((r) => r.health)
     .filter((v): v is number => typeof v === "number");
 
+  const exportRows = (scans ?? []).map((s) => {
+    const summary = (s.summary_stats ?? {}) as { seo_score?: { overall?: number } };
+    return {
+      scan_date: s.completed_at ?? s.started_at,
+      health: summary.seo_score?.overall ?? null,
+      pages: s.pages_scanned ?? 0,
+      issues: s.issues_found ?? 0,
+    };
+  });
+
   const latest = rows[0];
   const previous = rows[1];
   const delta =
@@ -114,6 +125,15 @@ export default async function HistoryPage({
         projectName={project.name}
         meta={`${rows.length} ${rows.length === 1 ? "scan" : "scans"} recorded`}
         projectId={projectId}
+        exportSlot={
+          <ReportExport
+            dataType="scan-history"
+            data={exportRows}
+            filenamePrefix={`${project.name}-scan-history`}
+            projectName={project.name}
+            projectUrl={project.url}
+          />
+        }
       />
       <div style={{ padding: "18px 32px 0" }}>
         <ReportTabs projectId={projectId} />

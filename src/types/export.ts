@@ -31,7 +31,8 @@ export type ExportDataType =
   | "anchor-distribution"
   | "technical-health"
   | "issues"
-  | "backlinks";
+  | "backlinks"
+  | "scan-history";
 
 export interface ExportFilter {
   key: string;
@@ -259,6 +260,13 @@ export const BACKLINKS_COLUMNS: ExportColumnDefinition[] = [
   { key: "last_seen_at", header: "Last Seen", defaultSelected: true, formatter: dateFormatter },
 ];
 
+export const SCAN_HISTORY_COLUMNS: ExportColumnDefinition[] = [
+  { key: "scan_date", header: "Scan Date", defaultSelected: true, formatter: dateFormatter },
+  { key: "health", header: "Health Score", defaultSelected: true },
+  { key: "pages", header: "Pages", defaultSelected: true },
+  { key: "issues", header: "Findings", defaultSelected: true },
+];
+
 // Registry: map data type to its column config
 export const EXPORT_COLUMN_REGISTRY: Record<ExportDataType, ExportColumnDefinition[]> = {
   "pages": PAGE_URLS_COLUMNS,
@@ -275,6 +283,7 @@ export const EXPORT_COLUMN_REGISTRY: Record<ExportDataType, ExportColumnDefiniti
   "technical-health": TECHNICAL_HEALTH_COLUMNS,
   "issues": ISSUES_FULL_COLUMNS,
   "backlinks": BACKLINKS_COLUMNS,
+  "scan-history": SCAN_HISTORY_COLUMNS,
 };
 
 // Filters per data type
@@ -357,6 +366,9 @@ export const EXPORT_FILTERS: Record<ExportDataType, ExportFilter[]> = {
     { key: "followed", label: "Followed Only", predicate: (r) => r.is_followed !== false },
     { key: "nofollowed", label: "NoFollowed Only", predicate: (r) => r.is_followed === false },
   ],
+  "scan-history": [
+    { key: "all", label: "All Scans", predicate: () => true },
+  ],
 };
 
 // Human-readable labels for data types
@@ -375,4 +387,5 @@ export const EXPORT_DATA_TYPE_LABELS: Record<ExportDataType, string> = {
   "technical-health": "Technical Health",
   "issues": "Issues",
   "backlinks": "Backlinks",
+  "scan-history": "Scan History",
 };

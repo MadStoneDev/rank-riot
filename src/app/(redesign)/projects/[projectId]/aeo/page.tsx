@@ -4,6 +4,7 @@ import { ReportTabs } from "@/components/redesign/ReportTabs";
 import { ReportHeader } from "@/components/redesign/ReportHeader";
 import { MetricCard, MetricStrip } from "@/components/redesign/primitives";
 import { PageRows, type PageRowItem } from "@/components/redesign/PageRows";
+import { ReportExport } from "@/components/redesign/ReportExport";
 import { flagFor, type PageFlag, type FixSeverity } from "@/lib/fixes";
 
 // Answer-engine / AI-readiness signals: structured data and lead answers.
@@ -43,7 +44,7 @@ export default async function AeoPage({
 
   const { data: project } = await supabase
     .from("projects")
-    .select("id, name")
+    .select("id, name, url")
     .eq("id", projectId)
     .eq("user_id", user.id)
     .is("deleted_at", null)
@@ -53,7 +54,7 @@ export default async function AeoPage({
   const [{ data: pages }, { data: issueRows }] = await Promise.all([
     supabase
       .from("pages")
-      .select("id, url, title, schema_types")
+      .select("id, url, title, schema_types, structured_data, open_graph, twitter_card")
       .eq("project_id", projectId)
       .like("url", "http%"),
     supabase
@@ -103,6 +104,15 @@ export default async function AeoPage({
         projectName={project.name}
         meta={`${all.length} pages · ${coverage}% with schema`}
         projectId={projectId}
+        exportSlot={
+          <ReportExport
+            dataType="schema-data"
+            data={all}
+            filenamePrefix={`${project.name}-schema`}
+            projectName={project.name}
+            projectUrl={project.url}
+          />
+        }
       />
       <div style={{ padding: "18px 32px 0" }}>
         <ReportTabs projectId={projectId} />

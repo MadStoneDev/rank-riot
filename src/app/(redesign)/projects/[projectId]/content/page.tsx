@@ -4,6 +4,7 @@ import { ReportTabs } from "@/components/redesign/ReportTabs";
 import { ReportHeader } from "@/components/redesign/ReportHeader";
 import { MetricCard, MetricStrip } from "@/components/redesign/primitives";
 import { PageRows, type PageRowItem } from "@/components/redesign/PageRows";
+import { ReportExport } from "@/components/redesign/ReportExport";
 import { flagFor, type PageFlag, type FixSeverity } from "@/lib/fixes";
 
 // Issue types that speak to on-page content quality (as opposed to speed or AEO).
@@ -48,7 +49,7 @@ export default async function ContentPage({
 
   const { data: project } = await supabase
     .from("projects")
-    .select("id, name")
+    .select("id, name, url")
     .eq("id", projectId)
     .eq("user_id", user.id)
     .is("deleted_at", null)
@@ -58,7 +59,9 @@ export default async function ContentPage({
   const [{ data: pages }, { data: issueRows }] = await Promise.all([
     supabase
       .from("pages")
-      .select("id, url, title, word_count")
+      .select(
+        "id, url, title, word_count, meta_description, h1s, h2s, canonical_url, has_robots_noindex, has_robots_nofollow",
+      )
       .eq("project_id", projectId)
       .like("url", "http%"),
     supabase
@@ -105,6 +108,15 @@ export default async function ContentPage({
         projectName={project.name}
         meta={`${(pages ?? []).length} pages · ${rows.length} with content issues`}
         projectId={projectId}
+        exportSlot={
+          <ReportExport
+            dataType="seo-metadata"
+            data={pages ?? []}
+            filenamePrefix={`${project.name}-content`}
+            projectName={project.name}
+            projectUrl={project.url}
+          />
+        }
       />
       <div style={{ padding: "18px 32px 0" }}>
         <ReportTabs projectId={projectId} />
