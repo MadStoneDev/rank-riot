@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { deleteScan } from "@/app/(private)/projects/actions";
+import { cancelScan } from "@/app/(redesign)/actions";
 import { MetricCard, MetricStrip, SeverityDot } from "@/components/redesign/primitives";
 import type { FixSeverity } from "@/lib/fixes";
 
@@ -59,11 +59,11 @@ export function ScanInProgress({
 
   const handleStop = async () => {
     if (stopping) return;
-    if (!confirm("Stop this scan? The in-progress scan will be discarded.")) return;
+    if (!confirm("Stop this scan? The in-progress scan will be discarded and your last completed scan kept.")) return;
     setStopping(true);
     try {
-      await deleteScan(scanId);
-      router.push("/overview");
+      await cancelScan(scanId);
+      router.refresh();
     } catch {
       setStopping(false);
     }

@@ -15,8 +15,9 @@ import {
   ImageIcon,
   Braces,
   GitCompare,
+  ShieldCheck,
 } from "lucide-react";
-import type { ComponentType } from "react";
+import { type ComponentType, useEffect, useState } from "react";
 
 import { createClient } from "@/utils/supabase/client";
 import { ThemeToggle } from "@/components/redesign/ThemeToggle";
@@ -38,12 +39,33 @@ function projectIdFrom(pathname: string): string | null {
 export function Sidebar({ email }: { email: string }) {
   const pathname = usePathname();
   const supabase = createClient();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Self-contained admin check (mirrors the classic AdminNavLink) so the admin
+  // entry survives now that the redesign sidebar is the app-wide chrome.
+  useEffect(() => {
+    let active = true;
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single()
+        .then(({ data }) => {
+          if (active && data?.role === "admin") setIsAdmin(true);
+        });
+    });
+    return () => {
+      active = false;
+    };
+  }, [supabase]);
   const projectId = projectIdFrom(pathname);
 
   const nav: Item[] = [
     { label: "Projects", href: "/overview", icon: FolderOpen },
-    { label: "Fixes", href: null, icon: Wrench },
-    { label: "Search", href: null, icon: Search },
+    { label: "Fixes", href: "/fixes", icon: Wrench },
+    { label: "Search", href: "/search", icon: Search },
     { label: "Settings", href: "/dashboard/settings", icon: Settings },
   ];
 
@@ -135,6 +157,12 @@ export function Sidebar({ email }: { email: string }) {
           item={{ label: "Billing", href: "/dashboard/billing", icon: CreditCard }}
           active={isActive("/dashboard/billing")}
         />
+        {isAdmin && (
+          <NavRow
+            item={{ label: "Admin", href: "/admin", icon: ShieldCheck }}
+            active={isActive("/admin")}
+          />
+        )}
         <ThemeToggle />
         <button
           onClick={async () => {

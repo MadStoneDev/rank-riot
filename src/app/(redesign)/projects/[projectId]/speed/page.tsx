@@ -7,7 +7,9 @@ import { PageRows, type PageRowItem } from "@/components/redesign/PageRows";
 import { ReportExport } from "@/components/redesign/ReportExport";
 import type { PageFlag } from "@/lib/fixes";
 
-const TTFB_SLOW_MS = 800;
+// Thresholds kept in sync with the crawler's issue detector: TTFB > 600ms
+// (slow_server_response), load > 3s (slow_page), payload > 3MB (large_page_size).
+const TTFB_SLOW_MS = 600;
 const LOAD_SLOW_MS = 3000;
 const HEAVY_BYTES = 3_000_000;
 

@@ -116,6 +116,36 @@ export async function startQuickScan(formData: FormData) {
   redirect(`/projects/${project.id}/fixes`);
 }
 
+// Stop an in-progress scan: ask the crawler to cancel it. The crawl loop exits
+// and the pipeline finalises the scan as "cancelled", leaving the previous
+// scan's data intact.
+export async function cancelScan(scanId: string): Promise<{ ok: boolean }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false };
+
+  const { data: sessionData } = await supabase.auth.getSession();
+  const accessToken = sessionData?.session?.access_token;
+  try {
+    const res = await fetch(
+      `${process.env.CRAWLER_API_URL}/api/scan/${scanId}/cancel`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        },
+      },
+    );
+    return { ok: res.ok };
+  } catch (error) {
+    console.error("Error cancelling scan:", error);
+    return { ok: false };
+  }
+}
+
 // Re-scan (or first-scan) an existing project.
 export async function rescanProject(formData: FormData) {
   const projectId = formData.get("projectId") as string;
