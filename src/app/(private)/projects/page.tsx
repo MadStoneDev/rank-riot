@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 
-// Switched over: the redesigned /overview is now the projects home. The classic
-// project list (components/projects/ProjectList and friends) remains for reuse.
+// Switched over: the redesigned /overview is now the projects home.
 export default async function ProjectsPage() {
   redirect("/overview");
 }

@@ -11,6 +11,10 @@ import {
   CreditCard,
   FileText,
   ListChecks,
+  Network,
+  ImageIcon,
+  Braces,
+  GitCompare,
 } from "lucide-react";
 import type { ComponentType } from "react";
 
@@ -51,6 +55,10 @@ export function Sidebar({ email }: { email: string }) {
           href: `/projects/${projectId}/pages-redesign`,
           icon: FileText,
         },
+        { label: "Sitemap", href: `/projects/${projectId}/sitemap`, icon: Network },
+        { label: "Images", href: `/projects/${projectId}/images`, icon: ImageIcon },
+        { label: "Schema", href: `/projects/${projectId}/schema`, icon: Braces },
+        { label: "Compare", href: `/projects/${projectId}/compare`, icon: GitCompare },
         {
           label: "Settings",
           href: `/projects/${projectId}/settings-redesign`,

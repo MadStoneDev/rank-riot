@@ -7,7 +7,7 @@ import { getAvatarUrl } from "@/utils/avatar";
 import {
   updateProfile,
   uploadAvatar,
-} from "@/app/(private)/dashboard/settings/actions";
+} from "@/app/(redesign)/dashboard/settings/actions";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 

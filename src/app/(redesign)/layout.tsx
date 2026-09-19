@@ -6,6 +6,7 @@ import { plexSans, plexMono } from "@/lib/redesign-fonts";
 import { Toaster } from "sonner";
 import { Sidebar } from "@/components/redesign/Sidebar";
 import { BottomNav } from "@/components/redesign/BottomNav";
+import SubscriptionProviderWrapper from "@/providers/SubscriptionProviderWrapper";
 
 // Chrome for the exception-based redesign. A sibling to (private), it gives the
 // redesign its own persistent sidebar / bottom nav instead of the classic
@@ -35,7 +36,11 @@ export default async function RedesignLayout({
         }}
       />
       <Sidebar email={user.email ?? ""} />
-      <main className="rr-main">{children}</main>
+      <main className="rr-main">
+        <SubscriptionProviderWrapper userId={user.id} userEmail={user.email || ""}>
+          {children}
+        </SubscriptionProviderWrapper>
+      </main>
       <BottomNav />
       <Toaster
         theme="dark"
