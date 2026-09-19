@@ -39,6 +39,63 @@
   --rr-text: #14161a;
   --rr-text-2: #5c626b;
   --rr-text-3: #8a9099;
+  --rr-accent-ink: #ffffff;
+}
+
+/*
+ * Migrated classic surfaces (account settings, billing, the deep tools) still
+ * use the classic `--color-*` tokens. Alias those to the redesign `--rr-*`
+ * tokens inside the `.rr` scope so that classic-styled content adopts the
+ * redesign palette AND follows the redesign's light/dark toggle (data-mode),
+ * without touching every component. `--rr-*` changes under data-mode="light",
+ * and these aliases resolve dynamically, so light mode comes along for free.
+ */
+.rr {
+  /* fonts — classic content picks up IBM Plex */
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+
+  /* surfaces */
+  --color-surface-base: var(--rr-bg);
+  --color-surface-raised: var(--rr-surface);
+  --color-surface-overlay: var(--rr-surface-raised);
+  --color-surface-elevated: var(--rr-surface-raised);
+  --color-surface-hover: color-mix(in srgb, var(--rr-text) 6%, var(--rr-surface));
+
+  /* borders */
+  --color-border-subtle: var(--rr-hairline);
+  --color-border-default: var(--rr-hairline-strong);
+  --color-border-strong: var(--rr-border);
+
+  /* text */
+  --color-text-primary: var(--rr-text);
+  --color-text-secondary: var(--rr-text-2);
+  --color-text-muted: var(--rr-text-3);
+  --color-text-inverse: var(--rr-accent-ink);
+
+  /* one accent (primary + secondary both map to it) */
+  --color-primary: var(--rr-accent);
+  --color-primary-hover: color-mix(in srgb, var(--rr-accent) 88%, #000);
+  --color-primary-muted: color-mix(in srgb, var(--rr-accent) 15%, transparent);
+  --color-secondary: var(--rr-accent);
+  --color-secondary-hover: color-mix(in srgb, var(--rr-accent) 88%, #000);
+
+  /* danger + severity → redesign severity ink */
+  --color-danger: var(--rr-crit);
+  --color-danger-hover: color-mix(in srgb, var(--rr-crit) 88%, #000);
+  --color-danger-muted: color-mix(in srgb, var(--rr-crit) 15%, transparent);
+  --color-severity-critical: var(--rr-crit);
+  --color-severity-high: var(--rr-crit);
+  --color-severity-medium: var(--rr-warn);
+  --color-severity-low: var(--rr-sev-low);
+
+  /* score colours */
+  --color-score-good: var(--rr-pos);
+  --color-score-good-muted: color-mix(in srgb, var(--rr-pos) 15%, transparent);
+  --color-score-warning: var(--rr-warn);
+  --color-score-warning-muted: color-mix(in srgb, var(--rr-warn) 15%, transparent);
+  --color-score-critical: var(--rr-crit);
+  --color-score-critical-muted: color-mix(in srgb, var(--rr-crit) 15%, transparent);
 }
 
 .rr .rr-mono {
