@@ -31,7 +31,7 @@ export default async function OverviewPage() {
 
   const { data: projects } = await supabase
     .from("projects")
-    .select("id, name, url, created_at")
+    .select("id, name, url, created_at, project_type")
     .eq("user_id", user.id)
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
@@ -105,6 +105,10 @@ export default async function OverviewPage() {
       lastScanned: completed?.completed_at ?? null,
       hasScanned: everScanned.has(p.id) || latestCompleted.has(p.id),
       scanning: scanning.has(p.id),
+      href:
+        p.project_type === "audit"
+          ? `/projects/${p.id}`
+          : `/projects/${p.id}/fixes`,
     };
   });
 
@@ -281,7 +285,7 @@ export default async function OverviewPage() {
               return (
                 <Link
                   key={r.id}
-                  href={`/projects/${r.id}/fixes`}
+                  href={r.href}
                   className="rr-proj-row"
                   style={{
                     padding: "13px 12px",

@@ -1,8 +1,6 @@
 import { Metadata } from "next";
-import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { redirect, notFound } from "next/navigation";
-import SEOProjectDetailPage from "@/components/projects/SEOProjectDetailPage";
 import AuditProjectDetailPage from "@/components/projects/AuditProjectDetailPage";
 
 // Generate dynamic metadata based on project name
@@ -58,24 +56,11 @@ export default async function ProjectDetailPage({
   }
 
   // Route to appropriate page based on project type
-  const inner =
-    project.project_type === "audit" ? (
-      <AuditProjectDetailPage params={params} />
-    ) : (
-      <SEOProjectDetailPage params={params} />
-    );
+  // Switched over: SEO projects use the redesigned report. Audit projects keep
+  // the classic audit report (the redesign is SEO-scoped).
+  if (project.project_type === "audit") {
+    return <AuditProjectDetailPage params={params} />;
+  }
 
-  return (
-    <>
-      <div className="mb-4 flex justify-end">
-        <Link
-          href={`/projects/${projectId}/fixes`}
-          className="text-sm font-medium text-[var(--color-primary)] hover:underline"
-        >
-          Try the new report (beta) →
-        </Link>
-      </div>
-      {inner}
-    </>
-  );
+  redirect(`/projects/${projectId}/fixes`);
 }

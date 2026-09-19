@@ -18,11 +18,12 @@ async function triggerScan(
   projectId: string,
   email: string | undefined,
   maxPages: number,
+  endpoint: string = "/api/scan",
 ) {
   const { data: sessionData } = await supabase.auth.getSession();
   const accessToken = sessionData?.session?.access_token;
   try {
-    await fetch(`${process.env.CRAWLER_API_URL}/api/scan`, {
+    await fetch(`${process.env.CRAWLER_API_URL}${endpoint}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -128,7 +129,7 @@ export async function rescanProject(formData: FormData) {
 
   const { data: project } = await supabase
     .from("projects")
-    .select("id")
+    .select("id, project_type")
     .eq("id", projectId)
     .eq("user_id", user.id)
     .is("deleted_at", null)
@@ -142,13 +143,17 @@ export async function rescanProject(formData: FormData) {
     .single();
   const plan = toPlanId(profile?.subscription_tier);
 
+  const isAudit = project.project_type === "audit";
   await triggerScan(
     supabase,
     projectId,
     user.email,
     getPlanLimits(plan).maxPagesPerScan,
+    isAudit ? "/api/scan/audit" : "/api/scan",
   );
 
-  revalidatePath(`/projects/${projectId}/fixes`);
-  redirect(`/projects/${projectId}/fixes`);
+  // Audit projects live on the classic report; SEO on the redesigned one.
+  const dest = isAudit ? `/projects/${projectId}` : `/projects/${projectId}/fixes`;
+  revalidatePath(dest);
+  redirect(dest);
 }
