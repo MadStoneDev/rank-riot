@@ -8,7 +8,7 @@ import {
 import { computeFixes } from "@/lib/fixes";
 import { ReportTabs } from "@/components/redesign/ReportTabs";
 import { ScanInProgress } from "@/components/redesign/ScanInProgress";
-import { ReportExport } from "@/components/redesign/ReportExport";
+import { ReportExportAll } from "@/components/redesign/ReportExportAll";
 import { rescanProject } from "@/app/(redesign)/actions";
 
 function hostOf(url: string): string {
@@ -82,27 +82,15 @@ export default async function FixesPage({
     .limit(1)
     .maybeSingle();
 
-  // Open issues (not fixed, not dismissed) → fixes, and the raw rows for export.
+  // Open issues (not fixed, not dismissed) → fixes.
   const { data: issueRows } = await supabase
     .from("issues")
-    .select("issue_type, severity, description, details, created_at, is_fixed, pages(url)")
+    .select("issue_type, severity")
     .eq("project_id", projectId)
     .eq("is_fixed", false)
     .eq("dismissed", false);
 
   const fixes = computeFixes(issueRows ?? []);
-  const issueExport = (issueRows ?? []).map((r) => {
-    const row = r as typeof r & { pages?: { url?: string } | null };
-    return {
-      page_url: row.pages?.url ?? "",
-      issue_type: row.issue_type,
-      severity: row.severity,
-      description: row.description,
-      details: row.details,
-      created_at: row.created_at,
-      is_fixed: row.is_fixed,
-    };
-  });
   const criticalCount = fixes.filter((f) => f.severity === "critical").length;
   const orphanCount = (issueRows ?? []).filter(
     (r) => r.issue_type === "orphan_page",
@@ -217,10 +205,8 @@ export default async function FixesPage({
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flex: "none" }}>
-          <ReportExport
-            dataType="issues"
-            data={issueExport}
-            filenamePrefix={`${project.name}-issues`}
+          <ReportExportAll
+            projectId={projectId}
             projectName={project.name}
             projectUrl={project.url}
           />

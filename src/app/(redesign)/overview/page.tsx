@@ -105,6 +105,7 @@ export default async function OverviewPage() {
       lastScanned: completed?.completed_at ?? null,
       hasScanned: everScanned.has(p.id) || latestCompleted.has(p.id),
       scanning: scanning.has(p.id),
+      isAudit: p.project_type === "audit",
       href:
         p.project_type === "audit"
           ? `/projects/${p.id}`
@@ -226,6 +227,27 @@ export default async function OverviewPage() {
                   >
                     {r.host}
                   </span>
+                  {r.isAudit && (
+                    <span
+                      className="rr-mono"
+                      style={{
+                        flex: "none",
+                        height: 18,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        padding: "0 6px",
+                        borderRadius: 4,
+                        border: "1px solid var(--rr-border-button)",
+                        fontSize: 10,
+                        fontWeight: 600,
+                        letterSpacing: ".06em",
+                        textTransform: "uppercase",
+                        color: "var(--rr-text-2)",
+                      }}
+                    >
+                      Audit
+                    </span>
+                  )}
                   {r.scanning && (
                     <span
                       aria-label="Scanning"
