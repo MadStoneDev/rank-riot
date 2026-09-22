@@ -78,19 +78,24 @@ export async function GET(
   // Per-image rows (flattened) for the images/alt dataset.
   const imagesAlt = pages.flatMap((p) =>
     (Array.isArray(p.images) ? (p.images as Record<string, unknown>[]) : []).map(
-      (img) => ({
-        pageUrl: p.url,
-        pageTitle: p.title ?? "",
-        imageSrc: img.src ?? "",
-        alt: img.alt ?? "",
-        hasAlt: !!(img.alt && String(img.alt).trim()),
-        width: img.width ?? (img.dimensions as { width?: number } | undefined)?.width,
-        height:
-          img.height ?? (img.dimensions as { height?: number } | undefined)?.height,
-        fileSizeBytes: img.file_size_bytes ?? null,
-        format: img.format ?? "",
-        loading: img.loading ?? "",
-      }),
+      (img) => {
+        const dims = img.dimensions as { width?: number; height?: number } | undefined;
+        const width = img.width ?? dims?.width;
+        const height = img.height ?? dims?.height;
+        return {
+          pageUrl: p.url,
+          pageTitle: p.title ?? "",
+          imageSrc: img.src ?? "",
+          alt: img.alt ?? "",
+          hasAlt: !!(img.alt && String(img.alt).trim()),
+          width,
+          height,
+          missingDimensions: !width || !height,
+          fileSizeBytes: img.file_size_bytes ?? null,
+          format: img.format ?? "",
+          loading: img.loading ?? "",
+        };
+      },
     ),
   );
 
