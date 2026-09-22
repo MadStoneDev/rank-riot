@@ -164,6 +164,97 @@ const FIX_RECIPES: Record<string, Recipe> = {
     effort: "Yoast · 15 min",
     category: "Content",
   },
+  oversized_images: {
+    title: (n) => `Compress ${n} oversized ${plural(n, "image", "images")}`,
+    impact: "Images over 200 KB slow the page, especially on mobile.",
+    effort: "Media · 20 min",
+    category: "Speed",
+  },
+  missing_image_alt: {
+    title: (n) => `Add alt text to images on ${n} ${plural(n, "page", "pages")}`,
+    impact: "Screen readers and image search can't interpret these images.",
+    effort: "Media · 20 min",
+    category: "Content",
+  },
+  keyword_not_in_title: {
+    title: (n) => `Work the target keyword into ${n} ${plural(n, "title", "titles")}`,
+    impact: "The page's main keyword is missing from its title tag.",
+    effort: "Yoast · 15 min",
+    category: "Content",
+  },
+  title_too_short: {
+    title: (n) => `Lengthen ${n} short ${plural(n, "title", "titles")}`,
+    impact: "Very short titles waste the strongest on-page ranking signal.",
+    effort: "Yoast · 15 min",
+    category: "Content",
+  },
+  meta_description_too_long: {
+    title: (n) => `Shorten ${n} long meta ${plural(n, "description", "descriptions")}`,
+    impact: "Google truncates descriptions beyond ~160 characters.",
+    effort: "Yoast · 20 min",
+    category: "Content",
+  },
+  duplicate_title: {
+    title: (n) => `Make ${n} duplicate ${plural(n, "title", "titles")} unique`,
+    impact: "Pages sharing a title compete with each other in search.",
+    effort: "Yoast · 20 min",
+    category: "Content",
+  },
+  duplicate_meta_description: {
+    title: (n) =>
+      `Make ${n} duplicate meta ${plural(n, "description", "descriptions")} unique`,
+    impact: "Duplicate descriptions weaken the snippet on each page.",
+    effort: "Yoast · 20 min",
+    category: "Content",
+  },
+  duplicate_content: {
+    title: (n) => `Resolve duplicate content on ${n} ${plural(n, "page", "pages")}`,
+    impact: "Identical content splits ranking signals between the pages.",
+    effort: "Content · 30 min",
+    category: "Content",
+  },
+  multiple_h1: {
+    title: (n) => `Fix multiple H1s on ${n} ${plural(n, "page", "pages")}`,
+    impact: "More than one H1 blurs the page's main topic.",
+    effort: "Theme · 15 min",
+    category: "Content",
+  },
+  missing_canonical: {
+    title: (n) => `Add a canonical URL to ${n} ${plural(n, "page", "pages")}`,
+    impact: "Without a canonical, duplicate URLs can split ranking.",
+    effort: "Yoast · 15 min",
+    category: "Content",
+  },
+  noindex: {
+    title: (n) => `Review noindex on ${n} ${plural(n, "page", "pages")}`,
+    impact: "These pages are blocked from Google's index — confirm that's intended.",
+    effort: "Yoast · 10 min",
+    category: "Content",
+  },
+  pages_not_in_sitemap: {
+    title: (n) => `Add ${n} ${plural(n, "page", "pages")} to the sitemap`,
+    impact: "Pages missing from the XML sitemap are slower for crawlers to find.",
+    effort: "Yoast · 15 min",
+    category: "Content",
+  },
+  url_structure_issues: {
+    title: (n) => `Clean up ${n} problem ${plural(n, "URL", "URLs")}`,
+    impact: "Overlong or parameter-heavy URLs are harder to crawl and share.",
+    effort: "WordPress · 30 min",
+    category: "Content",
+  },
+  poor_readability: {
+    title: (n) => `Improve readability on ${n} ${plural(n, "page", "pages")}`,
+    impact: "Dense, complex text is hard to read and lowers engagement.",
+    effort: "Content · 30 min",
+    category: "Content",
+  },
+  missing_twitter_card: {
+    title: (n) => `Add Twitter Card tags to ${n} ${plural(n, "page", "pages")}`,
+    impact: "Shares on X show no preview card.",
+    effort: "Yoast · 15 min",
+    category: "Content",
+  },
 };
 
 export function toFixSeverity(sev: string): FixSeverity {
@@ -202,6 +293,18 @@ const FLAG_LABELS: Record<string, string> = {
   url_structure_issues: "URL issues",
   missing_hreflang: "No hreflang",
   poor_readability: "Hard to read",
+  oversized_images: "Oversized images",
+  missing_image_alt: "Missing alt text",
+  keyword_not_in_title: "Keyword not in title",
+  title_too_short: "Title too short",
+  title_too_long: "Title too long",
+  meta_description_too_long: "Meta too long",
+  duplicate_title: "Duplicate title",
+  duplicate_content: "Duplicate content",
+  duplicate_meta_description: "Duplicate meta",
+  missing_canonical: "No canonical",
+  noindex: "Noindex",
+  pages_not_in_sitemap: "Not in sitemap",
 };
 
 export interface PageFlag {
