@@ -14,9 +14,12 @@ import {
 import { createClient } from "@/utils/supabase/server";
 
 export const metadata = {
-  title: "RankRiot - Technical SEO Analysis for Developers & Professionals",
+  title: {
+    absolute: "RankRiot - Technical SEO Analysis for Developers & Professionals",
+  },
   description:
     "Comprehensive site audits, broken link detection, and actionable SEO insights. Built for developers and SEO professionals who value precision.",
+  alternates: { canonical: "/" },
 };
 
 export default async function Home() {
@@ -114,27 +117,6 @@ export default async function Home() {
               {/* Decorative glow */}
               <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-[var(--color-primary)]/10 rounded-full blur-3xl -z-10" />
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-16 border-y border-[var(--color-border-subtle)] bg-[var(--color-surface-raised)]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-            {[
-              { value: "100K+", label: "Pages analyzed" },
-              { value: "2,500+", label: "SEO issues detected" },
-              { value: "99.9%", label: "Uptime reliability" },
-              { value: "<3s", label: "Average scan time per page" },
-            ].map((stat, i) => (
-              <div key={i} className="text-center">
-                <div className="text-3xl lg:text-4xl font-bold gradient-text">
-                  {stat.value}
-                </div>
-                <div className="mt-1 text-sm text-[var(--color-text-muted)]">{stat.label}</div>
-              </div>
-            ))}
           </div>
         </div>
       </section>

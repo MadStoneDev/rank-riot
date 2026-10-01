@@ -2,13 +2,19 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | RankRiot",
+  title: "Terms of Service",
   description:
     "Read the terms and conditions governing your use of RankRiot's SEO analysis and website auditing services.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsOfServicePage() {
-  const lastUpdated = "January 27, 2025";
+  const lastUpdated = "October 2, 2026";
+
+  // TODO(richard): replace these placeholders with the real operating entity
+  // before taking payments. Paddle requires an identifiable seller.
+  const legalEntity = "[Legal entity name — e.g. Haddad's Pty Ltd]";
+  const abn = "[ABN]";
 
   return (
     <>
@@ -39,13 +45,19 @@ export default function TermsOfServicePage() {
                 bound by these Terms of Service (&quot;Terms&quot;). If you disagree with
                 any part of these terms, you may not access the Service.
               </p>
-              <p className="text-[var(--color-text-secondary)]">
+              <p className="text-[var(--color-text-secondary)] mb-4">
                 These Terms apply to all visitors, users, and others who access
                 or use the Service. By using the Service, you also agree to our{" "}
                 <Link href="/privacy" className="text-secondary hover:underline">
                   Privacy Policy
                 </Link>
                 .
+              </p>
+              <p className="text-[var(--color-text-secondary)]">
+                The Service is operated by {legalEntity} (ABN {abn})
+                (&quot;RankRiot&quot;, &quot;we&quot;, &quot;us&quot;), based in
+                Australia. References to &quot;RankRiot&quot; in these Terms mean
+                that entity.
               </p>
             </section>
 
@@ -157,10 +169,32 @@ export default function TermsOfServicePage() {
                   the analysis
                 </li>
               </ul>
-              <p className="text-[var(--color-text-secondary)] mt-4">
+              <p className="text-[var(--color-text-secondary)] mt-4 mb-4">
                 We are not responsible for the content of websites you submit
                 for analysis or any issues arising from our crawling of those
                 websites.
+              </p>
+              <h3 className="text-xl font-medium text-[var(--color-text-primary)] mb-3">
+                Public-page audits by RankRiot
+              </h3>
+              <p className="text-[var(--color-text-secondary)]">
+                Separately from scans you initiate, RankRiot may analyse the
+                publicly accessible pages of a website &mdash; for example, to
+                generate a sample or demonstration audit, or at the request of a
+                site owner. Any such analysis accesses only publicly available
+                content, identifies our crawler by its user agent (see our{" "}
+                <Link href="/bot" className="text-secondary hover:underline">
+                  crawler information page
+                </Link>
+                ), and honours the site&apos;s robots directives and reasonable
+                rate limits. If you are a site owner and do not wish RankRiot to
+                analyse your site, you may block our crawler or{" "}
+                <Link href="/contact" className="text-secondary hover:underline">
+                  contact us
+                </Link>{" "}
+                to opt out. The ownership and authorisation warranty above
+                applies to URLs submitted by account holders, not to these
+                public-page audits.
               </p>
             </section>
 
@@ -189,19 +223,36 @@ export default function TermsOfServicePage() {
               </p>
               <ul className="list-disc pl-6 text-[var(--color-text-secondary)] space-y-2">
                 <li>
-                  Payments are processed securely through our payment provider,
-                  Paddle
+                  Payments are processed by our payment provider, Paddle, which
+                  acts as the merchant of record for purchases of the Service
                 </li>
                 <li>
                   Subscriptions are billed in advance on a monthly or annual
                   basis
                 </li>
-                <li>All fees are non-refundable unless otherwise stated</li>
                 <li>
-                  You authorise us to charge your payment method for recurring
-                  fees
+                  You authorise Paddle to charge your payment method for
+                  recurring fees until you cancel
                 </li>
               </ul>
+
+              <h3 className="text-xl font-medium text-[var(--color-text-primary)] mb-3 mt-6">
+                Refunds
+              </h3>
+              <p className="text-[var(--color-text-secondary)] mb-4">
+                Because Paddle is the merchant of record, refunds are handled in
+                accordance with Paddle&apos;s buyer terms, and you may request a
+                refund through Paddle or by{" "}
+                <Link href="/contact" className="text-secondary hover:underline">
+                  contacting us
+                </Link>
+                . Outside of a required remedy, we generally do not provide
+                refunds for amounts already paid or for partial billing periods
+                &mdash; however, nothing in these Terms limits any refund or
+                other remedy you are entitled to under the Australian Consumer
+                Law or other applicable law (see &quot;Australian Consumer
+                Law&quot; below).
+              </p>
 
               <h3 className="text-xl font-medium text-[var(--color-text-primary)] mb-3 mt-6">
                 Plan Changes
@@ -227,14 +278,36 @@ export default function TermsOfServicePage() {
               <p className="text-[var(--color-text-secondary)]">
                 You may cancel your subscription at any time through your
                 account settings. Upon cancellation, you will retain access to
-                paid features until the end of your current billing period. We
-                do not provide refunds for partial billing periods.
+                paid features until the end of your current billing period.
+                Except where a refund is required by law, we do not provide
+                refunds for partial billing periods.
               </p>
             </section>
 
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-primary mb-4">
-                7. Service Availability and Modifications
+                7. Australian Consumer Law
+              </h2>
+              <p className="text-[var(--color-text-secondary)] mb-4">
+                Our Service comes with guarantees that cannot be excluded under
+                the Australian Consumer Law. Nothing in these Terms (including
+                the disclaimers, limitation of liability, and refund provisions)
+                excludes, restricts, or modifies any guarantee, right, or remedy
+                you have under the Australian Consumer Law or other law that
+                cannot lawfully be excluded.
+              </p>
+              <p className="text-[var(--color-text-secondary)]">
+                For major failures with the Service, you are entitled to the
+                remedies available under the Australian Consumer Law. Where a
+                guarantee can lawfully be limited, our liability for breach of
+                that guarantee is limited, at our option, to re-supplying the
+                Service or paying the cost of having it re-supplied.
+              </p>
+            </section>
+
+            <section className="mb-10">
+              <h2 className="text-2xl font-semibold text-primary mb-4">
+                8. Service Availability and Modifications
               </h2>
               <p className="text-[var(--color-text-secondary)] mb-4">
                 We strive to maintain high availability but do not guarantee
@@ -262,7 +335,7 @@ export default function TermsOfServicePage() {
 
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-primary mb-4">
-                8. Intellectual Property
+                9. Intellectual Property
               </h2>
               <p className="text-[var(--color-text-secondary)] mb-4">
                 The Service and its original content, features, and
@@ -285,7 +358,7 @@ export default function TermsOfServicePage() {
 
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-primary mb-4">
-                9. Disclaimer of Warranties
+                10. Disclaimer of Warranties
               </h2>
               <p className="text-[var(--color-text-secondary)] mb-4">
                 THE SERVICE IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT
@@ -303,11 +376,16 @@ export default function TermsOfServicePage() {
                 We do not guarantee any specific search engine rankings,
                 traffic, or business results from using our Service.
               </p>
+              <p className="text-[var(--color-text-secondary)] mt-4">
+                These disclaimers apply only to the extent permitted by law and
+                are subject to the &quot;Australian Consumer Law&quot; section
+                above.
+              </p>
             </section>
 
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-primary mb-4">
-                10. Limitation of Liability
+                11. Limitation of Liability
               </h2>
               <p className="text-[var(--color-text-secondary)] mb-4">
                 TO THE MAXIMUM EXTENT PERMITTED BY LAW, RANKRIOT AND ITS
@@ -338,7 +416,7 @@ export default function TermsOfServicePage() {
 
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-primary mb-4">
-                11. Indemnification
+                12. Indemnification
               </h2>
               <p className="text-[var(--color-text-secondary)]">
                 You agree to indemnify and hold harmless RankRiot and its
@@ -351,7 +429,7 @@ export default function TermsOfServicePage() {
 
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-primary mb-4">
-                12. Governing Law
+                13. Governing Law
               </h2>
               <p className="text-[var(--color-text-secondary)]">
                 These Terms shall be governed by and construed in accordance
@@ -364,7 +442,7 @@ export default function TermsOfServicePage() {
 
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-primary mb-4">
-                13. Changes to Terms
+                14. Changes to Terms
               </h2>
               <p className="text-[var(--color-text-secondary)]">
                 We reserve the right to modify these Terms at any time. We will
@@ -377,7 +455,7 @@ export default function TermsOfServicePage() {
 
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-primary mb-4">
-                14. Severability
+                15. Severability
               </h2>
               <p className="text-[var(--color-text-secondary)]">
                 If any provision of these Terms is found to be unenforceable or
@@ -389,7 +467,7 @@ export default function TermsOfServicePage() {
 
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-primary mb-4">
-                15. Entire Agreement
+                16. Entire Agreement
               </h2>
               <p className="text-[var(--color-text-secondary)]">
                 These Terms, together with our Privacy Policy, constitute the
@@ -401,12 +479,14 @@ export default function TermsOfServicePage() {
 
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-primary mb-4">
-                16. Contact Us
+                17. Contact Us
               </h2>
               <p className="text-[var(--color-text-secondary)] mb-4">
                 If you have any questions about these Terms, please contact us:
               </p>
               <p className="text-[var(--color-text-secondary)]">
+                {legalEntity} (ABN {abn})
+                <br />
                 <Link
                   href="/contact"
                   className="text-secondary hover:underline"

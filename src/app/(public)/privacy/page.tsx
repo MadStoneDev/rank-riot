@@ -2,13 +2,19 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | RankRiot",
+  title: "Privacy Policy",
   description:
     "Learn how RankRiot collects, uses, and protects your personal information and website data.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPolicyPage() {
-  const lastUpdated = "January 27, 2025";
+  const lastUpdated = "October 2, 2026";
+
+  // TODO(richard): replace with the real operating entity. Keep in sync with
+  // the Terms of Service page.
+  const legalEntity = "[Legal entity name — e.g. Haddad's Pty Ltd]";
+  const abn = "[ABN]";
 
   return (
     <>
@@ -38,7 +44,10 @@ export default function PrivacyPolicyPage() {
                 RankRiot ("we", "our", or "us") is committed to protecting your
                 privacy. This Privacy Policy explains how we collect, use,
                 disclose, and safeguard your information when you use our SEO
-                analysis and website auditing service.
+                analysis and website auditing service. The Service is operated
+                by {legalEntity} (ABN {abn}), based in Australia, which is the
+                entity responsible for your personal information under this
+                policy.
               </p>
               <p className="text-[var(--color-text-secondary)]">
                 By using RankRiot, you agree to the collection and use of
@@ -82,9 +91,16 @@ export default function PrivacyPolicyPage() {
                 <li>Page performance metrics</li>
               </ul>
               <p className="text-[var(--color-text-secondary)] mb-4">
-                <strong>Important:</strong> We only analyse websites that you
-                explicitly submit to our service. We do not crawl or collect
-                data from websites without your direct request.
+                <strong>Important:</strong> For your account, we analyse only the
+                websites you explicitly submit. Separately, we may analyse the
+                publicly accessible pages of a website to prepare a sample or
+                demonstration audit (as described in our{" "}
+                <Link href="/terms" className="text-secondary hover:underline">
+                  Terms of Service
+                </Link>
+                ); such audits use only publicly available content and honour
+                the site&apos;s robots directives. We do not access private or
+                password-protected areas of any website without authorisation.
               </p>
 
               <h3 className="text-xl font-medium text-[var(--color-text-primary)] mb-3">
@@ -310,6 +326,8 @@ export default function PrivacyPolicyPage() {
                 practices, please contact us:
               </p>
               <p className="text-[var(--color-text-secondary)]">
+                {legalEntity} (ABN {abn})
+                <br />
                 <Link
                   href="/contact"
                   className="text-secondary hover:underline"
