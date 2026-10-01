@@ -9,9 +9,10 @@ import {
 } from "@tabler/icons-react";
 
 export const metadata: Metadata = {
-  title: "About | RankRiot",
+  title: "About",
   description:
     "RankRiot is built by developers for developers. We create professional SEO tools that are simple, affordable, and actually useful.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {

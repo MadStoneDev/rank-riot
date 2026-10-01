@@ -12,9 +12,17 @@ export const metadata: Metadata = {
   description:
     "Professional SEO analysis and site auditing tools. Scan your website, identify issues, and improve your search rankings with RankRiot.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://rankriot.app"),
+  applicationName: "RankRiot",
   openGraph: {
     type: "website",
     siteName: "RankRiot",
+    url: "/",
+    title: "RankRiot - SEO Intelligence Platform",
+    description:
+      "Professional SEO analysis and site auditing tools for developers and marketing teams.",
+  },
+  twitter: {
+    card: "summary_large_image",
     title: "RankRiot - SEO Intelligence Platform",
     description:
       "Professional SEO analysis and site auditing tools for developers and marketing teams.",

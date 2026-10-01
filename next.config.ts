@@ -14,6 +14,8 @@ const csp = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  // Don't advertise the framework/version to visitors.
+  poweredByHeader: false,
   async rewrites() {
     return [
       {

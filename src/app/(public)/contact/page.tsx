@@ -4,9 +4,10 @@ import { IconMail, IconBrandTwitter, IconBrandGithub } from "@tabler/icons-react
 import ContactForm from "@/components/contact/ContactForm";
 
 export const metadata: Metadata = {
-  title: "Contact | RankRiot",
+  title: "Contact",
   description:
     "Get in touch with the RankRiot team. We're here to help with your SEO questions and support needs.",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {

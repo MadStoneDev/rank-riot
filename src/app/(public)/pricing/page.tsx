@@ -1,21 +1,50 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { IconCheck, IconX, IconArrowRight } from "@tabler/icons-react";
+import { IconCheck, IconX, IconArrowRight, IconClock } from "@tabler/icons-react";
 import { PLAN_INFO, PLAN_LIMITS } from "@/lib/subscription-limits";
 import { PlanId } from "@/types/subscription";
 
 export const metadata: Metadata = {
-  title: "Pricing | RankRiot",
+  title: "Pricing",
   description:
     "Simple, transparent pricing for SEO tools that help your website rank higher. Start free, upgrade when you need more.",
+  alternates: { canonical: "/pricing" },
 };
 
 const PLAN_ORDER: PlanId[] = ["free", "starter", "pro", "business"];
+
+// Human-readable data-history label. Days < 30 would otherwise round to
+// "0 months", so show days (or weeks) at the low end.
+function formatHistory(days: number): string {
+  if (days >= 365) {
+    return `${Math.round(days / 365)} year${days >= 730 ? "s" : ""}`;
+  }
+  if (days >= 30) {
+    return `${Math.round(days / 30)} months`;
+  }
+  if (days >= 14) {
+    return `${Math.round(days / 7)} weeks`;
+  }
+  return `${days} days`;
+}
+
+// Largest annual saving across paid plans, as a whole-number percent.
+// Keeps marketing copy honest if prices ever change.
+const MAX_ANNUAL_DISCOUNT_PCT = Math.max(
+  ...PLAN_ORDER.map((id) => {
+    const { priceMonthly, priceYearly } = PLAN_INFO[id];
+    if (priceMonthly <= 0 || priceYearly <= 0) return 0;
+    return Math.round((1 - priceYearly / (priceMonthly * 12)) * 100);
+  })
+);
 
 const FEATURES: Array<{
   key: string;
   label: string;
   format: (v: number | string) => string;
+  // Not yet built — advertised as part of the roadmap, shown with a
+  // "Coming soon" badge and muted values so we never imply it's included today.
+  comingSoon?: boolean;
 }> = [
   {
     key: "projects",
@@ -34,23 +63,22 @@ const FEATURES: Array<{
   },
   {
     key: "keywords",
-    label: "Keywords tracked",
+    label: "Keyword rank tracking",
     format: (v) => Number(v).toLocaleString(),
+    comingSoon: true,
   },
   {
     key: "history",
     label: "Data history",
-    format: (v) =>
-      Number(v) >= 365
-        ? `${Math.round(Number(v) / 365)} year${Number(v) >= 730 ? "s" : ""}`
-        : `${Math.round(Number(v) / 30)} months`,
+    format: (v) => formatHistory(Number(v)),
   },
   {
     key: "competitors",
     label: "Competitor tracking",
     format: (v) => String(v),
+    comingSoon: true,
   },
-  { key: "users", label: "Team members", format: (v) => String(v) },
+  { key: "users", label: "Team members", format: (v) => String(v), comingSoon: true },
 ];
 
 const FEATURE_FLAGS = [
@@ -202,16 +230,14 @@ export default function PricingPage() {
                     <li className="flex items-start gap-3 text-sm">
                       <IconCheck className="w-5 h-5 text-[var(--color-score-good)] flex-shrink-0" />
                       <span className="text-[var(--color-text-secondary)]">
-                        {limits.maxKeywords} keywords tracked
+                        {formatHistory(limits.historyDays)} data history
                       </span>
                     </li>
                     <li className="flex items-start gap-3 text-sm">
-                      <IconCheck className="w-5 h-5 text-[var(--color-score-good)] flex-shrink-0" />
-                      <span className="text-[var(--color-text-secondary)]">
-                        {limits.historyDays >= 365
-                          ? `${Math.round(limits.historyDays / 365)} year${limits.historyDays >= 730 ? "s" : ""}`
-                          : `${Math.round(limits.historyDays / 30)} months`}{" "}
-                        data history
+                      <IconClock className="w-5 h-5 text-[var(--color-text-muted)]/50 flex-shrink-0" />
+                      <span className="text-[var(--color-text-muted)]">
+                        {limits.maxKeywords} keyword rank tracking{" "}
+                        <span className="text-[10px] uppercase tracking-wide">(soon)</span>
                       </span>
                     </li>
                     {limits.features.pdfReports && (
@@ -248,7 +274,7 @@ export default function PricingPage() {
         </div>
 
         <p className="text-center text-sm text-[var(--color-text-muted)] mt-8">
-          All plans include CSV export, email support, and 99.9% uptime SLA.
+          All plans include CSV export and email support.
         </p>
       </section>
 
@@ -292,16 +318,25 @@ export default function PricingPage() {
                     className={idx % 2 === 0 ? "bg-[var(--color-surface-overlay)]/30" : ""}
                   >
                     <td className="py-4 px-6 text-sm text-[var(--color-text-secondary)]">
-                      {feature.label}
+                      <span className="inline-flex items-center gap-2 flex-wrap">
+                        {feature.label}
+                        {feature.comingSoon && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[var(--color-surface-overlay)] border border-[var(--color-border-default)] text-[10px] font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
+                            Coming soon
+                          </span>
+                        )}
+                      </span>
                     </td>
                     {PLAN_ORDER.map((planId) => {
                       const value = getPlanFeatureValue(planId, feature.key);
                       return (
                         <td
                           key={planId}
-                          className={`py-4 px-6 text-center text-sm font-medium text-[var(--color-text-primary)] ${
-                            PLAN_INFO[planId].popular ? "bg-[var(--color-primary)]/5" : ""
-                          }`}
+                          className={`py-4 px-6 text-center text-sm font-medium ${
+                            feature.comingSoon
+                              ? "text-[var(--color-text-muted)]/50"
+                              : "text-[var(--color-text-primary)]"
+                          } ${PLAN_INFO[planId].popular ? "bg-[var(--color-primary)]/5" : ""}`}
                         >
                           {feature.format(value as number | string)}
                         </td>
@@ -378,7 +413,7 @@ export default function PricingPage() {
               },
               {
                 q: "Do you offer annual billing?",
-                a: "Yes, all paid plans offer annual billing at a discount. You'll save approximately 16% compared to monthly billing. Annual plans are billed upfront for the full year.",
+                a: `Yes, all paid plans offer annual billing at a discount. You'll save up to ${MAX_ANNUAL_DISCOUNT_PCT}% compared to monthly billing. Annual plans are billed upfront for the full year.`,
               },
               {
                 q: "What payment methods do you accept?",

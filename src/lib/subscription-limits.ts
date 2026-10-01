@@ -12,7 +12,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     maxCompetitors: 1,
     features: {
       pdfReports: false,
-      onDemandScans: false,
+      onDemandScans: true,
     },
   },
   starter: {
@@ -25,7 +25,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     maxCompetitors: 3,
     features: {
       pdfReports: false,
-      onDemandScans: false,
+      onDemandScans: true,
     },
   },
   pro: {
@@ -38,7 +38,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     maxCompetitors: 5,
     features: {
       pdfReports: true,
-      onDemandScans: false,
+      onDemandScans: true,
     },
   },
   business: {

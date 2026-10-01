@@ -1,6 +1,41 @@
 import Link from "next/link";
 import PublicNavbar from "@/components/layout/PublicNavbar";
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://rankriot.app";
+
+// Structured data so search engines (and AI answer engines) can identify the
+// organisation and the product. Rendered once on every public page.
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${baseUrl}/#organization`,
+      name: "RankRiot",
+      url: baseUrl,
+      logo: `${baseUrl}/icon`,
+      description:
+        "Professional SEO analysis and site auditing tools for developers and marketing teams.",
+    },
+    {
+      "@type": "SoftwareApplication",
+      name: "RankRiot",
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      url: baseUrl,
+      publisher: { "@id": `${baseUrl}/#organization` },
+      description:
+        "Site audits, AEO/GEO readiness scoring, broken-link detection, and actionable SEO insights.",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+        description: "Free plan available",
+      },
+    },
+  ],
+};
+
 export default function PublicLayout({
   children,
 }: Readonly<{
@@ -8,6 +43,10 @@ export default function PublicLayout({
 }>) {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       {/* Header (client component for mobile menu toggle) */}
       <PublicNavbar />
 

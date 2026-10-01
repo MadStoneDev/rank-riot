@@ -2,9 +2,10 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "RankRiotBot — Our Web Crawler | RankRiot",
+  title: "RankRiotBot — Our Web Crawler",
   description:
     "About RankRiotBot, the RankRiot web crawler: what it does, how to identify it, and how to allowlist it on your site.",
+  alternates: { canonical: "/bot" },
 };
 
 // User-Agent must match crawl-rank-riot/src/config/identity.ts
