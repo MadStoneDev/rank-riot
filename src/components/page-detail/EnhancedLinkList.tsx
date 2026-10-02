@@ -10,6 +10,7 @@ import {
   IconFilter,
 } from "@tabler/icons-react";
 import { decode } from "html-entities";
+import { isBlockedLinkStatus } from "@/lib/link-status";
 import { safeHref } from "@/utils/safe-url";
 import CollapsibleSection from "@/components/ui/CollapsibleSection";
 import Pagination from "@/components/ui/Pagination";
@@ -203,6 +204,16 @@ export default function EnhancedLinkList({
                         <span className="inline-flex items-center gap-1 text-[var(--color-score-critical)]">
                           <IconX className="h-4 w-4" />
                           <span className="text-xs font-medium">Broken</span>
+                        </span>
+                      ) : isBlockedLinkStatus(link.http_status) ? (
+                        <span
+                          className="inline-flex items-center gap-1 text-[var(--color-score-warning)]"
+                          title="The site blocked our crawler, so we couldn't verify this link. Check it manually."
+                        >
+                          <span className="text-xs font-medium">Blocked</span>
+                          <span className="text-xs text-[var(--color-text-muted)]">
+                            ({link.http_status})
+                          </span>
                         </span>
                       ) : link.http_status ? (
                         <span

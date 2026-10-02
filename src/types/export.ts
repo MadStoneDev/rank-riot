@@ -169,6 +169,8 @@ export const BROKEN_LINKS_COLUMNS: ExportColumnDefinition[] = [
   { key: "source_url", header: "Source URL", defaultSelected: true },
   { key: "destination_url", header: "Destination URL", defaultSelected: true },
   { key: "http_status", header: "HTTP Status", defaultSelected: true },
+  // broken = dead link; "blocked (couldn't verify)" = site blocks crawlers (P0.4).
+  { key: "link_state", header: "State", defaultSelected: true },
   { key: "anchor_text", header: "Anchor Text", defaultSelected: true },
   { key: "source_title", header: "Source Title", defaultSelected: false },
 ];

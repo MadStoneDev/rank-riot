@@ -57,15 +57,18 @@ export async function GET(
   // Broken internal links, resolved to their source page URL.
   const pageUrlById = new Map<string, string>();
   for (const p of pages) pageUrlById.set(p.id as string, p.url as string);
+  // Include both genuinely broken links and bot-blocked ones (couldn't verify),
+  // labelled via link_state so a blocked 403/999 isn't mistaken for dead (P0.4).
   const { data: brokenRaw } = await supabase
     .from("page_links")
-    .select("source_page_id, destination_url, http_status, anchor_text")
+    .select("source_page_id, destination_url, http_status, anchor_text, is_broken")
     .eq("project_id", projectId)
-    .eq("is_broken", true);
+    .or("is_broken.eq.true,http_status.in.(401,403,429,503,999)");
   const brokenLinks = (brokenRaw ?? []).map((l) => ({
     source_url: pageUrlById.get(l.source_page_id) ?? "",
     destination_url: l.destination_url,
     http_status: l.http_status,
+    link_state: l.is_broken ? "broken" : "blocked (couldn't verify)",
     anchor_text: l.anchor_text,
   }));
 
