@@ -64,12 +64,41 @@ export async function GET(
     .select("source_page_id, destination_url, http_status, anchor_text, is_broken")
     .eq("project_id", projectId)
     .or("is_broken.eq.true,http_status.in.(401,403,429,503,999)");
-  const brokenLinks = (brokenRaw ?? []).map((l) => ({
-    source_url: pageUrlById.get(l.source_page_id) ?? "",
-    destination_url: l.destination_url,
-    http_status: l.http_status,
-    link_state: l.is_broken ? "broken" : "blocked (couldn't verify)",
-    anchor_text: l.anchor_text,
+  // Group by destination so a single dead/blocked footer link doesn't produce
+  // one row per page it appears on — report it once with "found on N pages"
+  // (P0 gap #3, mirrors the image dedupe in P1.9).
+  const brokenGroups = new Map<
+    string,
+    {
+      destination_url: string;
+      http_status: number | null;
+      link_state: string;
+      anchor_text: string | null;
+      sources: Set<string>;
+    }
+  >();
+  for (const l of brokenRaw ?? []) {
+    const sourceUrl = pageUrlById.get(l.source_page_id) ?? "";
+    const g = brokenGroups.get(l.destination_url);
+    if (g) {
+      g.sources.add(sourceUrl);
+    } else {
+      brokenGroups.set(l.destination_url, {
+        destination_url: l.destination_url,
+        http_status: l.http_status,
+        link_state: l.is_broken ? "broken" : "blocked (couldn't verify)",
+        anchor_text: l.anchor_text,
+        sources: new Set([sourceUrl]),
+      });
+    }
+  }
+  const brokenLinks = Array.from(brokenGroups.values()).map((g) => ({
+    destination_url: g.destination_url,
+    http_status: g.http_status,
+    link_state: g.link_state,
+    found_on_pages: g.sources.size,
+    example_source_url: Array.from(g.sources)[0] ?? "",
+    anchor_text: g.anchor_text,
   }));
 
   // Redirects: pages whose status is 3xx or that carry a redirect target.
