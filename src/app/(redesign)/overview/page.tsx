@@ -43,7 +43,7 @@ export default async function OverviewPage() {
     ids.length
       ? supabase
           .from("scans")
-          .select("project_id, status, completed_at, started_at, summary_stats")
+          .select("project_id, status, completed_at, started_at, summary_stats, pages_scanned")
           .in("project_id", ids)
           .order("started_at", { ascending: false })
       : Promise.resolve({ data: [] as never[] }),
@@ -66,12 +66,17 @@ export default async function OverviewPage() {
   const latestCompleted = new Map<string, { completed_at: string | null; summary_stats: unknown }>();
   const everScanned = new Set<string>();
   const scanning = new Set<string>();
-  // Newest scan status per project (scans are ordered newest-first), so we can
-  // flag a project whose latest run failed instead of showing it as "—" (P0.5).
+  // Newest scan status + page count per project (scans are ordered newest-first),
+  // so we can flag a project whose latest run failed — including a legacy
+  // completed-but-0-pages scan — instead of showing it as "—" (P0.5 / #2).
   const newestStatus = new Map<string, string | null>();
+  const newestPages = new Map<string, number>();
   for (const s of scans ?? []) {
     everScanned.add(s.project_id);
-    if (!newestStatus.has(s.project_id)) newestStatus.set(s.project_id, s.status);
+    if (!newestStatus.has(s.project_id)) {
+      newestStatus.set(s.project_id, s.status);
+      newestPages.set(s.project_id, s.pages_scanned ?? 0);
+    }
     if ((s.status === "in_progress" || s.status === "pending")) scanning.add(s.project_id);
     if (s.status === "completed" && !latestCompleted.has(s.project_id)) {
       latestCompleted.set(s.project_id, {
@@ -112,7 +117,9 @@ export default async function OverviewPage() {
       failed:
         !scanning.has(p.id) &&
         (newestStatus.get(p.id) === "failed" ||
-          newestStatus.get(p.id) === "cancelled"),
+          newestStatus.get(p.id) === "cancelled" ||
+          (newestStatus.get(p.id) === "completed" &&
+            (newestPages.get(p.id) ?? 0) === 0)),
       isAudit: p.project_type === "audit",
       href:
         p.project_type === "audit"
@@ -346,7 +353,7 @@ export default async function OverviewPage() {
                     className="rr-proj-health rr-mono"
                     style={{ fontSize: 14, fontWeight: 600 }}
                   >
-                    {r.health ?? "—"}
+                    {r.failed ? "—" : (r.health ?? "—")}
                   </div>
                   <div
                     className="rr-proj-fixes rr-mono"

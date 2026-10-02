@@ -171,14 +171,21 @@ export default async function FixesPage({
     .limit(1)
     .maybeSingle();
 
+  // A completed scan that read 0 pages is really a failed scan that predates the
+  // Oct 2026 fix (legacy rows were never marked 'failed'). Treat it as unusable
+  // so we don't render Health 0 / "everything's clean" for it (P0 gap #2).
+  const latestScanEmpty = !!latestScan && (latestScan.pages_scanned ?? 0) === 0;
   const latestFailed =
     !runningScan &&
-    (newestScan?.status === "failed" || newestScan?.status === "cancelled");
-  const failureMessage =
-    newestScan?.failure_reason ??
-    ((newestScan?.summary_stats as { error_message?: string } | null)
-      ?.error_message ||
-      "The scan didn’t complete, so there are no results to show. Try running it again.");
+    (newestScan?.status === "failed" ||
+      newestScan?.status === "cancelled" ||
+      latestScanEmpty);
+  const failureMessage = latestScanEmpty
+    ? "The last scan didn’t read any pages — the site may block our crawler or be unreachable. Rescan to try again."
+    : (newestScan?.failure_reason ??
+      ((newestScan?.summary_stats as { error_message?: string } | null)
+        ?.error_message ||
+        "The scan didn’t complete, so there are no results to show. Try running it again."));
   const scanVersionStale =
     !!latestScan && !runningScan && isStaleScanVersion(latestScan.crawler_version);
 
@@ -268,10 +275,10 @@ export default async function FixesPage({
     );
   }
 
-  // No completed scan to show. Never render the metric strip or the "everything's
-  // clean" state here — show the failure (with a retry) or a not-scanned-yet
-  // prompt instead (P0.5).
-  if (!latestScan) {
+  // No usable completed scan to show (none at all, or one that read 0 pages).
+  // Never render the metric strip or the "everything's clean" state here — show
+  // the failure (with a retry) or a not-scanned-yet prompt instead (P0.5 / #2).
+  if (!latestScan || latestScanEmpty) {
     return (
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <div
