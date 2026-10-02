@@ -386,10 +386,10 @@ export type Database = {
           is_followed: boolean | null
           is_broken: boolean | null
           http_status: number | null
-          link_error: string | null
           rel_attributes: Json | null
           created_at: string | null
           updated_at: string | null
+          link_error: string | null
         }
         Insert: {
           id?: string
@@ -402,10 +402,10 @@ export type Database = {
           is_followed?: boolean | null
           is_broken?: boolean | null
           http_status?: number | null
-          link_error?: string | null
           rel_attributes?: Json | null
           created_at?: string | null
           updated_at?: string | null
+          link_error?: string | null
         }
         Update: {
           id?: string
@@ -418,10 +418,10 @@ export type Database = {
           is_followed?: boolean | null
           is_broken?: boolean | null
           http_status?: number | null
-          link_error?: string | null
           rel_attributes?: Json | null
           created_at?: string | null
           updated_at?: string | null
+          link_error?: string | null
         }
         Relationships: [
           {
