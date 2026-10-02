@@ -10,7 +10,7 @@ import {
   IconFilter,
 } from "@tabler/icons-react";
 import { decode } from "html-entities";
-import { isBlockedLinkStatus } from "@/lib/link-status";
+import { isBlockedLinkStatus, describeLinkError } from "@/lib/link-status";
 import { safeHref } from "@/utils/safe-url";
 import CollapsibleSection from "@/components/ui/CollapsibleSection";
 import Pagination from "@/components/ui/Pagination";
@@ -26,6 +26,7 @@ interface PageLink {
   is_broken?: boolean | null;
   is_followed?: boolean | null;
   http_status?: number | null;
+  link_error?: string | null;
   pages?: { url: string };
 }
 
@@ -200,7 +201,28 @@ export default function EnhancedLinkList({
                     }`}
                   >
                     <td className="px-4 py-3">
-                      {link.is_broken ? (
+                      {link.link_error ? (
+                        link.is_broken ? (
+                          <span
+                            className="inline-flex items-center gap-1 text-[var(--color-score-critical)]"
+                            title={`Broken: ${describeLinkError(link.link_error)}`}
+                          >
+                            <IconX className="h-4 w-4" />
+                            <span className="text-xs font-medium">
+                              Broken — {describeLinkError(link.link_error)}
+                            </span>
+                          </span>
+                        ) : (
+                          <span
+                            className="inline-flex items-center gap-1 text-[var(--color-score-warning)]"
+                            title={`Couldn't verify: ${describeLinkError(link.link_error)}. Check it manually.`}
+                          >
+                            <span className="text-xs font-medium">
+                              Couldn&rsquo;t verify — {describeLinkError(link.link_error)}
+                            </span>
+                          </span>
+                        )
+                      ) : link.is_broken ? (
                         <span className="inline-flex items-center gap-1 text-[var(--color-score-critical)]">
                           <IconX className="h-4 w-4" />
                           <span className="text-xs font-medium">Broken</span>

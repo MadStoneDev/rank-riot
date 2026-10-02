@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import type { ExportDataType, ExportableData } from "@/types/export";
+import { describeLinkError } from "@/lib/link-status";
 
 // Assembles every exportable dataset for a project in one call, so the redesign
 // can offer a single "Export all" (ZIP of one CSV per dataset) — the classic
@@ -61,9 +62,9 @@ export async function GET(
   // labelled via link_state so a blocked 403/999 isn't mistaken for dead (P0.4).
   const { data: brokenRaw } = await supabase
     .from("page_links")
-    .select("source_page_id, destination_url, http_status, anchor_text, is_broken")
+    .select("source_page_id, destination_url, http_status, anchor_text, is_broken, link_error")
     .eq("project_id", projectId)
-    .or("is_broken.eq.true,http_status.in.(401,403,429,503,999)");
+    .or("is_broken.eq.true,http_status.in.(401,403,429,503,999),link_error.not.is.null");
   // Group by destination so a single dead/blocked footer link doesn't produce
   // one row per page it appears on — report it once with "found on N pages"
   // (P0 gap #3, mirrors the image dedupe in P1.9).
@@ -83,10 +84,20 @@ export async function GET(
     if (g) {
       g.sources.add(sourceUrl);
     } else {
+      // State label: a recorded network reason (DNS/timeout/TLS) wins, else
+      // broken vs. bot-blocked by status.
+      const reason = l.link_error ? describeLinkError(l.link_error) : "";
+      const linkState = l.is_broken
+        ? reason
+          ? `broken (${reason})`
+          : "broken"
+        : reason
+          ? `couldn't verify (${reason})`
+          : "blocked (couldn't verify)";
       brokenGroups.set(l.destination_url, {
         destination_url: l.destination_url,
         http_status: l.http_status,
-        link_state: l.is_broken ? "broken" : "blocked (couldn't verify)",
+        link_state: linkState,
         anchor_text: l.anchor_text,
         sources: new Set([sourceUrl]),
       });
