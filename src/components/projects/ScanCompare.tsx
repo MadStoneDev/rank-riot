@@ -48,8 +48,12 @@ interface ComparisonData {
   changes: {
     newIssues: number;
     fixedIssues: number;
+    checkRetiredIssues?: number;
+    pageGoneIssues?: number;
+    unchangedIssues?: number;
     newPages: number;
     removedPages: number;
+    approximate?: boolean;
   };
 }
 
@@ -363,6 +367,46 @@ export default function ScanCompare({
                   <p className="text-sm text-[var(--color-text-muted)] mt-1">Removed Pages</p>
                 </div>
               </div>
+
+              {/* Why some vanished issues don't count as "fixed" (P1.1). */}
+              {(comparison.changes.checkRetiredIssues ||
+                comparison.changes.pageGoneIssues ||
+                comparison.changes.unchangedIssues != null) && (
+                <div className="mt-6 pt-5 border-t border-[var(--color-border-subtle)] flex flex-wrap gap-x-8 gap-y-2 text-sm text-[var(--color-text-secondary)]">
+                  {comparison.changes.unchangedIssues != null && (
+                    <span>
+                      <span className="font-semibold text-[var(--color-text-primary)]">
+                        {comparison.changes.unchangedIssues}
+                      </span>{" "}
+                      unchanged
+                    </span>
+                  )}
+                  {!!comparison.changes.checkRetiredIssues && (
+                    <span title="The check that found these was changed or retired between scans, so they aren't counted as fixed.">
+                      <span className="font-semibold text-[var(--color-text-primary)]">
+                        {comparison.changes.checkRetiredIssues}
+                      </span>{" "}
+                      check changed
+                    </span>
+                  )}
+                  {!!comparison.changes.pageGoneIssues && (
+                    <span title="The page these were on is no longer crawled, so they weren't fixed in place.">
+                      <span className="font-semibold text-[var(--color-text-primary)]">
+                        {comparison.changes.pageGoneIssues}
+                      </span>{" "}
+                      page removed
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {comparison.changes.approximate && (
+                <p className="mt-4 text-xs text-[var(--color-text-muted)]">
+                  Approximate: one or both scans predate per-issue tracking, so
+                  fixed/new are estimated from totals. Rescan both for an exact
+                  breakdown.
+                </p>
+              )}
             </div>
           </div>
         </>
