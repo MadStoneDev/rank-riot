@@ -20,13 +20,29 @@ const LINK_ERROR_LABELS: Record<string, string> = {
   network_error: "network error",
 };
 
+// link_error may be a bare category ("tls_error") or "category:RAW_CODE"
+// (e.g. "tls_error:UNABLE_TO_VERIFY_LEAF_SIGNATURE") — split off the category.
+function splitLinkError(value: string | null | undefined): {
+  category: string;
+  code: string;
+} {
+  if (!value) return { category: "", code: "" };
+  const idx = value.indexOf(":");
+  return idx === -1
+    ? { category: value, code: "" }
+    : { category: value.slice(0, idx), code: value.slice(idx + 1) };
+}
+
 export function describeLinkError(reason: string | null | undefined): string {
-  if (!reason) return "";
-  return LINK_ERROR_LABELS[reason] ?? reason;
+  const { category, code } = splitLinkError(reason);
+  if (!category) return "";
+  const label = LINK_ERROR_LABELS[category] ?? category;
+  return code ? `${label} (${code})` : label;
 }
 
 // Only dns_not_found / connection_refused mean genuinely broken; the rest
 // ("couldn't verify") shouldn't be presented as a dead link (P0 follow-up #2).
 export function linkErrorIsBroken(reason: string | null | undefined): boolean {
-  return reason === "dns_not_found" || reason === "connection_refused";
+  const { category } = splitLinkError(reason);
+  return category === "dns_not_found" || category === "connection_refused";
 }
