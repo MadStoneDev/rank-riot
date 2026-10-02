@@ -34,11 +34,15 @@ export default function SEOHealthScore({ page }: SEOHealthScoreProps) {
               SEO Health Score
             </h2>
             <p className="text-sm text-[var(--color-text-secondary)]">
-              {score >= 80
-                ? "Great job! Your page is well optimized."
-                : score >= 60
+              {critical > 0
+                ? "Needs attention. Critical issues found."
+                : warnings > 0
                   ? "Good, but there's room for improvement."
-                  : "Needs attention. Several issues found."}
+                  : score >= 80
+                    ? "Great job! Your page is well optimized."
+                    : score >= 60
+                      ? "Good, but there's room for improvement."
+                      : "Needs attention. Several issues found."}
             </p>
           </div>
         </div>

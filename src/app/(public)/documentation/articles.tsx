@@ -225,6 +225,15 @@ export const articles: Article[] = [
           each category is itself an average of pass rates, improving any
           failing check on any page moves the needle.
         </p>
+        <h3>Open issues cap the score</h3>
+        <p>
+          A high average shouldn&apos;t hide a serious problem. So if there are any
+          open <strong>critical</strong> issues, the score is capped at 79; if
+          there are open <strong>high</strong>-severity issues (but no critical),
+          it&apos;s capped at 89. Clear the critical and high issues and the cap
+          lifts. The same cap applies to each page&apos;s own score, so a page with
+          a critical issue is never shown as &ldquo;well optimised&rdquo;.
+        </p>
         <h2>Why a score might be zero</h2>
         <p>
           If the crawler is blocked (for example by a firewall or bot protection)

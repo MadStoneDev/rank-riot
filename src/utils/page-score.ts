@@ -181,7 +181,15 @@ export function calculatePageScore(page: PageScoreInput): PageScoreResult {
     issues.push({ type: "passed", category: "schema", message: "Structured data present" });
   }
 
-  return { score: Math.max(0, score), issues };
+  // Cap by severity so a page with an open critical/warning can't read as
+  // "well optimized" (P1.2): any critical → ≤79, any warning → ≤89.
+  let finalScore = Math.max(0, score);
+  const hasCritical = issues.some((i) => i.type === "critical");
+  const hasWarning = issues.some((i) => i.type === "warning");
+  if (hasCritical) finalScore = Math.min(finalScore, 79);
+  else if (hasWarning) finalScore = Math.min(finalScore, 89);
+
+  return { score: finalScore, issues };
 }
 
 /**
