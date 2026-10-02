@@ -247,12 +247,13 @@ export const TECHNICAL_HEALTH_COLUMNS: ExportColumnDefinition[] = [
 ];
 
 export const ISSUES_FULL_COLUMNS: ExportColumnDefinition[] = [
+  { key: "issue_id", header: "Issue ID", defaultSelected: false },
   { key: "page_url", header: "Page URL", defaultSelected: true },
   { key: "issue_type", header: "Issue Type", defaultSelected: true },
   { key: "severity", header: "Severity", defaultSelected: true },
   { key: "description", header: "Description", defaultSelected: true },
   { key: "details", header: "Details", defaultSelected: false, formatter: jsonFormatter },
-  { key: "created_at", header: "Created At", defaultSelected: true, formatter: dateFormatter },
+  { key: "first_seen", header: "First Seen", defaultSelected: true, formatter: dateFormatter },
   { key: "is_fixed", header: "Fixed", defaultSelected: false, formatter: booleanFormatter },
 ];
 

@@ -54,6 +54,7 @@ interface ComparisonData {
     newPages: number;
     removedPages: number;
     approximate?: boolean;
+    reconciles?: boolean;
   };
 }
 
@@ -403,8 +404,17 @@ export default function ScanCompare({
               {comparison.changes.approximate && (
                 <p className="mt-4 text-xs text-[var(--color-text-muted)]">
                   Approximate: one or both scans predate per-issue tracking, so
-                  fixed/new are estimated from totals. Rescan both for an exact
+                  fixed/new are estimated from totals. Exact tracking starts from
+                  scans after 2 Oct 2026 — compare two recent scans for an exact
                   breakdown.
+                </p>
+              )}
+
+              {comparison.changes.reconciles === false && (
+                <p className="mt-4 text-xs text-[var(--color-score-warning)]">
+                  Note: these counts don&rsquo;t fully reconcile with the scan
+                  totals — treat the breakdown as indicative. This usually clears
+                  after both scans are re-run on the current crawler.
                 </p>
               )}
             </div>

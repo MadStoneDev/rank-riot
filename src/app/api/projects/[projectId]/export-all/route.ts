@@ -38,19 +38,22 @@ export async function GET(
 
   const { data: issuesRaw } = await supabase
     .from("issues")
-    .select("issue_type, severity, description, details, created_at, is_fixed, pages(url)")
+    .select("fingerprint, issue_type, severity, description, details, created_at, is_fixed, pages(url)")
     .eq("project_id", projectId)
     .eq("is_fixed", false)
     .eq("dismissed", false);
   const issues = (issuesRaw ?? []).map((r) => {
     const row = r as typeof r & { pages?: { url?: string } | null };
     return {
+      // Stable per-issue identity + first-seen date so exports can be diffed
+      // and tracked over time (P1.1).
+      issue_id: row.fingerprint ?? "",
       page_url: row.pages?.url ?? "",
       issue_type: row.issue_type,
       severity: row.severity,
       description: row.description,
       details: row.details,
-      created_at: row.created_at,
+      first_seen: row.created_at,
       is_fixed: row.is_fixed,
     };
   });

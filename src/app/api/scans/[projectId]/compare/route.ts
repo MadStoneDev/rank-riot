@@ -178,6 +178,11 @@ export async function GET(
         }
       }
 
+      // Invariant: the buckets must reconcile with each scan's total (P1.1).
+      const reconciles =
+        unchanged + newIssues === newerFps.size &&
+        unchanged + fixed + checkRetired + pageGone === olderFps.size;
+
       changes = {
         newIssues,
         fixedIssues: fixed,
@@ -187,6 +192,7 @@ export async function GET(
         newPages: Math.max(0, metrics2.totalPages - metrics1.totalPages),
         removedPages: Math.max(0, metrics1.totalPages - metrics2.totalPages),
         approximate: false,
+        reconciles,
       };
     } else {
       // Fallback for scans without fingerprint snapshots: count subtraction
