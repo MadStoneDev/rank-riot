@@ -46,7 +46,10 @@ export default async function ImageAuditPage({
       pageId: page.id,
       imageSrc: img.src || "",
       alt: img.alt || "",
-      hasAlt: !!(img.alt && img.alt.trim()),
+      alt_state: (img.alt_state as string | undefined) ?? null,
+      hasAlt: img.alt_state
+        ? img.alt_state !== "absent"
+        : !!(img.alt && img.alt.trim()),
       fileSizeBytes:
         typeof img.file_size_bytes === "number" ? img.file_size_bytes : null,
     })),

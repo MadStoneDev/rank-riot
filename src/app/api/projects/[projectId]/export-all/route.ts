@@ -82,12 +82,18 @@ export async function GET(
         const dims = img.dimensions as { width?: number; height?: number } | undefined;
         const width = img.width ?? dims?.width;
         const height = img.height ?? dims?.height;
+        const altState = (img.alt_state as string | undefined) ?? null;
         return {
           pageUrl: p.url,
           pageTitle: p.title ?? "",
           imageSrc: img.src ?? "",
           alt: img.alt ?? "",
-          hasAlt: !!(img.alt && String(img.alt).trim()),
+          // "Has Alt" means the alt ATTRIBUTE is present (incl. decorative
+          // alt=""); only alt_state 'absent' is a genuine miss (P0.2).
+          hasAlt: altState
+            ? altState !== "absent"
+            : !!(img.alt && String(img.alt).trim()),
+          alt_state: altState,
           width,
           height,
           missingDimensions: !width || !height,

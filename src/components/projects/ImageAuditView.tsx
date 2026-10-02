@@ -23,6 +23,7 @@ interface ImageRow {
   imageSrc: string;
   alt: string;
   hasAlt: boolean;
+  alt_state?: string | null;
   fileSizeBytes?: number | null;
 }
 

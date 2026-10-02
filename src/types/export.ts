@@ -152,6 +152,9 @@ export const IMAGES_ALT_COLUMNS: ExportColumnDefinition[] = [
   { key: "imageSrc", header: "Image Source", defaultSelected: true },
   { key: "alt", header: "Alt Text", defaultSelected: true },
   { key: "hasAlt", header: "Has Alt", defaultSelected: true, formatter: booleanFormatter },
+  // absent = missing attribute (an issue); empty = decorative alt="" (fine);
+  // present = has text (P0.2).
+  { key: "alt_state", header: "Alt State", defaultSelected: true },
   { key: "altQuality", header: "Alt Quality", defaultSelected: true },
   { key: "width", header: "Width", defaultSelected: false },
   { key: "height", header: "Height", defaultSelected: false },
