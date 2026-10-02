@@ -10,6 +10,7 @@ import { ReportTabs } from "@/components/redesign/ReportTabs";
 import { ScanInProgress } from "@/components/redesign/ScanInProgress";
 import { ReportExportAll } from "@/components/redesign/ReportExportAll";
 import { rescanProject } from "@/app/(redesign)/actions";
+import { isStaleScanVersion } from "@/lib/crawler-version";
 
 function hostOf(url: string): string {
   try {
@@ -41,6 +42,83 @@ function formatScanned(iso?: string | null): string {
   });
 }
 
+function RescanForm({
+  projectId,
+  label = "Rescan",
+}: {
+  projectId: string;
+  label?: string;
+}) {
+  return (
+    <form action={rescanProject}>
+      <input type="hidden" name="projectId" value={projectId} />
+      <button
+        type="submit"
+        style={{
+          height: 34,
+          padding: "0 16px",
+          borderRadius: 7,
+          background: "var(--rr-accent)",
+          color: "var(--rr-accent-ink)",
+          fontSize: 13,
+          fontWeight: 600,
+          border: "none",
+          cursor: "pointer",
+        }}
+      >
+        {label}
+      </button>
+    </form>
+  );
+}
+
+// Inline notice used for the failed-scan and stale-version banners.
+function Banner({
+  tone,
+  title,
+  body,
+  action,
+}: {
+  tone: "critical" | "warn";
+  title: string;
+  body: string;
+  action?: React.ReactNode;
+}) {
+  const color = tone === "critical" ? "var(--rr-crit)" : "var(--rr-warn)";
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 14,
+        padding: "14px 16px",
+        borderRadius: 9,
+        border: `1px solid ${color}`,
+        background: "color-mix(in srgb, " + color + " 8%, transparent)",
+      }}
+    >
+      <div
+        aria-hidden
+        style={{
+          width: 8,
+          height: 8,
+          marginTop: 6,
+          borderRadius: "50%",
+          background: color,
+          flex: "none",
+        }}
+      />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color }}>{title}</div>
+        <div style={{ fontSize: 13, color: "var(--rr-text-2)", marginTop: 3 }}>
+          {body}
+        </div>
+      </div>
+      {action ? <div style={{ flex: "none" }}>{action}</div> : null}
+    </div>
+  );
+}
+
 export default async function FixesPage({
   params,
 }: {
@@ -65,7 +143,7 @@ export default async function FixesPage({
 
   const { data: latestScan } = await supabase
     .from("scans")
-    .select("completed_at, pages_scanned, summary_stats")
+    .select("completed_at, pages_scanned, summary_stats, crawler_version")
     .eq("project_id", projectId)
     .eq("status", "completed")
     .order("started_at", { ascending: false })
@@ -81,6 +159,28 @@ export default async function FixesPage({
     .order("started_at", { ascending: false })
     .limit(1)
     .maybeSingle();
+
+  // The newest scan of ANY status — used to detect a failed/cancelled latest
+  // run so we never render a failed or 0-page scan as a clean, healthy site
+  // (P0.5). A 0-page crawl is now stored as status='failed' by the crawler.
+  const { data: newestScan } = await supabase
+    .from("scans")
+    .select("status, failure_reason, summary_stats, completed_at, started_at")
+    .eq("project_id", projectId)
+    .order("started_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const latestFailed =
+    !runningScan &&
+    (newestScan?.status === "failed" || newestScan?.status === "cancelled");
+  const failureMessage =
+    newestScan?.failure_reason ??
+    ((newestScan?.summary_stats as { error_message?: string } | null)
+      ?.error_message ||
+      "The scan didn’t complete, so there are no results to show. Try running it again.");
+  const scanVersionStale =
+    !!latestScan && !runningScan && isStaleScanVersion(latestScan.crawler_version);
 
   // Open issues (not fixed, not dismissed) → fixes.
   const { data: issueRows } = await supabase
@@ -168,6 +268,54 @@ export default async function FixesPage({
     );
   }
 
+  // No completed scan to show. Never render the metric strip or the "everything's
+  // clean" state here — show the failure (with a retry) or a not-scanned-yet
+  // prompt instead (P0.5).
+  if (!latestScan) {
+    return (
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 24,
+            padding: "0 32px",
+            height: 72,
+            borderBottom: "1px solid var(--rr-hairline)",
+          }}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
+            <div style={{ fontSize: 19, fontWeight: 600 }}>{project.name}</div>
+            <div
+              className="rr-mono"
+              style={{ fontSize: 12, color: "var(--rr-text-3)" }}
+            >
+              {project.url}
+            </div>
+          </div>
+        </div>
+        <div style={{ padding: "24px 32px 64px" }}>
+          {latestFailed ? (
+            <Banner
+              tone="critical"
+              title="Last scan failed"
+              body={failureMessage}
+              action={<RescanForm projectId={projectId} label="Retry scan" />}
+            />
+          ) : (
+            <Banner
+              tone="warn"
+              title="No completed scans yet"
+              body="Run a scan to analyse this site and see its health, issues and fixes."
+              action={<RescanForm projectId={projectId} label="Run scan" />}
+            />
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto" }}>
       {/* Header */}
@@ -210,27 +358,38 @@ export default async function FixesPage({
             projectName={project.name}
             projectUrl={project.url}
           />
-          <form action={rescanProject}>
-            <input type="hidden" name="projectId" value={projectId} />
-            <button
-              type="submit"
-              style={{
-                height: 34,
-                padding: "0 16px",
-                borderRadius: 7,
-                background: "var(--rr-accent)",
-                color: "var(--rr-accent-ink)",
-                fontSize: 13,
-                fontWeight: 600,
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              Rescan
-            </button>
-          </form>
+          <RescanForm projectId={projectId} />
         </div>
       </div>
+
+      {/* Failed-rescan / stale-version notices (P0.5 / P0.6) */}
+      {(latestFailed || scanVersionStale) && (
+        <div
+          style={{
+            padding: "16px 32px 0",
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
+          }}
+        >
+          {latestFailed && (
+            <Banner
+              tone="critical"
+              title="Latest rescan failed"
+              body={`${failureMessage} Showing your last completed scan below.`}
+              action={<RescanForm projectId={projectId} label="Retry scan" />}
+            />
+          )}
+          {scanVersionStale && (
+            <Banner
+              tone="warn"
+              title="This scan used an older crawler"
+              body="These results came from an earlier crawler with known issues, so some findings may be inaccurate. Rescan for accurate results."
+              action={<RescanForm projectId={projectId} label="Rescan" />}
+            />
+          )}
+        </div>
+      )}
 
       {/* Metric strip */}
         <div style={{ padding: "24px 32px 0" }}>

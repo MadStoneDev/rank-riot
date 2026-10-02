@@ -66,8 +66,12 @@ export default async function OverviewPage() {
   const latestCompleted = new Map<string, { completed_at: string | null; summary_stats: unknown }>();
   const everScanned = new Set<string>();
   const scanning = new Set<string>();
+  // Newest scan status per project (scans are ordered newest-first), so we can
+  // flag a project whose latest run failed instead of showing it as "—" (P0.5).
+  const newestStatus = new Map<string, string | null>();
   for (const s of scans ?? []) {
     everScanned.add(s.project_id);
+    if (!newestStatus.has(s.project_id)) newestStatus.set(s.project_id, s.status);
     if ((s.status === "in_progress" || s.status === "pending")) scanning.add(s.project_id);
     if (s.status === "completed" && !latestCompleted.has(s.project_id)) {
       latestCompleted.set(s.project_id, {
@@ -105,6 +109,10 @@ export default async function OverviewPage() {
       lastScanned: completed?.completed_at ?? null,
       hasScanned: everScanned.has(p.id) || latestCompleted.has(p.id),
       scanning: scanning.has(p.id),
+      failed:
+        !scanning.has(p.id) &&
+        (newestStatus.get(p.id) === "failed" ||
+          newestStatus.get(p.id) === "cancelled"),
       isAudit: p.project_type === "audit",
       href:
         p.project_type === "audit"
@@ -259,6 +267,23 @@ export default async function OverviewPage() {
                         flex: "none",
                       }}
                     />
+                  )}
+                  {r.failed && (
+                    <span
+                      style={{
+                        padding: "2px 7px",
+                        borderRadius: 5,
+                        border: "1px solid var(--rr-crit)",
+                        fontSize: 10,
+                        fontWeight: 600,
+                        letterSpacing: ".06em",
+                        textTransform: "uppercase",
+                        color: "var(--rr-crit)",
+                        flex: "none",
+                      }}
+                    >
+                      Last scan failed
+                    </span>
                   )}
                 </div>
               );
