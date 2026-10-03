@@ -13,8 +13,43 @@ export interface ScoreDeduction {
   siteLevel: boolean;
 }
 
+// Human labels for the breakdown (interim until the P2.7 check registry lands).
+// Keeps the deduction list readable instead of "Empty Llms Txt".
+const ISSUE_LABELS: Record<string, string> = {
+  empty_llms_txt: "llms.txt has no links",
+  missing_llms_txt: "No llms.txt file",
+  faq_without_schema: "FAQ content without FAQ schema",
+  non_modern_image_format: "Images not in WebP/AVIF",
+  missing_image_dimensions: "Images missing width/height (layout shift)",
+  missing_image_alt: "Images missing alt text",
+  oversized_images: "Oversized images",
+  multiple_h1: "Multiple H1 headings",
+  missing_h1: "Missing H1 heading",
+  thin_content: "Thin content",
+  missing_meta_description: "Missing meta description",
+  meta_description_too_long: "Meta description too long",
+  title_too_short: "Title too short",
+  missing_title: "Missing title",
+  duplicate_content: "Duplicate content",
+  duplicate_title: "Duplicate titles",
+  duplicate_meta_description: "Duplicate meta descriptions",
+  heading_hierarchy_invalid: "Heading order problems",
+  invalid_structured_data: "Invalid structured data",
+  canonical_mismatch: "Canonical points elsewhere",
+  missing_canonical: "Missing canonical",
+  broken_internal_link: "Broken internal links",
+  slow_server_response: "Slow server response",
+  slow_page: "Slow pages",
+  orphan_page: "Orphaned pages",
+  pages_not_in_sitemap: "Pages not in sitemap",
+  noindex: "Noindex pages",
+};
+
 function humanIssueType(t: string): string {
-  return t.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  return (
+    ISSUE_LABELS[t] ??
+    t.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+  );
 }
 
 /**
@@ -67,15 +102,17 @@ export function ScoreExplainer({
           }}
         >
           <p style={{ margin: "0 0 10px" }}>
-            The score starts at 100. Each kind of open issue removes points based
-            on its severity and how much of the site it affects:
-            <br />
-            <span className="rr-mono" style={{ fontSize: 12 }}>
-              penalty = weight × √(affected pages ÷ scored pages)
-            </span>
-            <br />
-            Weights: critical 25, high 12, medium 6, low 2. Any open critical caps
-            the score at 79; any open high caps it at 89.
+            Each problem costs points based on how serious it is and how much of
+            the site it affects. Serious problems also cap the score — any open
+            critical issue caps it at 79, any open high issue at 89.
+          </p>
+          <p style={{ margin: "0 0 10px", fontSize: 12, color: "var(--rr-text-3)" }}>
+            For the detail-minded, the score starts at 100 and each issue
+            subtracts{" "}
+            <span className="rr-mono">
+              weight × √(affected pages ÷ scored pages)
+            </span>{" "}
+            — weights: critical 25, high 12, medium 6, low 2.
           </p>
 
           {capped && (
