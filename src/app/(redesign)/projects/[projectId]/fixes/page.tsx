@@ -11,6 +11,7 @@ import { ScanInProgress } from "@/components/redesign/ScanInProgress";
 import { ReportExportAll } from "@/components/redesign/ReportExportAll";
 import { rescanProject } from "@/app/(redesign)/actions";
 import { isStaleScanVersion } from "@/lib/crawler-version";
+import { ScoreExplainer, type ScoreDeduction } from "@/components/redesign/ScoreExplainer";
 
 function hostOf(url: string): string {
   try {
@@ -143,12 +144,32 @@ export default async function FixesPage({
 
   const { data: latestScan } = await supabase
     .from("scans")
-    .select("completed_at, pages_scanned, summary_stats, crawler_version")
+    .select("id, completed_at, pages_scanned, summary_stats, crawler_version")
     .eq("project_id", projectId)
     .eq("status", "completed")
     .order("started_at", { ascending: false })
     .limit(1)
     .maybeSingle();
+
+  // Score deductions (the "how is this calculated" breakdown) + score version,
+  // from the stored report for this scan (P1.2 transparency).
+  let scoreDeductions: ScoreDeduction[] = [];
+  let scoreVersion: number | null = null;
+  let scoreCapped: "critical" | "high" | null = null;
+  if (latestScan?.id) {
+    const { data: scores } = await supabase
+      .from("scan_scores")
+      .select("version, report")
+      .eq("scan_id", latestScan.id)
+      .maybeSingle();
+    scoreVersion = scores?.version ?? null;
+    const report = (scores?.report ?? {}) as {
+      deductions?: ScoreDeduction[];
+      capped?: "critical" | "high" | null;
+    };
+    if (Array.isArray(report.deductions)) scoreDeductions = report.deductions;
+    scoreCapped = report.capped ?? null;
+  }
 
   // A scan currently running takes over the whole screen (Screen 6).
   const { data: runningScan } = await supabase
@@ -418,6 +439,13 @@ export default async function FixesPage({
             />
             <MetricCard label="Orphaned content" value={orphanCount} delta="pages" />
           </MetricStrip>
+          <ScoreExplainer
+            overall={health}
+            deductions={scoreDeductions}
+            capped={scoreCapped}
+            scoreVersion={scoreVersion}
+            crawlerVersion={latestScan.crawler_version}
+          />
         </div>
 
         {/* Section nav + fixes list */}
