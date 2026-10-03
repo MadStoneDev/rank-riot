@@ -78,9 +78,9 @@ export default async function SpeedPage({
     const load = p.load_time_ms ?? 0;
     const size = p.size_bytes ?? 0;
     const flags: PageFlag[] = [];
-    if (ttfb > TTFB_SLOW_MS) flags.push({ label: "Slow TTFB", severity: "warning" });
-    if (load > LOAD_SLOW_MS) flags.push({ label: "Slow load", severity: "warning" });
-    if (size > HEAVY_BYTES) flags.push({ label: "Heavy page", severity: "warning" });
+    if (ttfb > TTFB_SLOW_MS) flags.push({ label: "Slow TTFB", severity: "medium" });
+    if (load > LOAD_SLOW_MS) flags.push({ label: "Slow load", severity: "medium" });
+    if (size > HEAVY_BYTES) flags.push({ label: "Heavy page", severity: "medium" });
     if (flags.length === 0) continue;
 
     const metaParts: string[] = [];

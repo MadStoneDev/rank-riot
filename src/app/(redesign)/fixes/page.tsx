@@ -2,9 +2,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { SeverityDot } from "@/components/redesign/primitives";
-import { computeFixes, type FixSeverity } from "@/lib/fixes";
-
-const SEV_RANK: Record<FixSeverity, number> = { critical: 0, warning: 1, low: 2 };
+import { computeFixes } from "@/lib/fixes";
+import { SEVERITY_RANK as SEV_RANK } from "@/types/severity";
 
 // Global Fixes: every open fix across all of the user's projects, most severe
 // first, each linking to that project's report.

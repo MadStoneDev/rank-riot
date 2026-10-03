@@ -24,7 +24,7 @@ export function DisclosureSection({
   defaultOpen?: boolean;
 }) {
   const initiallyOpen =
-    defaultOpen ?? (severity === "critical" || severity === "warning");
+    defaultOpen ?? (severity === "critical" || severity === "high" || severity === "medium");
   const [open, setOpen] = useState(initiallyOpen);
   const hasBody = !!children;
 

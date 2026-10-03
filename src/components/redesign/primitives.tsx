@@ -1,14 +1,17 @@
 import type { CSSProperties, ReactNode } from "react";
+import type { Severity as IssueSeverity } from "@/types/severity";
 
 // Presentational primitives for the exception-based redesign. Stateless, so
 // they render on the server; the only interactive primitive (TabBar) lives in
 // its own client file. All colours come from the `.rr` token scope.
 
-export type Severity = "critical" | "warning" | "low" | "clean";
+// The canonical 4-value severity scale, plus "clean" for a passing state (P1.3).
+export type Severity = IssueSeverity | "clean";
 
 const SEV_INK: Record<Severity, string> = {
   critical: "var(--rr-crit)",
-  warning: "var(--rr-warn)",
+  high: "var(--rr-crit)", // same red family as critical; count/label distinguish
+  medium: "var(--rr-warn)",
   low: "var(--rr-sev-low)",
   clean: "var(--rr-sev-clean)",
 };
@@ -41,7 +44,7 @@ export function Flag({
   severity = "critical",
   children,
 }: {
-  severity?: "critical" | "warning" | "low";
+  severity?: IssueSeverity;
   children: ReactNode;
 }) {
   const ink = SEV_INK[severity];

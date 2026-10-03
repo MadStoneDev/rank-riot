@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { computeFixes, type FixSeverity } from "@/lib/fixes";
+import { SEVERITY_RANK as SEV_RANK } from "@/types/severity";
 import { getPlanLimits, toPlanId } from "@/lib/subscription-limits";
 import { startQuickScan, rescanProject } from "../actions";
 
@@ -20,7 +21,6 @@ function shortDate(iso: string | null): string {
   return d.toLocaleDateString(undefined, { day: "numeric", month: "short" });
 }
 
-const SEV_RANK: Record<FixSeverity, number> = { critical: 0, warning: 1, low: 2 };
 
 export default async function OverviewPage() {
   const supabase = await createClient();
@@ -362,9 +362,9 @@ export default async function OverviewPage() {
                       color:
                         r.openFixes === 0
                           ? "var(--rr-text-3)"
-                          : r.worst === "critical"
+                          : r.worst === "critical" || r.worst === "high"
                             ? "var(--rr-crit)"
-                            : r.worst === "warning"
+                            : r.worst === "medium"
                               ? "var(--rr-warn)"
                               : "var(--rr-text-2)",
                     }}

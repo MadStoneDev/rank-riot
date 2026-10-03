@@ -99,13 +99,13 @@ export default function DesignPreviewPage() {
                 <span
                   style={{ display: "inline-flex", alignItems: "center", gap: 10 }}
                 >
-                  <SeverityDot severity="warning" /> Newsletter
+                  <SeverityDot severity="medium" /> Newsletter
                 </span>
               }
               secondary="/newsletter"
               flags={
                 <>
-                  <Flag severity="warning">Orphan</Flag>
+                  <Flag severity="medium">Orphan</Flag>
                   <Flag severity="low">Thin</Flag>
                 </>
               }
@@ -116,7 +116,7 @@ export default function DesignPreviewPage() {
                 <span
                   style={{ display: "inline-flex", alignItems: "center", gap: 10 }}
                 >
-                  <SeverityDot severity="warning" /> Money First CEO Podcast
+                  <SeverityDot severity="medium" /> Money First CEO Podcast
                 </span>
               }
               secondary="/podcast/ep-12"

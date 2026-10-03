@@ -1,4 +1,5 @@
 import { getIssueAdvice } from "@/utils/issue-advice";
+import { type Severity, SEVERITY_RANK, normalizeSeverity } from "@/types/severity";
 
 // Frontend fix-grouping layer for the redesigned Scan report. A "fix" is the
 // headline unit: a group of issues that share one remedy ("Write meta
@@ -6,7 +7,9 @@ import { getIssueAdvice } from "@/utils/issue-advice";
 // from the issues table; once the grouping rules settle it can move to the
 // crawler. Raw issues live one level down (a fix expands to its pages).
 
-export type FixSeverity = "critical" | "warning" | "low";
+// Severity is the shared canonical scale now (critical > high > medium > low);
+// FixSeverity remains as an alias so existing imports keep working (P1.3).
+export type FixSeverity = Severity;
 export type FixCategory = "Fixes" | "Speed" | "Content" | "AEO";
 
 export interface Fix {
@@ -257,11 +260,6 @@ const FIX_RECIPES: Record<string, Recipe> = {
   },
 };
 
-export function toFixSeverity(sev: string): FixSeverity {
-  if (sev === "critical" || sev === "high") return "critical";
-  if (sev === "medium") return "warning";
-  return "low";
-}
 
 // Short flag labels for the Pages tab — name the fault, never the type name.
 const FLAG_LABELS: Record<string, string> = {
@@ -309,39 +307,35 @@ const FLAG_LABELS: Record<string, string> = {
 
 export interface PageFlag {
   label: string;
-  severity: FixSeverity;
+  severity: Severity;
 }
 
 export function flagFor(issueType: string, severity: string): PageFlag {
   const label =
     FLAG_LABELS[issueType] ??
     issueType.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase());
-  return { label, severity: toFixSeverity(severity) };
+  return { label, severity: normalizeSeverity(severity) };
 }
 
-const SEV_RANK: Record<FixSeverity, number> = {
-  critical: 0,
-  warning: 1,
-  low: 2,
-};
-
-// Group open-issue rows into fixes, most severe first.
+// Group open-issue rows into fixes, most severe first. Severity is carried
+// through on the canonical scale — no lossy high→critical/medium→warning
+// collapse, so a "high" issue reads as "high" here, in Compare and in exports.
 export function computeFixes(
   rows: { issue_type: string; severity: string }[],
 ): Fix[] {
   const groups = new Map<
     string,
-    { count: number; severity: FixSeverity }
+    { count: number; severity: Severity }
   >();
 
   for (const row of rows) {
     const g = groups.get(row.issue_type) ?? {
       count: 0,
-      severity: "low" as FixSeverity,
+      severity: "low" as Severity,
     };
     g.count += 1;
-    const s = toFixSeverity(row.severity);
-    if (SEV_RANK[s] < SEV_RANK[g.severity]) g.severity = s;
+    const s = normalizeSeverity(row.severity);
+    if (SEVERITY_RANK[s] < SEVERITY_RANK[g.severity]) g.severity = s;
     groups.set(row.issue_type, g);
   }
 
@@ -376,6 +370,7 @@ export function computeFixes(
   }
 
   return fixes.sort(
-    (a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity] || b.count - a.count,
+    (a, b) =>
+      SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity] || b.count - a.count,
   );
 }

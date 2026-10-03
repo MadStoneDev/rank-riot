@@ -28,7 +28,9 @@ interface ComparisonData {
       totalPages: number;
       totalIssues: number;
       criticalIssues: number;
-      warningIssues: number;
+      highIssues: number;
+      mediumIssues: number;
+      lowIssues: number;
       brokenLinks: number;
       avgScore: number;
     };
@@ -40,7 +42,9 @@ interface ComparisonData {
       totalPages: number;
       totalIssues: number;
       criticalIssues: number;
-      warningIssues: number;
+      highIssues: number;
+      mediumIssues: number;
+      lowIssues: number;
       brokenLinks: number;
       avgScore: number;
     };
@@ -298,6 +302,20 @@ export default function ScanCompare({
                 {renderChangeIndicator(
                   comparison.scan2.metrics.criticalIssues,
                   comparison.scan1.metrics.criticalIssues,
+                  true
+                )}
+              </div>
+            </div>
+
+            <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] p-5">
+              <p className="text-sm text-[var(--color-text-muted)] mb-1">High Issues</p>
+              <p className="text-2xl font-bold text-[var(--color-score-critical)]">
+                {comparison.scan2.metrics.highIssues}
+              </p>
+              <div className="mt-2 text-sm">
+                {renderChangeIndicator(
+                  comparison.scan2.metrics.highIssues,
+                  comparison.scan1.metrics.highIssues,
                   true
                 )}
               </div>

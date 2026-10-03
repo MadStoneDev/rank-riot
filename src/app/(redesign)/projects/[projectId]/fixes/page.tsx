@@ -220,6 +220,15 @@ export default async function FixesPage({
 
   const fixes = computeFixes(issueRows ?? []);
   const criticalCount = fixes.filter((f) => f.severity === "critical").length;
+  const highCount = fixes.filter((f) => f.severity === "high").length;
+  // Headline the worst severity present on the canonical scale (P1.3) — "high"
+  // issues are shown as high, not promoted to "critical".
+  const severityDelta =
+    criticalCount > 0
+      ? `${criticalCount} critical`
+      : highCount > 0
+        ? `${highCount} high`
+        : undefined;
   const orphanCount = (issueRows ?? []).filter(
     (r) => r.issue_type === "orphan_page",
   ).length;
@@ -429,8 +438,8 @@ export default async function FixesPage({
             <MetricCard
               label="Open fixes"
               value={fixes.length}
-              delta={criticalCount > 0 ? `${criticalCount} critical` : undefined}
-              deltaTone={criticalCount > 0 ? "critical" : "muted"}
+              delta={severityDelta}
+              deltaTone={criticalCount > 0 || highCount > 0 ? "critical" : "muted"}
             />
             <MetricCard
               label="Median response"

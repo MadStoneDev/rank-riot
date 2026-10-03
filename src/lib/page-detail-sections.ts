@@ -61,7 +61,7 @@ function normalizeUrl(url: string): string {
 
 function rollUp(rows: SectionRow[], fallback: Severity): Severity {
   if (rows.some((r) => r.tone === "critical")) return "critical";
-  if (rows.some((r) => r.tone === "warning")) return "warning";
+  if (rows.some((r) => r.tone === "warning")) return "medium";
   return fallback;
 }
 
@@ -157,7 +157,7 @@ export function computeSections(
         tone: "warning",
       });
     }
-    const severity: Severity = h1 === 0 || skip ? "warning" : "clean";
+    const severity: Severity = h1 === 0 || skip ? "medium" : "clean";
     const parts: string[] = [];
     parts.push(h1 === 0 ? "No H1" : `${h1} H1`);
     parts.push(`${h2} H2`);
@@ -176,7 +176,7 @@ export function computeSections(
     const imgs = asArray(page.images) as { alt?: string }[];
     const total = imgs.length;
     const missingAlt = imgs.filter((i) => !i?.alt || i.alt.trim() === "").length;
-    const severity: Severity = missingAlt > 0 ? "warning" : "clean";
+    const severity: Severity = missingAlt > 0 ? "medium" : "clean";
     const summary =
       total === 0
         ? "No images"
@@ -198,7 +198,7 @@ export function computeSections(
   // ── Links ──
   {
     const { inbound, outbound, broken } = links;
-    const severity: Severity = broken > 0 ? "warning" : "clean";
+    const severity: Severity = broken > 0 ? "medium" : "clean";
     const rows: SectionRow[] = [
       { label: "Inbound", value: String(inbound), tone: "clean", mono: true },
       { label: "Outbound", value: String(outbound), tone: "clean", mono: true },
@@ -253,7 +253,7 @@ export function computeSections(
     const load = page.load_time_ms ?? 0;
     const slow = (ttfb > 0 && ttfb > 800) || (load > 0 && load > 3000);
     const heavy = size > 3_000_000;
-    const severity: Severity = slow || heavy ? "warning" : "clean";
+    const severity: Severity = slow || heavy ? "medium" : "clean";
     const rows: SectionRow[] = [
       {
         label: "TTFB",

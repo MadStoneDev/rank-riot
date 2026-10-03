@@ -3,14 +3,9 @@ import { createClient } from "@/utils/supabase/server";
 import { ReportTabs } from "@/components/redesign/ReportTabs";
 import { ReportExport } from "@/components/redesign/ReportExport";
 import { getPageScore } from "@/utils/page-score";
-import { flagFor, type PageFlag, type FixSeverity } from "@/lib/fixes";
+import { flagFor, type PageFlag } from "@/lib/fixes";
+import { SEVERITY_RANK as SEV_RANK } from "@/types/severity";
 import { PagesV2View, type PageRow } from "./PagesV2View";
-
-const SEV_RANK: Record<FixSeverity, number> = {
-  critical: 0,
-  warning: 1,
-  low: 2,
-};
 
 function pathOf(url: string): string {
   try {

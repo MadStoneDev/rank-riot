@@ -5,7 +5,8 @@ import { ReportHeader } from "@/components/redesign/ReportHeader";
 import { MetricCard, MetricStrip } from "@/components/redesign/primitives";
 import { PageRows, type PageRowItem } from "@/components/redesign/PageRows";
 import { ReportExport } from "@/components/redesign/ReportExport";
-import { flagFor, type PageFlag, type FixSeverity } from "@/lib/fixes";
+import { flagFor, type PageFlag } from "@/lib/fixes";
+import { SEVERITY_RANK as SEV_RANK } from "@/types/severity";
 
 // Answer-engine / AI-readiness signals: structured data and lead answers.
 const AEO_ISSUE_TYPES = new Set([
@@ -15,7 +16,6 @@ const AEO_ISSUE_TYPES = new Set([
   "missing_podcast_schema",
 ]);
 
-const SEV_RANK: Record<FixSeverity, number> = { critical: 0, warning: 1, low: 2 };
 
 function pathOf(url: string): string {
   try {

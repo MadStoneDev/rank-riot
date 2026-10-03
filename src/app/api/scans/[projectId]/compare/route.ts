@@ -79,11 +79,16 @@ export async function GET(
 
       if (snapshot?.snapshot_data) {
         const data = snapshot.snapshot_data as any;
+        const di = data.issues ?? {};
         return {
           totalPages: data.metrics?.totalPages ?? 0,
-          totalIssues: data.issues?.total ?? issueCounts.total,
-          criticalIssues: data.issues?.critical ?? issueCounts.critical,
-          warningIssues: data.issues?.high != null ? (data.issues.high || 0) + (data.issues.medium || 0) : issueCounts.high + issueCounts.medium,
+          totalIssues: di.total ?? issueCounts.total,
+          // Per-severity on the canonical scale — never fold "high" into
+          // "warning" (P1.3), so Compare agrees with Fixes and exports.
+          criticalIssues: di.critical ?? issueCounts.critical,
+          highIssues: di.high ?? issueCounts.high,
+          mediumIssues: di.medium ?? issueCounts.medium,
+          lowIssues: di.low ?? issueCounts.low,
           brokenLinks: data.metrics?.brokenLinks ?? 0,
           avgScore: data.metrics?.avgSeoScore ?? 0,
         };
@@ -95,7 +100,9 @@ export async function GET(
         totalPages: scan.pages_scanned || 0,
         totalIssues: scan.issues_found || issueCounts.total,
         criticalIssues: issueCounts.critical,
-        warningIssues: issueCounts.high + issueCounts.medium,
+        highIssues: issueCounts.high,
+        mediumIssues: issueCounts.medium,
+        lowIssues: issueCounts.low,
         brokenLinks: 0,
         avgScore: 0,
       };
