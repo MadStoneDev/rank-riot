@@ -50,7 +50,7 @@ export default async function OverviewPage() {
           .select("project_id, status, completed_at, started_at, summary_stats, pages_scanned")
           .in("project_id", ids)
           .order("started_at", { ascending: false })
-      : Promise.resolve({ data: [] as never[] }),
+      : Promise.resolve({ data: [] as never[], error: null }),
     ids.length
       ? supabase
           .from("issues")
@@ -58,7 +58,7 @@ export default async function OverviewPage() {
           .in("project_id", ids)
           .eq("is_fixed", false)
           .eq("dismissed", false)
-      : Promise.resolve({ data: [] as never[] }),
+      : Promise.resolve({ data: [] as never[], error: null }),
     supabase
       .from("profiles")
       .select("subscription_tier")
