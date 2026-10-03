@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { computeFixes, type FixSeverity } from "@/lib/fixes";
 import { SEVERITY_RANK as SEV_RANK } from "@/types/severity";
+import { LocalTime } from "@/components/redesign/LocalTime";
 import { getPlanLimits, toPlanId } from "@/lib/subscription-limits";
 import { startQuickScan, rescanProject } from "../actions";
 
@@ -14,12 +15,6 @@ function hostOf(url: string): string {
   }
 }
 
-function shortDate(iso: string | null): string {
-  if (!iso) return "";
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleDateString(undefined, { day: "numeric", month: "short" });
-}
 
 
 export default async function OverviewPage() {
@@ -428,7 +423,7 @@ export default async function OverviewPage() {
                     className="rr-proj-scanned rr-mono"
                     style={{ fontSize: 12, color: "var(--rr-text-3)" }}
                   >
-                    {shortDate(r.lastScanned)}
+                    <LocalTime iso={r.lastScanned} mode="date-short" fallback="" />
                   </div>
                 </Link>
               );

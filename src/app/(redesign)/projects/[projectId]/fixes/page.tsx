@@ -12,6 +12,7 @@ import { ReportExportAll } from "@/components/redesign/ReportExportAll";
 import { rescanProject } from "@/app/(redesign)/actions";
 import { isStaleScanVersion } from "@/lib/crawler-version";
 import { ScoreExplainer, type ScoreDeduction } from "@/components/redesign/ScoreExplainer";
+import { LocalTime } from "@/components/redesign/LocalTime";
 
 function hostOf(url: string): string {
   try {
@@ -28,19 +29,6 @@ function median(values: number[]): number {
   return sorted.length % 2 === 0
     ? Math.round((sorted[mid - 1] + sorted[mid]) / 2)
     : sorted[mid];
-}
-
-function formatScanned(iso?: string | null): string {
-  if (!iso) return "not scanned yet";
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "not scanned yet";
-  return d.toLocaleString(undefined, {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
 }
 
 function RescanForm({
@@ -256,9 +244,13 @@ export default async function FixesPage({
   };
   const health = summary.seo_score?.overall ?? null;
 
-  const metaLine = `${project.url} · scanned ${formatScanned(
-    latestScan?.completed_at,
-  )} · ${pagesCount ?? 0} pages`;
+  const metaLine = (
+    <>
+      {project.url} · scanned{" "}
+      <LocalTime iso={latestScan?.completed_at} fallback="not scanned yet" /> ·{" "}
+      {pagesCount ?? 0} pages
+    </>
+  );
 
   if (runningScan) {
     const stats = (runningScan.summary_stats ?? {}) as {

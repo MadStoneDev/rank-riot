@@ -4,26 +4,14 @@ import { ReportTabs } from "@/components/redesign/ReportTabs";
 import { ReportHeader } from "@/components/redesign/ReportHeader";
 import { MetricCard, MetricStrip } from "@/components/redesign/primitives";
 import { ReportExport } from "@/components/redesign/ReportExport";
+import { LocalTime } from "@/components/redesign/LocalTime";
 
 interface ScanRow {
   id: string;
-  date: string;
+  iso: string | null;
   health: number | null;
   pages: number;
   issues: number;
-}
-
-function formatDate(iso: string | null): string {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleString(undefined, {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
 }
 
 // A minimal neutral sparkline of the health trend (oldest → newest). Progress
@@ -90,7 +78,7 @@ export default async function HistoryPage({
     const summary = (s.summary_stats ?? {}) as { seo_score?: { overall?: number } };
     return {
       id: s.id,
-      date: formatDate(s.completed_at ?? s.started_at),
+      iso: s.completed_at ?? s.started_at,
       health: summary.seo_score?.overall ?? null,
       pages: s.pages_scanned ?? 0,
       issues: s.issues_found ?? 0,
@@ -228,7 +216,7 @@ export default async function HistoryPage({
                   }}
                 >
                   <div className="rr-mono" style={{ flex: 1, fontSize: 13 }}>
-                    {r.date}
+                    <LocalTime iso={r.iso} />
                   </div>
                   <div
                     className="rr-mono"
