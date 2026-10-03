@@ -29,7 +29,7 @@ export default async function OverviewPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth");
 
-  const { data: projects } = await supabase
+  const { data: projects, error: projectsError } = await supabase
     .from("projects")
     .select("id, name, url, created_at, project_type")
     .eq("user_id", user.id)
@@ -39,7 +39,11 @@ export default async function OverviewPage() {
   const list = projects ?? [];
   const ids = list.map((p) => p.id);
 
-  const [{ data: scans }, { data: issues }, { data: profile }] = await Promise.all([
+  const [
+    { data: scans, error: scansError },
+    { data: issues, error: issuesError },
+    { data: profile },
+  ] = await Promise.all([
     ids.length
       ? supabase
           .from("scans")
@@ -61,6 +65,51 @@ export default async function OverviewPage() {
       .eq("id", user.id)
       .single(),
   ]);
+
+  // If a data fetch failed (e.g. an origin 503), show an error + retry — never
+  // render every project as "Not scanned yet", which looks like data loss (#5a).
+  if (projectsError || scansError || issuesError) {
+    return (
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "64px 32px" }}>
+        <div
+          style={{
+            maxWidth: 440,
+            margin: "0 auto",
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            gap: 12,
+          }}
+        >
+          <div style={{ fontSize: 18, fontWeight: 600 }}>
+            Couldn&rsquo;t load your projects
+          </div>
+          <div style={{ fontSize: 14, color: "var(--rr-text-2)" }}>
+            Something went wrong talking to the server. This is usually temporary.
+          </div>
+          <div>
+            <a
+              href="/overview"
+              style={{
+                display: "inline-block",
+                height: 34,
+                lineHeight: "34px",
+                padding: "0 16px",
+                borderRadius: 7,
+                background: "var(--rr-accent)",
+                color: "var(--rr-accent-ink)",
+                fontSize: 13,
+                fontWeight: 600,
+                textDecoration: "none",
+              }}
+            >
+              Try again
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Latest completed scan + any-scan-exists, per project.
   const latestCompleted = new Map<string, { completed_at: string | null; summary_stats: unknown }>();
@@ -340,6 +389,10 @@ export default async function OverviewPage() {
                 <Link
                   key={r.id}
                   href={r.href}
+                  // Don't prefetch every project's report on load — with many
+                  // projects that burst of RSC requests can trip origin/CDN rate
+                  // limits (#5b). Prefetch on hover/focus instead.
+                  prefetch={false}
                   className="rr-proj-row"
                   style={{
                     padding: "13px 12px",
