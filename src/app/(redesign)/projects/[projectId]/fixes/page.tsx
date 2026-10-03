@@ -121,16 +121,19 @@ export default async function FixesPage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth");
 
-  const { data: project } = await supabase
+  const { data: project, error: projectError } = await supabase
     .from("projects")
     .select("id, name, url")
     .eq("id", projectId)
     .eq("user_id", user.id)
     .is("deleted_at", null)
     .single();
+  // Distinguish "project doesn't exist" (404) from a fetch error (503) — the
+  // latter must not fall through and render a misleading empty/404 state.
+  if (projectError) throw new Error("Failed to load project");
   if (!project) notFound();
 
-  const { data: latestScan } = await supabase
+  const { data: latestScan, error: latestScanError } = await supabase
     .from("scans")
     .select("id, completed_at, pages_scanned, summary_stats, crawler_version")
     .eq("project_id", projectId)
@@ -138,6 +141,9 @@ export default async function FixesPage({
     .order("started_at", { ascending: false })
     .limit(1)
     .maybeSingle();
+  // A failed scans fetch must not render "No completed scans yet" — that's the
+  // false empty state the overview and project page disagreed on (#7 / P1.5).
+  if (latestScanError) throw new Error("Failed to load scan data");
 
   // Score deductions (the "how is this calculated" breakdown) + score version,
   // from the stored report for this scan (P1.2 transparency).

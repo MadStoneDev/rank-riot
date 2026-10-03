@@ -15,6 +15,32 @@ function hostOf(url: string): string {
   }
 }
 
+type OpenIssueRow = { project_id: string; issue_type: string; severity: string };
+
+// Fetch ALL open issues across the given projects, paginated past Supabase's
+// per-request row cap so the overview's per-project fix counts match the
+// single-project Fixes page (P1.5 — the batched query was being truncated).
+async function fetchAllOpenIssues(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  ids: string[],
+): Promise<{ data: OpenIssueRow[]; error: unknown }> {
+  const all: OpenIssueRow[] = [];
+  const pageSize = 1000;
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await supabase
+      .from("issues")
+      .select("project_id, issue_type, severity")
+      .in("project_id", ids)
+      .eq("is_fixed", false)
+      .eq("dismissed", false)
+      .order("id", { ascending: true })
+      .range(from, from + pageSize - 1);
+    if (error) return { data: all, error };
+    all.push(...((data ?? []) as OpenIssueRow[]));
+    if (!data || data.length < pageSize) break;
+  }
+  return { data: all, error: null };
+}
 
 
 export default async function OverviewPage() {
@@ -47,12 +73,7 @@ export default async function OverviewPage() {
           .order("started_at", { ascending: false })
       : Promise.resolve({ data: [] as never[], error: null }),
     ids.length
-      ? supabase
-          .from("issues")
-          .select("project_id, issue_type, severity")
-          .in("project_id", ids)
-          .eq("is_fixed", false)
-          .eq("dismissed", false)
+      ? fetchAllOpenIssues(supabase, ids)
       : Promise.resolve({ data: [] as never[], error: null }),
     supabase
       .from("profiles")
@@ -122,7 +143,13 @@ export default async function OverviewPage() {
       newestPages.set(s.project_id, s.pages_scanned ?? 0);
     }
     if ((s.status === "in_progress" || s.status === "pending")) scanning.add(s.project_id);
-    if (s.status === "completed" && !latestCompleted.has(s.project_id)) {
+    // A 0-page completed scan isn't a usable result (the project Fixes page
+    // treats it as failed) — don't source health/fixes from it (#7 / P1.5).
+    if (
+      s.status === "completed" &&
+      (s.pages_scanned ?? 0) > 0 &&
+      !latestCompleted.has(s.project_id)
+    ) {
       latestCompleted.set(s.project_id, {
         completed_at: s.completed_at,
         summary_stats: s.summary_stats,
