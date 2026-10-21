@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, FormEvent } from "react";
+import { useState, useRef, useEffect, FormEvent } from "react";
 import {
   signInWithEmail,
   verifyOtp,
@@ -10,6 +10,15 @@ import OtpInput from "./OtpInput";
 
 type AuthState = "email" | "otp";
 
+// Friendly copy for the error codes the server redirects back with. Anything
+// else (e.g. a Supabase message) is shown as-is.
+const FRIENDLY_ERRORS: Record<string, string> = {
+  missing_fields: "Please enter your email and the verification code.",
+  authentication_failed: "We couldn't verify that code. Please try again.",
+  email_link_invalid:
+    "That email link is invalid or has expired. Enter your email to get a new code.",
+};
+
 export default function AuthForm() {
   const [authState, setAuthState] = useState<AuthState>("email");
   const [email, setEmail] = useState("");
@@ -17,6 +26,24 @@ export default function AuthForm() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+
+  // Surface the ?error= the server redirects with (F-A01/F-R02). Without this
+  // the verifyOtp / email-confirm error redirects were silently dropped and
+  // the user saw nothing. Read it client-side (no Suspense requirement) and
+  // clean the URL so a refresh doesn't keep showing a stale error.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get("error");
+    if (!raw) return;
+    setError(FRIENDLY_ERRORS[raw] ?? raw);
+    params.delete("error");
+    const qs = params.toString();
+    window.history.replaceState(
+      {},
+      "",
+      window.location.pathname + (qs ? `?${qs}` : ""),
+    );
+  }, []);
 
   // Handle email submission
   const handleEmailSubmit = async (e: FormEvent) => {

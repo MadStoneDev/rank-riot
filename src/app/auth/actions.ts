@@ -62,11 +62,17 @@ export async function verifyOtp(formData: FormData): Promise<void> {
     redirect("/auth?error=missing_fields");
   }
 
+  // Decide the outcome inside the try, then redirect AFTER it (F-A01).
+  // redirect() throws NEXT_REDIRECT; calling it inside the try meant the
+  // specific "token expired/invalid" redirect at the error branch was caught
+  // here and replaced with the generic authentication_failed, so users never
+  // saw the real reason. Compute a message, redirect once outside the catch.
+  let errorMessage: string | null = null;
   try {
     const supabase = await createClient();
 
     // Verify the OTP
-    const { data, error } = await supabase.auth.verifyOtp({
+    const { error } = await supabase.auth.verifyOtp({
       email,
       token: otp,
       type: "email",
@@ -74,16 +80,20 @@ export async function verifyOtp(formData: FormData): Promise<void> {
 
     if (error) {
       console.error("Error verifying OTP:", error);
-      redirect(`/auth?error=${encodeURIComponent(error.message)}`);
+      errorMessage = error.message;
     }
   } catch (error) {
     console.error("Error during authentication:", error);
-    redirect("/auth?error=authentication_failed");
+    errorMessage = "authentication_failed";
   }
 
-  // If we get here, authentication was successful
-  // Move the redirect outside the try/catch block
-  redirect("/dashboard");
+  if (errorMessage) {
+    redirect(`/auth?error=${encodeURIComponent(errorMessage)}`);
+  }
+
+  // Authentication succeeded — land on the live projects list, matching the
+  // nav's "Projects" destination rather than the classic dashboard (F-A02).
+  redirect("/overview");
 }
 
 // Google OAuth authentication
