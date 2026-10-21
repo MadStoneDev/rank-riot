@@ -27,6 +27,8 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // redirect the user to an error page with some instructions
-  redirect("/error");
+  // The email OTP link was missing/expired/invalid. Send the user back to the
+  // auth page with a surfaced reason rather than to a non-existent /error
+  // route that 404s (F-R02).
+  redirect("/auth?error=email_link_invalid");
 }
