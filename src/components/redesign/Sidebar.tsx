@@ -98,7 +98,7 @@ export function Sidebar({ email }: { email: string }) {
     <aside className="rr-sidebar" aria-label="Main navigation">
       {/* App mark + wordmark */}
       <Link
-        href="/projects"
+        href="/overview"
         style={{
           height: 56,
           display: "flex",
