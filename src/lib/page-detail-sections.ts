@@ -1,4 +1,5 @@
 import type { Severity } from "@/components/redesign/primitives";
+import { SLOW_TTFB_MS } from "@/lib/thresholds";
 
 // Compute the six fixed page-detail sections (Metadata · Headings · Images ·
 // Links · Schema · Performance) from a crawled page. Each carries a severity, a
@@ -251,14 +252,14 @@ export function computeSections(
     const ttfb = page.first_byte_time_ms ?? 0;
     const size = page.size_bytes ?? 0;
     const load = page.load_time_ms ?? 0;
-    const slow = (ttfb > 0 && ttfb > 800) || (load > 0 && load > 3000);
+    const slow = (ttfb > 0 && ttfb > SLOW_TTFB_MS) || (load > 0 && load > 3000);
     const heavy = size > 3_000_000;
     const severity: Severity = slow || heavy ? "medium" : "clean";
     const rows: SectionRow[] = [
       {
         label: "TTFB",
         value: ttfb > 0 ? `${ttfb} ms` : "—",
-        tone: ttfb > 800 ? "warning" : "clean",
+        tone: ttfb > SLOW_TTFB_MS ? "warning" : "clean",
         mono: true,
       },
       {

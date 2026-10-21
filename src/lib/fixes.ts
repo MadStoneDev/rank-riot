@@ -169,7 +169,8 @@ const FIX_RECIPES: Record<string, Recipe> = {
   },
   oversized_images: {
     title: (n) => `Compress ${n} oversized ${plural(n, "image", "images")}`,
-    impact: "Images over 200 KB slow the page, especially on mobile.",
+    // 400 KB matches the crawler's oversized_images threshold (F-D03).
+    impact: "Images over 400 KB slow the page, especially on mobile.",
     effort: "Media · 20 min",
     category: "Speed",
   },

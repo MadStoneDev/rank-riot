@@ -5,9 +5,9 @@ import {
   MediaAnalysisData,
   ImageFileSizeStats,
 } from "@/types/media-analysis";
-
-// Images larger than this are flagged as optimisation candidates.
-const LARGE_IMAGE_THRESHOLD_BYTES = 200 * 1024; // 200 KB
+// Shared with the crawler's oversized_images threshold so UI counts match the
+// raised issues (F-D03).
+import { LARGE_IMAGE_THRESHOLD_BYTES } from "@/lib/thresholds";
 const NEXT_GEN_FORMATS = new Set(["webp", "avif"]);
 
 function normalizeFormat(img: ImageData): string | null {
