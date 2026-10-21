@@ -11,7 +11,9 @@ export interface PageRow {
   title: string;
   path: string;
   pageType: string | null;
-  score: number;
+  // null = the crawler's report has no score for this page (non-HTML resource,
+  // or a legacy scan predating the weighted model). Shown as "—" (SC-02).
+  score: number | null;
   inlinks: number;
   flags: PageFlag[];
 }
@@ -203,7 +205,7 @@ export function PagesV2View({
               className="rr-mono"
               style={{ width: 40, textAlign: "right", fontSize: 14, fontWeight: 600 }}
             >
-              {r.score}
+              {r.score ?? "—"}
             </div>
             <div
               className="rr-mono"

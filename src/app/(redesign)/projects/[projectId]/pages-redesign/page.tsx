@@ -2,7 +2,11 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { ReportTabs } from "@/components/redesign/ReportTabs";
 import { ReportExport } from "@/components/redesign/ReportExport";
-import { getPageScore } from "@/utils/page-score";
+import {
+  fetchScoreReport,
+  latestCompletedScanId,
+  pageScoreFromReport,
+} from "@/lib/score-report";
 import { flagFor, type PageFlag } from "@/lib/fixes";
 import { SEVERITY_RANK as SEV_RANK } from "@/types/severity";
 import { PagesV2View, type PageRow } from "./PagesV2View";
@@ -47,6 +51,11 @@ export default async function PagesRedesignPage({
     .like("url", "http%")
     .order("url", { ascending: true });
 
+  // Read the crawler's persisted per-page scores (SC-02, F-D01/F-D02) rather
+  // than recomputing them with a divergent frontend formula.
+  const scanId = await latestCompletedScanId(supabase, projectId);
+  const report = scanId ? await fetchScoreReport(supabase, scanId) : null;
+
   const { data: issueRows } = await supabase
     .from("issues")
     .select("page_id, issue_type, severity")
@@ -67,7 +76,7 @@ export default async function PagesRedesignPage({
     title: p.title || "Untitled page",
     path: pathOf(p.url),
     pageType: p.page_type ?? null,
-    score: getPageScore(p),
+    score: pageScoreFromReport(report, p.url),
     inlinks: p.inlink_count ?? 0,
     flags: (flagsByPage.get(p.id) ?? []).sort(
       (a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity],
