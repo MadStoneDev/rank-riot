@@ -2,6 +2,7 @@ import "@/components/redesign/tokens.css";
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { isUserAdmin } from "@/lib/is-admin";
 import { plexSans, plexMono } from "@/lib/redesign-fonts";
 import { Toaster } from "sonner";
 import { Sidebar } from "@/components/redesign/Sidebar";
@@ -23,6 +24,8 @@ export default async function RedesignLayout({
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth");
 
+  const isAdmin = await isUserAdmin(user.id);
+
   return (
     <div
       className={`rr rr-shell ${plexSans.variable} ${plexMono.variable}`}
@@ -35,7 +38,7 @@ export default async function RedesignLayout({
             "try{if(localStorage.getItem('rr-mode')==='light'&&document.currentScript&&document.currentScript.parentElement){document.currentScript.parentElement.setAttribute('data-mode','light');}}catch(e){}",
         }}
       />
-      <Sidebar email={user.email ?? ""} />
+      <Sidebar email={user.email ?? ""} isAdmin={isAdmin} />
       <main className="rr-main">
         <SubscriptionProviderWrapper userId={user.id} userEmail={user.email || ""}>
           {children}

@@ -17,7 +17,7 @@ import {
   GitCompare,
   ShieldCheck,
 } from "lucide-react";
-import { type ComponentType, useEffect, useState } from "react";
+import { type ComponentType } from "react";
 
 import { createClient } from "@/utils/supabase/client";
 import { ThemeToggle } from "@/components/redesign/ThemeToggle";
@@ -36,30 +36,15 @@ function projectIdFrom(pathname: string): string | null {
   return m ? m[1] : null;
 }
 
-export function Sidebar({ email }: { email: string }) {
+export function Sidebar({
+  email,
+  isAdmin = false,
+}: {
+  email: string;
+  // Resolved server-side in the layout (F-P02) instead of a per-mount query.
+  isAdmin?: boolean;
+}) {
   const pathname = usePathname();
-  const supabase = createClient();
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  // Self-contained admin check (mirrors the classic AdminNavLink) so the admin
-  // entry survives now that the redesign sidebar is the app-wide chrome.
-  useEffect(() => {
-    let active = true;
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return;
-      supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single()
-        .then(({ data }) => {
-          if (active && data?.role === "admin") setIsAdmin(true);
-        });
-    });
-    return () => {
-      active = false;
-    };
-  }, [supabase]);
   const projectId = projectIdFrom(pathname);
 
   const nav: Item[] = [
@@ -166,7 +151,7 @@ export function Sidebar({ email }: { email: string }) {
         <ThemeToggle />
         <button
           onClick={async () => {
-            await supabase.auth.signOut();
+            await createClient().auth.signOut();
             window.location.href = "/";
           }}
           title="Sign out"

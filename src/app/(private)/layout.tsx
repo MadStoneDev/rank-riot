@@ -2,6 +2,7 @@ import "@/components/redesign/tokens.css";
 import { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { isUserAdmin } from "@/lib/is-admin";
 import { plexSans, plexMono } from "@/lib/redesign-fonts";
 
 import { Sidebar } from "@/components/redesign/Sidebar";
@@ -31,6 +32,8 @@ export default async function PrivateLayout({
     redirect("/auth");
   }
 
+  const isAdmin = await isUserAdmin(user.id);
+
   return (
     <div className={`rr rr-shell ${plexSans.variable} ${plexMono.variable}`}>
       <script
@@ -40,7 +43,7 @@ export default async function PrivateLayout({
         }}
       />
       <SkipLink />
-      <Sidebar email={user.email ?? ""} />
+      <Sidebar email={user.email ?? ""} isAdmin={isAdmin} />
       <main id="main-content" className="rr-main">
         <SubscriptionProviderWrapper userId={user.id} userEmail={user.email || ""}>
           <div style={{ maxWidth: 1200, margin: "0 auto", padding: "20px 32px 96px" }}>
