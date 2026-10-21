@@ -77,13 +77,17 @@ export async function startQuickScan(formData: FormData) {
 
   if (error || !project) redirect("/overview?error=create");
 
-  await triggerScan(supabase, {
+  const scanResult = await triggerScan(supabase, {
     projectId: project.id,
     email: user.email,
     maxPages: getPlanLimits(plan).maxPagesPerScan,
   });
 
   revalidatePath("/overview");
+  // The project exists; if the scan did not start, send the user back to the
+  // overview with a surfaced reason rather than to a report that never fills
+  // (F-S03). On success, go to the report (shows the in-progress state).
+  if (!scanResult.ok) redirect("/overview?error=scan");
   redirect(`/projects/${project.id}/fixes`);
 }
 

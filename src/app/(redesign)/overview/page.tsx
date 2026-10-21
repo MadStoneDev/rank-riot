@@ -17,6 +17,16 @@ function hostOf(url: string): string {
 
 type OpenIssueRow = { project_id: string; issue_type: string; severity: string };
 
+// Plain one-sentence messages for the ?error= the create/scan actions redirect
+// back with. These were previously dropped — the overview showed nothing when a
+// project hit the plan limit, failed to create, or its scan did not start
+// (F-S03). Unknown codes fall back to a generic line.
+const OVERVIEW_ERRORS: Record<string, string> = {
+  limit: "You have reached your project limit on the current plan.",
+  create: "That project could not be created, so please try again.",
+  scan: "The project was created but its scan could not be started, so try scanning it again.",
+};
+
 // Fetch ALL open issues across the given projects, paginated past Supabase's
 // per-request row cap so the overview's per-project fix counts match the
 // single-project Fixes page (P1.5 — the batched query was being truncated).
@@ -43,7 +53,17 @@ async function fetchAllOpenIssues(
 }
 
 
-export default async function OverviewPage() {
+export default async function OverviewPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string | string[] }>;
+}) {
+  const { error: errorParam } = await searchParams;
+  const errorCode = Array.isArray(errorParam) ? errorParam[0] : errorParam;
+  const errorMessage = errorCode
+    ? (OVERVIEW_ERRORS[errorCode] ?? "Something went wrong, so please try again.")
+    : null;
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -204,6 +224,22 @@ export default async function OverviewPage() {
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+      {errorMessage && (
+        <div
+          role="alert"
+          style={{
+            margin: "16px 32px 0",
+            padding: "10px 14px",
+            borderRadius: 7,
+            border: "1px solid var(--rr-crit)",
+            background: "var(--rr-crit-muted, transparent)",
+            color: "var(--rr-crit)",
+            fontSize: 13,
+          }}
+        >
+          {errorMessage}
+        </div>
+      )}
       {/* Header + scan box */}
       <div
         style={{
