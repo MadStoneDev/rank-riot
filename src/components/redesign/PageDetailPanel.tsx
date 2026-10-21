@@ -13,7 +13,8 @@ interface Detail {
   title: string;
   url: string;
   path: string;
-  score: number;
+  // null when the crawler's report has no score for this page (non-HTML/legacy).
+  score: number | null;
   sections: Section[];
 }
 
@@ -132,7 +133,7 @@ export function PageDetailPanel({
                   className="rr-mono"
                   style={{ fontSize: 24, fontWeight: 600, lineHeight: 1, flex: "none" }}
                 >
-                  {detail.score}
+                  {detail.score ?? "—"}
                 </span>
                 <button
                   onClick={onClose}
