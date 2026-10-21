@@ -16,6 +16,35 @@ const csp = [
 const nextConfig: NextConfig = {
   // Don't advertise the framework/version to visitors.
   poweredByHeader: false,
+  async redirects() {
+    // Permanent redirects from the retiring classic (private) routes to their
+    // redesign equivalents, added BEFORE the classic routes/components are
+    // deleted so existing deep links and bookmarks never 404 (F-R07 + Stage-2
+    // kill-list). :id / :pageId map straight through (same DB ids). These
+    // sources match exact segments, so "/pages/:pageId" never matches
+    // "/pages-redesign/...". The classic audit dispatcher /projects/:id is
+    // intentionally NOT redirected — audit projects still render there (F-R08).
+    return [
+      {
+        source: "/projects/:id/pages/:pageId",
+        destination: "/projects/:id/pages-redesign/:pageId",
+        permanent: true,
+      },
+      {
+        source: "/projects/:id/pages",
+        destination: "/projects/:id/pages-redesign",
+        permanent: true,
+      },
+      {
+        source: "/projects/:id/settings",
+        destination: "/projects/:id/settings-redesign",
+        permanent: true,
+      },
+      { source: "/projects", destination: "/overview", permanent: true },
+      { source: "/projects/new", destination: "/overview", permanent: true },
+      { source: "/dashboard", destination: "/overview", permanent: true },
+    ];
+  },
   async rewrites() {
     return [
       {
