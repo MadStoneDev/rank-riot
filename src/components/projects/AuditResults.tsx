@@ -13,6 +13,7 @@ import {
   IconCheck,
   IconX,
 } from "@tabler/icons-react";
+import { scoreTextClass, scoreBgMutedClass } from "@/lib/score-band";
 
 interface AuditResultsProps {
   results: any;
@@ -32,17 +33,9 @@ export default function AuditResults({ results }: AuditResultsProps) {
     );
   }
 
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-[var(--color-score-good)]";
-    if (score >= 60) return "text-[var(--color-score-warning)]";
-    return "text-[var(--color-score-critical)]";
-  };
-
-  const getScoreBg = (score: number) => {
-    if (score >= 80) return "bg-[var(--color-score-good-muted)]";
-    if (score >= 60) return "bg-[var(--color-score-warning-muted)]";
-    return "bg-[var(--color-score-critical-muted)]";
-  };
+  // Colour/background come from the shared score-band source (F-D11).
+  const getScoreColor = scoreTextClass;
+  const getScoreBg = scoreBgMutedClass;
 
   const getScoreLabel = (score: number) => {
     if (score >= 90) return "Excellent";
