@@ -6,16 +6,8 @@ import { MetricCard, MetricStrip } from "@/components/redesign/primitives";
 import { PageRows, type PageRowItem } from "@/components/redesign/PageRows";
 import { ReportExport } from "@/components/redesign/ReportExport";
 import { flagFor, type PageFlag } from "@/lib/fixes";
+import { displayGroupFor } from "@/lib/issue-category";
 import { SEVERITY_RANK as SEV_RANK } from "@/types/severity";
-
-// Answer-engine / AI-readiness signals: structured data and lead answers.
-const AEO_ISSUE_TYPES = new Set([
-  "missing_structured_data",
-  "faq_without_schema",
-  "missing_answer_block",
-  "missing_podcast_schema",
-]);
-
 
 function pathOf(url: string): string {
   try {
@@ -70,7 +62,7 @@ export default async function AeoPage({
   const coverage = all.length > 0 ? Math.round((withSchema / all.length) * 100) : 0;
 
   const aeoIssues = (issueRows ?? []).filter(
-    (r) => AEO_ISSUE_TYPES.has(r.issue_type) && r.page_id,
+    (r) => displayGroupFor(r.issue_type) === "AEO" && r.page_id,
   );
   const flagsByPage = new Map<string, PageFlag[]>();
   const typeCounts = new Map<string, number>();

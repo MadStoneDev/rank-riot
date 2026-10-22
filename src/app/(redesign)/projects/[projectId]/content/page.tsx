@@ -6,32 +6,8 @@ import { MetricCard, MetricStrip } from "@/components/redesign/primitives";
 import { PageRows, type PageRowItem } from "@/components/redesign/PageRows";
 import { ReportExport } from "@/components/redesign/ReportExport";
 import { flagFor, type PageFlag } from "@/lib/fixes";
+import { displayGroupFor } from "@/lib/issue-category";
 import { SEVERITY_RANK as SEV_RANK } from "@/types/severity";
-
-// Issue types that speak to on-page content quality (as opposed to speed or AEO).
-const CONTENT_ISSUE_TYPES = new Set([
-  "thin_content",
-  "missing_title",
-  "empty_page_title",
-  "title_too_short",
-  "title_too_long",
-  "keyword_not_in_title",
-  "missing_meta_description",
-  "meta_description_too_long",
-  "duplicate_meta_description",
-  "missing_h1",
-  "multiple_h1",
-  "heading_hierarchy_invalid",
-  "duplicate_title",
-  "duplicate_content",
-  "poor_readability",
-  "missing_image_alt",
-  "missing_canonical",
-  "url_structure_issues",
-  "missing_open_graph",
-  "incomplete_open_graph",
-]);
-
 
 function pathOf(url: string): string {
   try {
@@ -80,7 +56,7 @@ export default async function ContentPage({
   ]);
 
   const contentIssues = (issueRows ?? []).filter(
-    (r) => CONTENT_ISSUE_TYPES.has(r.issue_type) && r.page_id,
+    (r) => displayGroupFor(r.issue_type) === "Content" && r.page_id,
   );
 
   const flagsByPage = new Map<string, PageFlag[]>();
