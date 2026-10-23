@@ -111,6 +111,7 @@ export default async function PagesRedesignPage({
           </div>
         </div>
         <ReportExport
+          projectId={projectId}
           dataType="pages"
           data={pages ?? []}
           filenamePrefix={`${project.name}-pages`}

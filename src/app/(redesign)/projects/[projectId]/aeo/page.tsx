@@ -98,6 +98,7 @@ export default async function AeoPage({
         projectId={projectId}
         exportSlot={
           <ReportExport
+            projectId={projectId}
             dataType="schema-data"
             data={all}
             filenamePrefix={`${project.name}-schema`}

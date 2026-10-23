@@ -93,6 +93,7 @@ export default async function ContentPage({
         projectId={projectId}
         exportSlot={
           <ReportExport
+            projectId={projectId}
             dataType="seo-metadata"
             data={pages ?? []}
             filenamePrefix={`${project.name}-content`}

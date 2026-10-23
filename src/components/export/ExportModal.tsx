@@ -22,13 +22,14 @@ import {
   EXPORT_FILTERS,
   EXPORT_DATA_TYPE_LABELS,
 } from "@/types/export";
-import { executeExport } from "@/utils/export";
+import { executeExport, triggerDownload } from "@/utils/export";
 import PdfBrandingForm from "@/components/export/PdfBrandingForm";
 import { PdfBranding } from "@/utils/pdf-report";
 
 interface ExportModalProps {
   isOpen: boolean;
   onClose: () => void;
+  projectId: string;
   dataType: ExportDataType;
   data: ExportableData;
   filenamePrefix: string;
@@ -53,6 +54,7 @@ const FORMAT_OPTIONS: {
 export default function ExportModal({
   isOpen,
   onClose,
+  projectId,
   dataType,
   data,
   filenamePrefix,
@@ -61,6 +63,7 @@ export default function ExportModal({
   allowedFormats,
 }: ExportModalProps) {
   const hasPdfReports = useHasPdfReports();
+  const [isExporting, setIsExporting] = useState(false);
   const availableColumns = EXPORT_COLUMN_REGISTRY[dataType] || [];
   const filters = EXPORT_FILTERS[dataType] || [];
 
@@ -118,7 +121,7 @@ export default function ExportModal({
     selectedColumns.has(c.key)
   );
 
-  const handleExport = () => {
+  const handleExport = async () => {
     if (processedData.length === 0) {
       toast.error("No data to export with current filters.");
       return;
@@ -131,12 +134,55 @@ export default function ExportModal({
     const ext = selectedFormat === "text" ? "txt" : selectedFormat;
     const filename = `${filenamePrefix}-${dataType}.${ext}`;
 
+    // PDF/HTML are a paid feature: generate them SERVER-SIDE so the entitlement
+    // is enforced on the server (not a bypassable client gate, F-E01) and large
+    // projects render without loading/formatting everything in the tab (F-E02).
+    // The server re-fetches the dataset (paginated), so it is authoritative.
+    if (selectedFormat === "pdf" || selectedFormat === "html") {
+      setIsExporting(true);
+      try {
+        const res = await fetch(`/api/projects/${projectId}/export`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            dataType,
+            format: selectedFormat,
+            columnKeys: activeColumnsArray.map((c) => c.key),
+            filterKey: activeFilter,
+            sortBy: sortBy || undefined,
+            sortDirection,
+            limit: limit ?? undefined,
+            branding: pdfBranding,
+          }),
+        });
+        if (res.status === 403) {
+          toast.error("PDF/HTML reports require a Pro plan or higher.");
+          return;
+        }
+        if (!res.ok) {
+          toast.error("Export failed. Please try again.");
+          return;
+        }
+        const blob = await res.blob();
+        triggerDownload(blob, filename);
+        toast.success(`Exported ${selectedFormat.toUpperCase()}`);
+        onClose();
+      } catch {
+        toast.error("Export failed. Please try again.");
+      } finally {
+        setIsExporting(false);
+      }
+      return;
+    }
+
+    // CSV / JSON / plain text: free formats, generated client-side from the
+    // already-loaded preview data (preserves the exact filter/sort/limit view).
     executeExport(
       selectedFormat,
       processedData,
       activeColumnsArray,
       filename,
-      (selectedFormat === "pdf" || selectedFormat === "html") ? pdfBranding : undefined,
+      undefined,
       projectName,
       projectUrl,
       dataType,
@@ -369,10 +415,10 @@ export default function ExportModal({
           </button>
           <button
             onClick={handleExport}
-            disabled={processedData.length === 0 || activeColumnsArray.length === 0}
+            disabled={isExporting || processedData.length === 0 || activeColumnsArray.length === 0}
             className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Export {selectedFormat.toUpperCase()}
+            {isExporting ? "Exporting…" : `Export ${selectedFormat.toUpperCase()}`}
           </button>
         </div>
       </div>

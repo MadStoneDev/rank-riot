@@ -106,6 +106,7 @@ export default async function SpeedPage({
         projectId={projectId}
         exportSlot={
           <ReportExport
+            projectId={projectId}
             dataType="performance"
             data={all}
             filenamePrefix={`${project.name}-performance`}
