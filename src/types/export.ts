@@ -31,7 +31,6 @@ export type ExportDataType =
   | "anchor-distribution"
   | "technical-health"
   | "issues"
-  | "backlinks"
   | "scan-history";
 
 export interface ExportFilter {
@@ -257,15 +256,8 @@ export const ISSUES_FULL_COLUMNS: ExportColumnDefinition[] = [
   { key: "is_fixed", header: "Fixed", defaultSelected: false, formatter: booleanFormatter },
 ];
 
-export const BACKLINKS_COLUMNS: ExportColumnDefinition[] = [
-  { key: "source_url", header: "Source URL", defaultSelected: true },
-  { key: "source_domain", header: "Source Domain", defaultSelected: true },
-  { key: "anchor_text", header: "Anchor Text", defaultSelected: true },
-  { key: "is_followed", header: "Followed", defaultSelected: true, formatter: booleanFormatter },
-  { key: "target_page_url", header: "Target Page", defaultSelected: true },
-  { key: "first_seen_at", header: "First Seen", defaultSelected: false, formatter: dateFormatter },
-  { key: "last_seen_at", header: "Last Seen", defaultSelected: true, formatter: dateFormatter },
-];
+// Backlinks export retired (the backlink checker is being removed); kept out of
+// the export surface entirely (F-E03).
 
 export const SCAN_HISTORY_COLUMNS: ExportColumnDefinition[] = [
   { key: "scan_date", header: "Scan Date", defaultSelected: true, formatter: dateFormatter },
@@ -289,7 +281,6 @@ export const EXPORT_COLUMN_REGISTRY: Record<ExportDataType, ExportColumnDefiniti
   "anchor-distribution": ANCHOR_DISTRIBUTION_COLUMNS,
   "technical-health": TECHNICAL_HEALTH_COLUMNS,
   "issues": ISSUES_FULL_COLUMNS,
-  "backlinks": BACKLINKS_COLUMNS,
   "scan-history": SCAN_HISTORY_COLUMNS,
 };
 
@@ -368,11 +359,6 @@ export const EXPORT_FILTERS: Record<ExportDataType, ExportFilter[]> = {
     { key: "medium", label: "Medium", predicate: (r) => r.severity === "medium" },
     { key: "low", label: "Low", predicate: (r) => r.severity === "low" },
   ],
-  "backlinks": [
-    { key: "all", label: "All Backlinks", predicate: () => true },
-    { key: "followed", label: "Followed Only", predicate: (r) => r.is_followed !== false },
-    { key: "nofollowed", label: "NoFollowed Only", predicate: (r) => r.is_followed === false },
-  ],
   "scan-history": [
     { key: "all", label: "All Scans", predicate: () => true },
   ],
@@ -393,6 +379,5 @@ export const EXPORT_DATA_TYPE_LABELS: Record<ExportDataType, string> = {
   "anchor-distribution": "Anchor Distribution",
   "technical-health": "Technical Health",
   "issues": "Issues",
-  "backlinks": "Backlinks",
   "scan-history": "Scan History",
 };

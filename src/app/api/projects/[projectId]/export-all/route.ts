@@ -151,6 +151,31 @@ export async function GET(
     ),
   );
 
+  // Scan history: one row per completed scan with its persisted health score
+  // (F-E03 — scan-history is in the export union; produce it rather than omit).
+  const { data: scansRaw } = await supabase
+    .from("scans")
+    .select("id, completed_at, pages_scanned, issues_found")
+    .eq("project_id", projectId)
+    .eq("status", "completed")
+    .order("completed_at", { ascending: false });
+  const scanRows = scansRaw ?? [];
+  const scanIds = scanRows.map((s) => s.id as string);
+  const overallByScan = new Map<string, number>();
+  if (scanIds.length > 0) {
+    const { data: scoresRaw } = await supabase
+      .from("scan_scores")
+      .select("scan_id, overall")
+      .in("scan_id", scanIds);
+    for (const s of scoresRaw ?? []) overallByScan.set(s.scan_id as string, s.overall as number);
+  }
+  const scanHistory = scanRows.map((s) => ({
+    scan_date: s.completed_at,
+    health: overallByScan.get(s.id as string) ?? null,
+    pages: s.pages_scanned ?? 0,
+    issues: s.issues_found ?? 0,
+  }));
+
   const all: { dataType: ExportDataType; data: ExportableData; label?: string }[] = [
     { dataType: "issues", data: issues },
     { dataType: "pages", data: pages },
@@ -162,6 +187,7 @@ export async function GET(
     { dataType: "redirects", data: redirects },
     { dataType: "images-alt", data: imagesAlt },
     { dataType: "broken-links", data: brokenLinks },
+    { dataType: "scan-history", data: scanHistory },
   ];
   const entries = all.filter((e) => e.data.length > 0);
 
