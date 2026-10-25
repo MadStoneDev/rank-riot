@@ -6,6 +6,7 @@ import {
   SeverityDot,
 } from "@/components/redesign/primitives";
 import { computeFixes } from "@/lib/fixes";
+import { fetchAllProjectPages } from "@/lib/server/project-pages";
 import { ReportTabs } from "@/components/redesign/ReportTabs";
 import { ScanInProgress } from "@/components/redesign/ScanInProgress";
 import { ReportExportAll } from "@/components/redesign/ReportExportAll";
@@ -233,14 +234,15 @@ export default async function FixesPage({
     .eq("project_id", projectId)
     .like("url", "http%");
 
-  const { data: ttfbRows } = await supabase
-    .from("pages")
-    .select("first_byte_time_ms")
-    .eq("project_id", projectId)
-    .like("url", "http%")
-    .not("first_byte_time_ms", "is", null);
+  // Paginated so the median is over every page's TTFB, not the first 1000 (F-P01).
+  const ttfbRows = await fetchAllProjectPages<{ first_byte_time_ms: number | null }>(
+    supabase,
+    projectId,
+    "first_byte_time_ms",
+    { filter: (q) => q.not("first_byte_time_ms", "is", null) },
+  );
   const medianTtfb = median(
-    (ttfbRows ?? [])
+    ttfbRows
       .map((r) => r.first_byte_time_ms as number)
       .filter((v) => typeof v === "number" && v > 0),
   );

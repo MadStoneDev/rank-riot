@@ -5,9 +5,17 @@ import { ReportHeader } from "@/components/redesign/ReportHeader";
 import { MetricCard, MetricStrip } from "@/components/redesign/primitives";
 import { PageRows, type PageRowItem } from "@/components/redesign/PageRows";
 import { ReportExport } from "@/components/redesign/ReportExport";
+import { fetchAllProjectPages } from "@/lib/server/project-pages";
 import { flagFor, type PageFlag } from "@/lib/fixes";
 import { displayGroupFor } from "@/lib/issue-category";
 import { SEVERITY_RANK as SEV_RANK } from "@/types/severity";
+
+interface AeoRow {
+  id: string;
+  url: string;
+  title: string | null;
+  schema_types: unknown;
+}
 
 function pathOf(url: string): string {
   try {
@@ -43,12 +51,14 @@ export default async function AeoPage({
     .single();
   if (!project) notFound();
 
-  const [{ data: pages }, { data: issueRows }] = await Promise.all([
-    supabase
-      .from("pages")
-      .select("id, url, title, schema_types, structured_data, open_graph, twitter_card")
-      .eq("project_id", projectId)
-      .like("url", "http%"),
+  // Pages paginated so schema coverage % is over every page and each issue's
+  // page resolves, not just the first 1000 (F-P01).
+  const [all, { data: issueRows }] = await Promise.all([
+    fetchAllProjectPages<AeoRow>(
+      supabase,
+      projectId,
+      "id, url, title, schema_types, structured_data, open_graph, twitter_card",
+    ),
     supabase
       .from("issues")
       .select("page_id, issue_type, severity")
@@ -56,8 +66,6 @@ export default async function AeoPage({
       .eq("is_fixed", false)
       .eq("dismissed", false),
   ]);
-
-  const all = pages ?? [];
   const withSchema = all.filter((p) => schemaTypesOf(p.schema_types).length > 0).length;
   const coverage = all.length > 0 ? Math.round((withSchema / all.length) * 100) : 0;
 

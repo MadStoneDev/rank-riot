@@ -5,9 +5,17 @@ import { ReportHeader } from "@/components/redesign/ReportHeader";
 import { MetricCard, MetricStrip } from "@/components/redesign/primitives";
 import { PageRows, type PageRowItem } from "@/components/redesign/PageRows";
 import { ReportExport } from "@/components/redesign/ReportExport";
+import { fetchAllProjectPages } from "@/lib/server/project-pages";
 import { flagFor, type PageFlag } from "@/lib/fixes";
 import { displayGroupFor } from "@/lib/issue-category";
 import { SEVERITY_RANK as SEV_RANK } from "@/types/severity";
+
+interface ContentRow {
+  id: string;
+  url: string;
+  title: string | null;
+  word_count: number | null;
+}
 
 function pathOf(url: string): string {
   try {
@@ -39,14 +47,14 @@ export default async function ContentPage({
     .single();
   if (!project) notFound();
 
-  const [{ data: pages }, { data: issueRows }] = await Promise.all([
-    supabase
-      .from("pages")
-      .select(
-        "id, url, title, word_count, meta_description, h1s, h2s, canonical_url, has_robots_noindex, has_robots_nofollow",
-      )
-      .eq("project_id", projectId)
-      .like("url", "http%"),
+  // Pages paginated so every issue's page resolves and the "with content
+  // issues" count is complete, not capped at the first 1000 pages (F-P01).
+  const [pages, { data: issueRows }] = await Promise.all([
+    fetchAllProjectPages<ContentRow>(
+      supabase,
+      projectId,
+      "id, url, title, word_count, meta_description, h1s, h2s, canonical_url, has_robots_noindex, has_robots_nofollow",
+    ),
     supabase
       .from("issues")
       .select("page_id, issue_type, severity")

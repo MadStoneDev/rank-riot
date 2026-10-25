@@ -7,6 +7,7 @@ import {
   latestCompletedScanId,
   pageScoreFromReport,
 } from "@/lib/score-report";
+import { fetchAllProjectPages, PAGE_LIST_CEILING } from "@/lib/server/project-pages";
 import { flagFor, type PageFlag } from "@/lib/fixes";
 import { SEVERITY_RANK as SEV_RANK } from "@/types/severity";
 import { PagesV2View, type PageRow } from "./PagesV2View";
@@ -42,14 +43,16 @@ export default async function PagesRedesignPage({
     .single();
   if (!project) notFound();
 
-  const { data: pages } = await supabase
-    .from("pages")
-    .select(
-      "id, url, title, page_type, inlink_count, meta_description, h1s, h2s, word_count, canonical_url, has_robots_noindex, is_indexable, http_status, images, open_graph, twitter_card, structured_data",
-    )
-    .eq("project_id", projectId)
-    .like("url", "http%")
-    .order("url", { ascending: true });
+  // Paginated and ceiling-bounded (F-P01): the list used to silently stop at
+  // the first 1000 pages; now it loads every page up to a soft ceiling the
+  // whole list is shipped under, with the server-side export as the complete
+  // source beyond it.
+  const pages = await fetchAllProjectPages(
+    supabase,
+    projectId,
+    "id, url, title, page_type, inlink_count, meta_description, h1s, h2s, word_count, canonical_url, has_robots_noindex, is_indexable, http_status, images, open_graph, twitter_card, structured_data",
+    { orderBy: "url", max: PAGE_LIST_CEILING },
+  );
 
   // Read the crawler's persisted per-page scores (SC-02, F-D01/F-D02) rather
   // than recomputing them with a divergent frontend formula.

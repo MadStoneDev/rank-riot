@@ -37,6 +37,11 @@ const PILLS: { key: Segment; label: string }[] = [
   { key: "pagination", label: "Pagination" },
 ];
 
+// Cap the rows rendered to the DOM so "show all" on a large project can't
+// freeze the browser (F-P01). The default exceptions view is far smaller than
+// this; the server-side export is the path to the complete list beyond it.
+const RENDER_CAP = 1000;
+
 export function PagesV2View({
   rows,
   projectId,
@@ -53,6 +58,8 @@ export function PagesV2View({
       .filter((r) => inSegment(r.pageType, segment))
       .filter((r) => (showAll ? true : r.flags.length > 0));
   }, [rows, segment, showAll]);
+
+  const shown = visible.slice(0, RENDER_CAP);
 
   // On wide screens open the detail as a slide-over over the dimmed list;
   // below 1080 fall through to a full-screen navigation.
@@ -158,7 +165,7 @@ export function PagesV2View({
           {showAll ? "No pages in this segment." : "No exceptions here — these pages are clean."}
         </div>
       ) : (
-        visible.map((r) => (
+        shown.map((r) => (
           <Link
             key={r.id}
             href={`/projects/${projectId}/pages-redesign/${r.id}`}
@@ -234,6 +241,21 @@ export function PagesV2View({
             </div>
           </Link>
         ))
+      )}
+      {visible.length > RENDER_CAP && (
+        <div
+          className="rr-mono"
+          style={{
+            padding: "16px 12px",
+            fontSize: 12,
+            color: "var(--rr-text-3)",
+            textAlign: "center",
+          }}
+        >
+          Showing the first {RENDER_CAP.toLocaleString()} of{" "}
+          {visible.length.toLocaleString()}. Refine with the filters above, or
+          export for the complete list.
+        </div>
       )}
       </div>
 

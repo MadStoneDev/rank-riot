@@ -5,7 +5,17 @@ import { ReportHeader } from "@/components/redesign/ReportHeader";
 import { MetricCard, MetricStrip } from "@/components/redesign/primitives";
 import { PageRows, type PageRowItem } from "@/components/redesign/PageRows";
 import { ReportExport } from "@/components/redesign/ReportExport";
+import { fetchAllProjectPages } from "@/lib/server/project-pages";
 import type { PageFlag } from "@/lib/fixes";
+
+interface SpeedRow {
+  id: string;
+  url: string;
+  title: string | null;
+  first_byte_time_ms: number | null;
+  load_time_ms: number | null;
+  size_bytes: number | null;
+}
 
 // Thresholds kept in sync with the crawler's issue detector: TTFB > 600ms
 // (slow_server_response), load > 3s (slow_page), payload > 3MB (large_page_size).
@@ -55,15 +65,13 @@ export default async function SpeedPage({
     .single();
   if (!project) notFound();
 
-  const { data: pages } = await supabase
-    .from("pages")
-    .select(
-      "id, url, title, first_byte_time_ms, load_time_ms, size_bytes, word_count, js_count, css_count",
-    )
-    .eq("project_id", projectId)
-    .like("url", "http%");
-
-  const all = pages ?? [];
+  // Paginated so medians and the slow/heavy counts cover every page, not just
+  // the first 1000 PostgREST would otherwise return (F-P01).
+  const all = await fetchAllProjectPages<SpeedRow>(
+    supabase,
+    projectId,
+    "id, url, title, first_byte_time_ms, load_time_ms, size_bytes, word_count, js_count, css_count",
+  );
   const ttfbs = all
     .map((p) => p.first_byte_time_ms ?? 0)
     .filter((v) => v > 0);

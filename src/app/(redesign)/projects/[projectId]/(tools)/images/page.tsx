@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { fetchAllProjectPages, PAGE_LIST_CEILING } from "@/lib/server/project-pages";
 import ImageAuditView from "@/components/projects/ImageAuditView";
 
 export const metadata: Metadata = {
@@ -30,16 +31,17 @@ export default async function ImageAuditPage({
 
   if (!project) notFound();
 
-  // Get all pages with images (exclude non-HTTP URLs)
-  const { data: pagesWithImages } = await supabase
-    .from("pages")
-    .select("id, url, title, images")
-    .eq("project_id", projectId)
-    .like("url", "http%")
-    .not("images", "is", null);
+  // Get all pages with images, paginated and ceiling-bounded (F-P01) — the
+  // audit used to miss every image past the first 1000 pages.
+  const pagesWithImages = await fetchAllProjectPages(
+    supabase,
+    projectId,
+    "id, url, title, images",
+    { filter: (q) => q.not("images", "is", null), max: PAGE_LIST_CEILING },
+  );
 
   // Flatten to per-image rows
-  const images = (pagesWithImages || []).flatMap((page: any) =>
+  const images = pagesWithImages.flatMap((page: any) =>
     (Array.isArray(page.images) ? page.images : []).map((img: any) => ({
       pageUrl: page.url,
       pageTitle: page.title || "",

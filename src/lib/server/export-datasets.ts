@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ExportDataType, ExportableData } from "@/types/export";
 import { describeLinkError } from "@/lib/link-status";
+import { fetchAllProjectPages } from "@/lib/server/project-pages";
 
 // Server-side, PAGINATED dataset builders for exports (F-E02 / F-P01). Every
 // read is chunked so a large project (up to 100k pages) never pulls its whole
@@ -15,19 +16,7 @@ const CHUNK = 1000;
 
 /** Fetch every crawled page row for a project, one page of rows at a time. */
 export async function fetchAllPages(supabase: DB, projectId: string): Promise<Row[]> {
-  const out: Row[] = [];
-  for (let from = 0; ; from += CHUNK) {
-    const { data, error } = await supabase
-      .from("pages")
-      .select("*")
-      .eq("project_id", projectId)
-      .like("url", "http%")
-      .range(from, from + CHUNK - 1);
-    if (error || !data || data.length === 0) break;
-    out.push(...(data as Row[]));
-    if (data.length < CHUNK) break;
-  }
-  return out;
+  return fetchAllProjectPages<Row>(supabase, projectId, "*");
 }
 
 async function fetchAllLinks(supabase: DB, projectId: string, columns: string, filter?: (q: any) => any): Promise<Row[]> {
