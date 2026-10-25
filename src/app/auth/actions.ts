@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { getSiteUrl } from "@/lib/site-url";
 
 // Types for our responses
 type AuthResult = {
@@ -33,8 +34,11 @@ export async function signInWithEmail(formData: FormData): Promise<AuthResult> {
       email,
       options: {
         shouldCreateUser: true,
-        // Make sure to set the OTP email template in Supabase dashboard
-        // with a template that includes {{ .Token }} as the OTP code
+        // Pass the app's own URL so the email's confirmation link points at
+        // this app's /auth/confirm, not Supabase's fallback SITE_URL (which was
+        // the API host). The 6-digit {{ .Token }} in the template is the
+        // primary path; this is the fallback link's base.
+        emailRedirectTo: `${getSiteUrl()}/auth/confirm`,
       },
     });
 
@@ -71,16 +75,26 @@ export async function verifyOtp(formData: FormData): Promise<void> {
   try {
     const supabase = await createClient();
 
-    // Verify the OTP
-    const { error } = await supabase.auth.verifyOtp({
-      email,
-      token: otp,
+    // A returning user's code verifies as type "email" (signInWithOtp magic
+    // link); a brand-new user's code comes from the signup-confirmation email
+    // and verifies as type "signup". We don't know which at this point, so try
+    // "email" first and fall back to "signup" before surfacing an error — this
+    // is what let new users complete sign-in from the same code screen.
+    const first = await supabase.auth.verifyOtp({
+      email: email!,
+      token: otp!,
       type: "email",
     });
-
-    if (error) {
-      console.error("Error verifying OTP:", error);
-      errorMessage = error.message;
+    if (first.error) {
+      const second = await supabase.auth.verifyOtp({
+        email: email!,
+        token: otp!,
+        type: "signup",
+      });
+      if (second.error) {
+        console.error("Error verifying OTP:", first.error, second.error);
+        errorMessage = first.error.message;
+      }
     }
   } catch (error) {
     console.error("Error during authentication:", error);
@@ -105,7 +119,7 @@ export async function signInWithGoogle(): Promise<AuthResult> {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL || "https://rankriot.app"}/api/auth/callback`,
+        redirectTo: `${getSiteUrl()}/api/auth/callback`,
       },
     });
 

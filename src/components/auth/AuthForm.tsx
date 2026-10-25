@@ -187,7 +187,7 @@ export default function AuthForm() {
 
             <div className="mb-6">
               <p className="text-center text-sm text-[var(--color-text-secondary)] mb-4">
-                We've sent a verification code to <strong>{email}</strong>
+                We've emailed you a 6-digit code at <strong>{email}</strong>
               </p>
 
               <OtpInput />
