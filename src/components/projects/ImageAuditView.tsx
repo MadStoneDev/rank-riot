@@ -138,6 +138,7 @@ export default function ImageAuditView({ images, projectId, projectName }: Image
           </p>
         </div>
         <ExportTriggerButton
+          projectId={projectId}
           dataType="images-alt"
           data={images}
           filenamePrefix={sanitizeFilename(projectName)}

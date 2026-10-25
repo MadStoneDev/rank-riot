@@ -95,13 +95,23 @@ function getEmailContent(
 
     case "signup":
     case "email":
+      // New users land on the same 6-digit code screen as returning users, so
+      // the email must carry the code — not a link only, which left new users
+      // unable to finish sign-in. The direct-confirm link is a fallback.
       return {
-        subject: "Confirm your RankRiot email",
+        subject: "Your RankRiot sign-in code",
         html: wrapper(`
-<h2 style="margin:0 0 16px;color:#171717;font-size:20px;font-weight:600;">Confirm your email address</h2>
-<p style="margin:0 0 24px;color:#525252;font-size:15px;line-height:1.6;">Thanks for signing up! Please confirm your email address by clicking the button below.</p>
-${button("Confirm Email", confirmUrl)}
-<p style="margin:0;color:#a3a3a3;font-size:13px;">If you didn't create an account, you can safely ignore this email.</p>`),
+<div style="text-align:center;">
+<h2 style="margin:0 0 16px;color:#171717;font-size:20px;font-weight:600;">Your sign-in code</h2>
+<p style="margin:0 0 24px;color:#525252;font-size:15px;line-height:1.6;">Welcome to RankRiot! Enter this code on the sign-in screen to confirm your email and finish signing in:</p>
+<div style="margin:0 auto 24px;background:#f5f5fa;border:2px solid ${PRIMARY_COLOR};border-radius:12px;padding:20px 32px;display:inline-block;">
+<span style="font-size:36px;font-weight:700;letter-spacing:8px;color:${PRIMARY_COLOR};font-family:'Courier New',monospace;">${token}</span>
+</div>
+<p style="margin:0 0 20px;color:#525252;font-size:15px;">This code expires in 10 minutes.</p>
+<p style="margin:0 0 8px;color:#a3a3a3;font-size:13px;">Or confirm your email directly:</p>
+<p style="margin:0 0 24px;"><a href="${confirmUrl}" style="color:${PRIMARY_COLOR};font-size:13px;text-decoration:underline;">Confirm email</a></p>
+<p style="margin:0;color:#a3a3a3;font-size:13px;">If you didn't create a RankRiot account, you can safely ignore this email.</p>
+</div>`),
       };
 
     case "recovery":

@@ -1,3 +1,7 @@
+import type { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
+import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 import "@/components/redesign/tokens.css";
 import { plexSans, plexMono } from "@/lib/redesign-fonts";
 import {
@@ -13,7 +17,27 @@ import { TabBar } from "@/components/redesign/TabBar";
 // Preview of the exception-based redesign's design-system foundation. Additive
 // and scoped (`.rr`) so it does not touch the current app. Real screens compose
 // from these primitives; this route just lets us eyeball them on live fonts.
-export default function DesignPreviewPage() {
+// Kept in the app but restricted to admins and marked noindex (F-R05).
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
+
+export default async function DesignPreviewPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/auth");
+
+  const admin = createAdminClient();
+  const { data: profile } = await admin
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  // Non-admins get a 404 so the internal design showcase isn't exposed.
+  if (profile?.role !== "admin") notFound();
+
   return (
     <div
       className={`rr ${plexSans.variable} ${plexMono.variable}`}

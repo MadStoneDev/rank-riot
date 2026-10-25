@@ -93,6 +93,7 @@ export default function SchemaAuditView({ pages, projectId, projectName }: Schem
           </p>
         </div>
         <ExportTriggerButton
+          projectId={projectId}
           dataType="schema-data"
           data={pages}
           filenamePrefix={sanitizeFilename(projectName)}

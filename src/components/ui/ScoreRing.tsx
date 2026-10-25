@@ -1,5 +1,7 @@
 "use client";
 
+import { scoreColorVar, scoreGlowClass } from "@/lib/score-band";
+
 interface ScoreRingProps {
   score: number;
   size?: "sm" | "md" | "lg" | "xl";
@@ -15,17 +17,9 @@ const SIZES = {
   xl: { width: 112, stroke: 7, font: "text-3xl", labelFont: "text-xs" },
 };
 
-function getScoreColor(score: number): string {
-  if (score >= 80) return "var(--color-score-good)";
-  if (score >= 60) return "var(--color-score-warning)";
-  return "var(--color-score-critical)";
-}
-
-function getGlowClass(score: number): string {
-  if (score >= 80) return "glow-green";
-  if (score >= 60) return "glow-amber";
-  return "glow-red";
-}
+// Colour/glow come from the shared score-band source (F-D11).
+const getScoreColor = scoreColorVar;
+const getGlowClass = scoreGlowClass;
 
 export default function ScoreRing({
   score,

@@ -1,7 +1,18 @@
 import { Metadata } from "next";
 import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { fetchAllProjectPages, PAGE_LIST_CEILING } from "@/lib/server/project-pages";
 import SchemaAuditView from "@/components/projects/SchemaAuditView";
+
+interface SchemaPageRow {
+  id: string;
+  url: string;
+  title: string | null;
+  schema_types: string[] | null;
+  structured_data: unknown;
+  open_graph: unknown;
+  twitter_card: unknown;
+}
 
 export const metadata: Metadata = {
   title: "Schema & Structured Data | RankRiot",
@@ -30,17 +41,18 @@ export default async function SchemaAuditPage({
 
   if (!project) notFound();
 
-  // Get all pages with schema / OG data (exclude non-HTTP URLs)
-  const { data: pages } = await supabase
-    .from("pages")
-    .select("id, url, title, schema_types, structured_data, open_graph, twitter_card")
-    .eq("project_id", projectId)
-    .like("url", "http%")
-    .order("url");
+  // Get all pages with schema / OG data, paginated and ceiling-bounded (F-P01)
+  // so coverage reflects every page, not just the first 1000.
+  const pages = await fetchAllProjectPages<SchemaPageRow>(
+    supabase,
+    projectId,
+    "id, url, title, schema_types, structured_data, open_graph, twitter_card",
+    { orderBy: "url", max: PAGE_LIST_CEILING },
+  );
 
   return (
     <SchemaAuditView
-      pages={pages || []}
+      pages={pages}
       projectId={projectId}
       projectName={project.name}
     />

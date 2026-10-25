@@ -2,7 +2,12 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { ReportTabs } from "@/components/redesign/ReportTabs";
 import { ReportExport } from "@/components/redesign/ReportExport";
-import { getPageScore } from "@/utils/page-score";
+import {
+  fetchScoreReport,
+  latestCompletedScanId,
+  pageScoreFromReport,
+} from "@/lib/score-report";
+import { fetchAllProjectPages, PAGE_LIST_CEILING } from "@/lib/server/project-pages";
 import { flagFor, type PageFlag } from "@/lib/fixes";
 import { SEVERITY_RANK as SEV_RANK } from "@/types/severity";
 import { PagesV2View, type PageRow } from "./PagesV2View";
@@ -38,14 +43,21 @@ export default async function PagesRedesignPage({
     .single();
   if (!project) notFound();
 
-  const { data: pages } = await supabase
-    .from("pages")
-    .select(
-      "id, url, title, page_type, inlink_count, meta_description, h1s, h2s, word_count, canonical_url, has_robots_noindex, is_indexable, http_status, images, open_graph, twitter_card, structured_data",
-    )
-    .eq("project_id", projectId)
-    .like("url", "http%")
-    .order("url", { ascending: true });
+  // Paginated and ceiling-bounded (F-P01): the list used to silently stop at
+  // the first 1000 pages; now it loads every page up to a soft ceiling the
+  // whole list is shipped under, with the server-side export as the complete
+  // source beyond it.
+  const pages = await fetchAllProjectPages(
+    supabase,
+    projectId,
+    "id, url, title, page_type, inlink_count, meta_description, h1s, h2s, word_count, canonical_url, has_robots_noindex, is_indexable, http_status, images, open_graph, twitter_card, structured_data",
+    { orderBy: "url", max: PAGE_LIST_CEILING },
+  );
+
+  // Read the crawler's persisted per-page scores (SC-02, F-D01/F-D02) rather
+  // than recomputing them with a divergent frontend formula.
+  const scanId = await latestCompletedScanId(supabase, projectId);
+  const report = scanId ? await fetchScoreReport(supabase, scanId) : null;
 
   const { data: issueRows } = await supabase
     .from("issues")
@@ -67,7 +79,7 @@ export default async function PagesRedesignPage({
     title: p.title || "Untitled page",
     path: pathOf(p.url),
     pageType: p.page_type ?? null,
-    score: getPageScore(p),
+    score: pageScoreFromReport(report, p.url),
     inlinks: p.inlink_count ?? 0,
     flags: (flagsByPage.get(p.id) ?? []).sort(
       (a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity],
@@ -102,6 +114,7 @@ export default async function PagesRedesignPage({
           </div>
         </div>
         <ReportExport
+          projectId={projectId}
           dataType="pages"
           data={pages ?? []}
           filenamePrefix={`${project.name}-pages`}

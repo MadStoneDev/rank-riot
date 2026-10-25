@@ -2,7 +2,11 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, ExternalLink } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
-import { getPageScore } from "@/utils/page-score";
+import {
+  fetchScoreReport,
+  latestCompletedScanId,
+  pageScoreFromReport,
+} from "@/lib/score-report";
 import {
   computeSections,
   type PageForSections,
@@ -63,22 +67,11 @@ export default async function PageDetailRedesign({
   const broken = (outLinks ?? []).filter((l) => l.is_broken === true).length;
   const inbound = page.inlink_count ?? 0;
 
-  const score = getPageScore({
-    url: page.url,
-    title: page.title,
-    meta_description: page.meta_description,
-    h1s: page.h1s as unknown[] | null,
-    h2s: page.h2s as unknown[] | null,
-    word_count: page.word_count,
-    canonical_url: page.canonical_url,
-    has_robots_noindex: page.has_robots_noindex,
-    is_indexable: page.is_indexable,
-    http_status: page.http_status,
-    images: page.images as { src: string; alt: string }[] | null,
-    open_graph: page.open_graph as Record<string, unknown> | null,
-    twitter_card: page.twitter_card as Record<string, unknown> | null,
-    structured_data: page.structured_data,
-  });
+  // Read the crawler's persisted score for this page (SC-02, F-D01/F-D02)
+  // instead of recomputing it. null → "not scored" (non-HTML/legacy scan).
+  const scanId = await latestCompletedScanId(supabase, projectId);
+  const report = scanId ? await fetchScoreReport(supabase, scanId) : null;
+  const score = pageScoreFromReport(report, page.url);
 
   const sections = computeSections(page as PageForSections, {
     inbound,
@@ -132,7 +125,7 @@ export default async function PageDetailRedesign({
             className="rr-mono"
             style={{ fontSize: 24, fontWeight: 600, lineHeight: 1, flex: "none" }}
           >
-            {score}
+            {score ?? "—"}
           </span>
         </div>
         <div

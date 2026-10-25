@@ -5,33 +5,17 @@ import { ReportHeader } from "@/components/redesign/ReportHeader";
 import { MetricCard, MetricStrip } from "@/components/redesign/primitives";
 import { PageRows, type PageRowItem } from "@/components/redesign/PageRows";
 import { ReportExport } from "@/components/redesign/ReportExport";
+import { fetchAllProjectPages } from "@/lib/server/project-pages";
 import { flagFor, type PageFlag } from "@/lib/fixes";
+import { displayGroupFor } from "@/lib/issue-category";
 import { SEVERITY_RANK as SEV_RANK } from "@/types/severity";
 
-// Issue types that speak to on-page content quality (as opposed to speed or AEO).
-const CONTENT_ISSUE_TYPES = new Set([
-  "thin_content",
-  "missing_title",
-  "empty_page_title",
-  "title_too_short",
-  "title_too_long",
-  "keyword_not_in_title",
-  "missing_meta_description",
-  "meta_description_too_long",
-  "duplicate_meta_description",
-  "missing_h1",
-  "multiple_h1",
-  "heading_hierarchy_invalid",
-  "duplicate_title",
-  "duplicate_content",
-  "poor_readability",
-  "missing_image_alt",
-  "missing_canonical",
-  "url_structure_issues",
-  "missing_open_graph",
-  "incomplete_open_graph",
-]);
-
+interface ContentRow {
+  id: string;
+  url: string;
+  title: string | null;
+  word_count: number | null;
+}
 
 function pathOf(url: string): string {
   try {
@@ -63,14 +47,14 @@ export default async function ContentPage({
     .single();
   if (!project) notFound();
 
-  const [{ data: pages }, { data: issueRows }] = await Promise.all([
-    supabase
-      .from("pages")
-      .select(
-        "id, url, title, word_count, meta_description, h1s, h2s, canonical_url, has_robots_noindex, has_robots_nofollow",
-      )
-      .eq("project_id", projectId)
-      .like("url", "http%"),
+  // Pages paginated so every issue's page resolves and the "with content
+  // issues" count is complete, not capped at the first 1000 pages (F-P01).
+  const [pages, { data: issueRows }] = await Promise.all([
+    fetchAllProjectPages<ContentRow>(
+      supabase,
+      projectId,
+      "id, url, title, word_count, meta_description, h1s, h2s, canonical_url, has_robots_noindex, has_robots_nofollow",
+    ),
     supabase
       .from("issues")
       .select("page_id, issue_type, severity")
@@ -80,7 +64,7 @@ export default async function ContentPage({
   ]);
 
   const contentIssues = (issueRows ?? []).filter(
-    (r) => CONTENT_ISSUE_TYPES.has(r.issue_type) && r.page_id,
+    (r) => displayGroupFor(r.issue_type) === "Content" && r.page_id,
   );
 
   const flagsByPage = new Map<string, PageFlag[]>();
@@ -117,6 +101,7 @@ export default async function ContentPage({
         projectId={projectId}
         exportSlot={
           <ReportExport
+            projectId={projectId}
             dataType="seo-metadata"
             data={pages ?? []}
             filenamePrefix={`${project.name}-content`}

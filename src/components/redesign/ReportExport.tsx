@@ -8,12 +8,14 @@ import type { ExportDataType, ExportableData } from "@/types/export";
 // Redesign-styled outlined "Export" that opens the existing ExportModal. The
 // trigger matches the report header; the modal is the shared classic surface.
 export function ReportExport({
+  projectId,
   dataType,
   data,
   filenamePrefix,
   projectName,
   projectUrl,
 }: {
+  projectId: string;
   dataType: ExportDataType;
   data: ExportableData;
   filenamePrefix: string;
@@ -49,6 +51,7 @@ export function ReportExport({
       <ExportModal
         isOpen={open}
         onClose={() => setOpen(false)}
+        projectId={projectId}
         dataType={dataType}
         data={data}
         filenamePrefix={filenamePrefix}

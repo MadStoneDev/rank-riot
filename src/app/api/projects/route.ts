@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { canCreateProject, toPlanId, PLAN_LIMITS, PLAN_INFO } from "@/lib/subscription-limits";
+import { triggerScan } from "@/lib/trigger-scan";
 import { parseSettingsFormValue } from "@/lib/project-settings";
 import { createRateLimiter, getClientIp } from "@/utils/rate-limit";
 import { validateOrigin } from "@/utils/csrf";
@@ -172,57 +173,25 @@ export async function POST(request: NextRequest) {
       projectId = data.id;
     }
 
-    // Trigger appropriate scan type
+    // Trigger the scan through the shared helper so the plan page cap is always
+    // applied (this route previously omitted it, letting a free-plan project
+    // crawl past its cap — F-S01) and the crawler auth header is mandatory
+    // (F-S02).
     const endpoint = project_type === "audit" ? "/api/scan/audit" : "/api/scan";
-    const fullUrl = `${crawlerApiUrl}${endpoint}`;
+    const scanResult = await triggerScan(supabase, {
+      projectId,
+      email: user.email,
+      maxPages: PLAN_LIMITS[userPlan].maxPagesPerScan,
+      endpoint,
+    });
 
-    // Get access token to forward to the crawler backend
-    const { data: sessionData } = await supabase.auth.getSession();
-    const accessToken = sessionData?.session?.access_token;
-
-    try {
-      const scanResponse = await fetch(fullUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-        },
-        body: JSON.stringify({
-          project_id: projectId,
-          email: user.email,
-        }),
-      });
-
-      if (!scanResponse.ok) {
-        const errorText = await scanResponse.text();
-        console.error(`❌ Error triggering ${project_type} scan:`, errorText);
-        console.error(`   Status: ${scanResponse.status}`);
-        console.error(`   URL was: ${fullUrl}`);
-
-        return NextResponse.json(
-          {
-            id: projectId,
-            existing: isExisting,
-            scanFailed: true,
-            message: isExisting
-              ? "Project updated but scan failed to start. Please try scanning manually."
-              : "Project created but scan failed to start. Please try scanning manually.",
-          },
-          { status: isExisting ? 200 : 201 },
-        );
-      } else {
-        const scanData = await scanResponse.json();
-        console.log(
-          `✅ ${project_type} scan triggered${
-            isExisting ? " (existing project)" : ""
-          }:`,
-          scanData,
-        );
-      }
-    } catch (error) {
-      console.error(`❌ Error initiating ${project_type} scan:`, error);
-      console.error(`   Attempted URL: ${fullUrl}`);
-      // Project was created but scan failed — inform the user
+    if (!scanResult.ok) {
+      console.error(
+        `❌ Error triggering ${project_type} scan:`,
+        scanResult.error,
+        scanResult.status ?? "",
+      );
+      // Project was created/updated but the scan failed — inform the user.
       return NextResponse.json(
         {
           id: projectId,
@@ -235,6 +204,10 @@ export async function POST(request: NextRequest) {
         { status: isExisting ? 200 : 201 },
       );
     }
+
+    console.log(
+      `✅ ${project_type} scan triggered${isExisting ? " (existing project)" : ""}`,
+    );
 
     // Return response with indicator if project already existed
     return NextResponse.json(

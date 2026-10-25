@@ -6,6 +6,7 @@ import ExportModal from "@/components/export/ExportModal";
 import { ExportDataType, ExportFormat, ExportableData } from "@/types/export";
 
 interface ExportTriggerButtonProps {
+  projectId: string;
   dataType: ExportDataType;
   data: ExportableData;
   filenamePrefix: string;
@@ -19,6 +20,7 @@ interface ExportTriggerButtonProps {
 }
 
 export default function ExportTriggerButton({
+  projectId,
   dataType,
   data,
   filenamePrefix,
@@ -55,6 +57,7 @@ export default function ExportTriggerButton({
       <ExportModal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
+        projectId={projectId}
         dataType={dataType}
         data={data}
         filenamePrefix={filenamePrefix}

@@ -115,6 +115,7 @@ export default async function HistoryPage({
         projectId={projectId}
         exportSlot={
           <ReportExport
+            projectId={projectId}
             dataType="scan-history"
             data={exportRows}
             filenamePrefix={`${project.name}-scan-history`}
