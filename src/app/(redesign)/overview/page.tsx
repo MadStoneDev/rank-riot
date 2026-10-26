@@ -156,11 +156,15 @@ export default async function OverviewPage({
   // completed-but-0-pages scan — instead of showing it as "—" (P0.5 / #2).
   const newestStatus = new Map<string, string | null>();
   const newestPages = new Map<string, number>();
+  // Newest scan's summary_stats per project, so the overview can flag a site the
+  // crawler was blocked from — stored on the newest (failed, 0-page) scan (PC-09b).
+  const newestSummary = new Map<string, unknown>();
   for (const s of scans ?? []) {
     everScanned.add(s.project_id);
     if (!newestStatus.has(s.project_id)) {
       newestStatus.set(s.project_id, s.status);
       newestPages.set(s.project_id, s.pages_scanned ?? 0);
+      newestSummary.set(s.project_id, s.summary_stats);
     }
     if ((s.status === "in_progress" || s.status === "pending")) scanning.add(s.project_id);
     // A 0-page completed scan isn't a usable result (the project Fixes page
@@ -211,6 +215,12 @@ export default async function OverviewPage({
           newestStatus.get(p.id) === "cancelled" ||
           (newestStatus.get(p.id) === "completed" &&
             (newestPages.get(p.id) ?? 0) === 0)),
+      blocked:
+        !scanning.has(p.id) &&
+        (
+          (newestSummary.get(p.id) as { bot_protection?: { blocked?: boolean } } | undefined)
+            ?.bot_protection?.blocked === true
+        ),
       isAudit: p.project_type === "audit",
       href:
         p.project_type === "audit"
@@ -382,7 +392,25 @@ export default async function OverviewPage({
                       }}
                     />
                   )}
-                  {r.failed && (
+                  {r.blocked && (
+                    <span
+                      title="The site's firewall blocked our crawler. Open the project to see how to allowlist it."
+                      style={{
+                        padding: "2px 7px",
+                        borderRadius: 5,
+                        border: "1px solid var(--rr-warn)",
+                        fontSize: 10,
+                        fontWeight: 600,
+                        letterSpacing: ".06em",
+                        textTransform: "uppercase",
+                        color: "var(--rr-warn)",
+                        flex: "none",
+                      }}
+                    >
+                      Crawler blocked
+                    </span>
+                  )}
+                  {r.failed && !r.blocked && (
                     <span
                       style={{
                         padding: "2px 7px",

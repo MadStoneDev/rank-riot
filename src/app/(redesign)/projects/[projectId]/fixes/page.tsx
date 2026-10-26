@@ -14,6 +14,9 @@ import { rescanProject } from "@/app/(redesign)/actions";
 import { isStaleScanVersion } from "@/lib/crawler-version";
 import { ScoreExplainer, type ScoreDeduction } from "@/components/redesign/ScoreExplainer";
 import { LocalTime } from "@/components/redesign/LocalTime";
+import BotBlockedNotice, {
+  type BotProtectionInfo,
+} from "@/components/projects/BotBlockedNotice";
 
 function hostOf(url: string): string {
   try {
@@ -187,6 +190,14 @@ export default async function FixesPage({
     .limit(1)
     .maybeSingle();
 
+  // Bot-protection block: a fully-blocked crawl is stored as a failed, 0-page
+  // scan (PC-09a), so the bot_protection payload lives on the NEWEST scan of any
+  // status, not necessarily the latest completed one. Surface the allowlist
+  // notice whenever the most recent run was blocked (PC-09b).
+  const botProtection =
+    ((newestScan?.summary_stats as { bot_protection?: BotProtectionInfo } | null)
+      ?.bot_protection) ?? null;
+
   // A completed scan that read 0 pages is really a failed scan that predates the
   // Oct 2026 fix (legacy rows were never marked 'failed'). Treat it as unusable
   // so we don't render Health 0 / "everything's clean" for it (P0 gap #2).
@@ -332,7 +343,10 @@ export default async function FixesPage({
             </div>
           </div>
         </div>
-        <div style={{ padding: "24px 32px 64px" }}>
+        <div style={{ padding: "24px 32px 64px", display: "flex", flexDirection: "column", gap: 16 }}>
+          {botProtection?.blocked && (
+            <BotBlockedNotice info={botProtection} projectUrl={project.url} />
+          )}
           {latestFailed ? (
             <Banner
               tone="critical"
@@ -398,6 +412,13 @@ export default async function FixesPage({
           <RescanForm projectId={projectId} />
         </div>
       </div>
+
+      {/* Crawler blocked by the site's firewall — allowlist steps (PC-09b) */}
+      {botProtection?.blocked && (
+        <div style={{ padding: "16px 32px 0" }}>
+          <BotBlockedNotice info={botProtection} projectUrl={project.url} />
+        </div>
+      )}
 
       {/* Failed-rescan / stale-version notices (P0.5 / P0.6) */}
       {(latestFailed || scanVersionStale) && (
