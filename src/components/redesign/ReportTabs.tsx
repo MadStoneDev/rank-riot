@@ -3,19 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// Shared section nav for the redesigned scan report. Fixes and Pages are built;
-// Speed / Content / AEO / History are muted placeholders until their screens
-// land. 2px accent underline on the active section.
+import { PROJECT_SECTIONS, sectionHref } from "@/components/redesign/project-sections";
+
+// Shared section nav for the redesigned scan report. Built from the one canonical
+// section list (F-R06) so it and the sidebar always offer the same sections —
+// no section is reachable from only one of them. 2px accent underline on the
+// active section.
 export function ReportTabs({ projectId }: { projectId: string }) {
   const pathname = usePathname();
-  const items: { label: string; href: string | null }[] = [
-    { label: "Fixes", href: `/projects/${projectId}/fixes` },
-    { label: "Pages", href: `/projects/${projectId}/pages-redesign` },
-    { label: "Speed", href: `/projects/${projectId}/speed` },
-    { label: "Content", href: `/projects/${projectId}/content` },
-    { label: "AEO", href: `/projects/${projectId}/aeo` },
-    { label: "History", href: `/projects/${projectId}/history` },
-  ];
+  const items: { label: string; href: string | null }[] = PROJECT_SECTIONS.map(
+    (s) => ({ label: s.label, href: sectionHref(projectId, s) }),
+  );
 
   return (
     <div

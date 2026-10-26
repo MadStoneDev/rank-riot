@@ -9,18 +9,13 @@ import {
   Search,
   Settings,
   CreditCard,
-  FileText,
-  ListChecks,
-  Network,
-  ImageIcon,
-  Braces,
-  GitCompare,
   ShieldCheck,
 } from "lucide-react";
 import { type ComponentType } from "react";
 
 import { createClient } from "@/utils/supabase/client";
 import { ThemeToggle } from "@/components/redesign/ThemeToggle";
+import { PROJECT_SECTIONS, sectionHref } from "@/components/redesign/project-sections";
 
 // Persistent 216px sidebar for the exception-based redesign. Active navigation
 // is indicated by weight + a neutral surface — never the accent colour. When a
@@ -54,24 +49,14 @@ export function Sidebar({
     { label: "Settings", href: "/dashboard/settings", icon: Settings },
   ];
 
+  // Project children come from the one canonical section list (F-R06), so the
+  // sidebar and the in-page ReportTabs always offer the same sections.
   const projectChildren: Item[] = projectId
-    ? [
-        { label: "Fixes", href: `/projects/${projectId}/fixes`, icon: ListChecks },
-        {
-          label: "Pages",
-          href: `/projects/${projectId}/pages-redesign`,
-          icon: FileText,
-        },
-        { label: "Sitemap", href: `/projects/${projectId}/sitemap`, icon: Network },
-        { label: "Images", href: `/projects/${projectId}/images`, icon: ImageIcon },
-        { label: "Schema", href: `/projects/${projectId}/schema`, icon: Braces },
-        { label: "Compare", href: `/projects/${projectId}/compare`, icon: GitCompare },
-        {
-          label: "Settings",
-          href: `/projects/${projectId}/settings-redesign`,
-          icon: Settings,
-        },
-      ]
+    ? PROJECT_SECTIONS.map((s) => ({
+        label: s.label,
+        href: sectionHref(projectId, s),
+        icon: s.icon,
+      }))
     : [];
 
   const isActive = (href: string | null) =>
