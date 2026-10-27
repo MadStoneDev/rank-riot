@@ -293,6 +293,81 @@ async function cancelScan(
   return NextResponse.json({ success: true, scanId, status: "failed" });
 }
 
+async function setApiAccess(
+  params: Record<string, unknown>,
+): Promise<NextResponse> {
+  const { userId, api_access } = params as {
+    userId?: string;
+    api_access?: boolean;
+  };
+  if (!userId || typeof api_access !== "boolean") {
+    return error("Missing required params: userId, api_access (boolean)", 400);
+  }
+  const admin = createAdminClient();
+  const { error: updateError } = await admin
+    .from("profiles")
+    .update({ api_access })
+    .eq("id", userId);
+  if (updateError) {
+    return error(`Failed to update API access: ${updateError.message}`, 500);
+  }
+  return NextResponse.json({ success: true, userId, api_access });
+}
+
+async function setApiKeyLimits(
+  params: Record<string, unknown>,
+): Promise<NextResponse> {
+  const { keyId, rate_limit_per_min, monthly_quota } = params as {
+    keyId?: string;
+    rate_limit_per_min?: number;
+    monthly_quota?: number | null;
+  };
+  if (!keyId) return error("Missing required param: keyId", 400);
+
+  const updates: Record<string, number | null> = {};
+  if (rate_limit_per_min !== undefined) {
+    if (!Number.isFinite(rate_limit_per_min) || rate_limit_per_min <= 0) {
+      return error("rate_limit_per_min must be a positive number", 400);
+    }
+    updates.rate_limit_per_min = rate_limit_per_min;
+  }
+  if (monthly_quota !== undefined) {
+    if (monthly_quota !== null && (!Number.isFinite(monthly_quota) || monthly_quota < 0)) {
+      return error("monthly_quota must be null or a non-negative number", 400);
+    }
+    updates.monthly_quota = monthly_quota;
+  }
+  if (Object.keys(updates).length === 0) {
+    return error("Nothing to update (rate_limit_per_min and/or monthly_quota)", 400);
+  }
+
+  const admin = createAdminClient();
+  const { error: updateError } = await admin
+    .from("api_keys")
+    .update(updates)
+    .eq("id", keyId);
+  if (updateError) {
+    return error(`Failed to update key limits: ${updateError.message}`, 500);
+  }
+  return NextResponse.json({ success: true, keyId, ...updates });
+}
+
+async function revokeApiKeyAdmin(
+  params: Record<string, unknown>,
+): Promise<NextResponse> {
+  const { keyId } = params as { keyId?: string };
+  if (!keyId) return error("Missing required param: keyId", 400);
+  const admin = createAdminClient();
+  const { error: updateError } = await admin
+    .from("api_keys")
+    .update({ status: "revoked", revoked_at: new Date().toISOString() })
+    .eq("id", keyId);
+  if (updateError) {
+    return error(`Failed to revoke key: ${updateError.message}`, 500);
+  }
+  return NextResponse.json({ success: true, keyId });
+}
+
 async function diagnoseOrphan(
   params: Record<string, unknown>,
 ): Promise<NextResponse> {
@@ -441,6 +516,12 @@ export async function POST(request: NextRequest) {
         return await deleteScan(params);
       case "cancel_scan":
         return await cancelScan(params);
+      case "set_api_access":
+        return await setApiAccess(params);
+      case "set_api_key_limits":
+        return await setApiKeyLimits(params);
+      case "revoke_api_key":
+        return await revokeApiKeyAdmin(params);
       case "diagnose_orphan":
         return await diagnoseOrphan(params);
       default:

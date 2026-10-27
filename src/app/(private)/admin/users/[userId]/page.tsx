@@ -7,6 +7,8 @@ import { IconArrowLeft, IconUser, IconCreditCard, IconNote } from "@tabler/icons
 import RoleManager from "@/components/admin/RoleManager";
 import SubscriptionManager from "@/components/admin/SubscriptionManager";
 import AdminNotes from "@/components/admin/AdminNotes";
+import ApiAccessManager from "@/components/admin/ApiAccessManager";
+import UserApiKeys, { type AdminApiKeyRow } from "@/components/admin/UserApiKeys";
 
 export async function generateMetadata({
   params,
@@ -131,6 +133,18 @@ export default async function AdminUserDetailPage({
     author_email: authorMap.get(n.author_id) || undefined,
   }));
 
+  // This user's API keys (service-role; api_keys is RLS-locked). Never select
+  // key_hash.
+  const { data: apiKeyRows } = await admin
+    .from("api_keys")
+    .select(
+      "id, name, key_prefix, scopes, rate_limit_per_min, monthly_quota, status, created_at, last_used_at",
+    )
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  const apiKeys = (apiKeyRows ?? []) as AdminApiKeyRow[];
+  const apiAccess = (profile as { api_access?: boolean | null }).api_access === true;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -214,6 +228,20 @@ export default async function AdminUserDetailPage({
           Role
         </h2>
         <RoleManager userId={profile.id} currentRole={profile.role || "user"} />
+      </div>
+
+      {/* API Access + Keys */}
+      <div className="glass-card p-5">
+        <h2 className="text-sm font-semibold text-[var(--color-text-primary)] mb-3">
+          API access
+        </h2>
+        <ApiAccessManager userId={profile.id} initialApiAccess={apiAccess} />
+        <div className="mt-5">
+          <h3 className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
+            API keys
+          </h3>
+          <UserApiKeys keys={apiKeys} />
+        </div>
       </div>
 
       {/* Subscription Card */}

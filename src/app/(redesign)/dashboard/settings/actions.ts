@@ -3,6 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+  createApiKey as createApiKeyViaCrawler,
+  revokeApiKey as revokeApiKeyViaCrawler,
+} from "@/lib/api-keys-client";
 
 function getR2Client() {
   const accountId = process.env.R2_ACCOUNT_ID;
@@ -44,6 +48,43 @@ export async function updateProfile(formData: FormData) {
     return { error: error.message };
   }
 
+  revalidatePath("/dashboard/settings");
+  return { success: true };
+}
+
+export async function createApiKeyAction(input: {
+  name: string;
+  scopes: string[];
+}): Promise<{ key?: string; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "You must be logged in." };
+
+  const res = await createApiKeyViaCrawler(supabase, input);
+  if (!res.ok || !res.data) {
+    if (res.error === "api_access_required") {
+      return { error: "Your account doesn't have API access yet." };
+    }
+    return { error: res.error || "Could not create the key." };
+  }
+  revalidatePath("/dashboard/settings");
+  // The raw key is returned to the caller to show ONCE; it is never stored.
+  return { key: res.data.key };
+}
+
+export async function revokeApiKeyAction(
+  id: string,
+): Promise<{ success?: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "You must be logged in." };
+
+  const res = await revokeApiKeyViaCrawler(supabase, id);
+  if (!res.ok) return { error: res.error || "Could not revoke the key." };
   revalidatePath("/dashboard/settings");
   return { success: true };
 }

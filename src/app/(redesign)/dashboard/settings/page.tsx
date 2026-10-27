@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import UserSettingsForm from "@/components/settings/UserSettingsForm";
 import ScanSchedules from "@/components/settings/ScanSchedules";
 import DeleteAccountSection from "@/components/settings/DeleteAccountSection";
+import ApiKeysSection from "@/components/settings/ApiKeysSection";
+import { listApiKeys } from "@/lib/api-keys-client";
 
 import { createClient } from "@/utils/supabase/server";
 
@@ -33,6 +35,17 @@ export default async function SettingsPage() {
       .is("deleted_at", null)
       .order("name"),
   ]);
+
+  // API-key section is gated by profiles.api_access (an admin grant; billing
+  // will drive it later). Admins always see it. api_access may be absent from
+  // the generated types until supatypes is regenerated after the migration.
+  const profileFlags = (profile ?? {}) as {
+    api_access?: boolean | null;
+    role?: string | null;
+  };
+  const showApiKeys =
+    profileFlags.api_access === true || profileFlags.role === "admin";
+  const apiKeys = showApiKeys ? (await listApiKeys(supabase)).data?.keys ?? [] : [];
 
   return (
     <div className="space-y-6">
@@ -94,6 +107,25 @@ export default async function SettingsPage() {
           </p>
         </div>
       </div>
+
+      {/* API Keys (gated by api_access) */}
+      {showApiKeys && (
+        <div className="bg-[var(--color-surface-raised)] rounded-2xl border border-[var(--color-border-default)] overflow-hidden">
+          <div className="px-6 py-4 border-b border-[var(--color-border-subtle)]">
+            <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
+              API keys
+            </h2>
+            <p className="text-sm text-[var(--color-text-muted)] mt-1">
+              Keys for the RankRiot API. Create a key, pick its scopes, and keep
+              the secret somewhere safe — it is shown only once.
+            </p>
+          </div>
+
+          <div className="p-6">
+            <ApiKeysSection initialKeys={apiKeys} />
+          </div>
+        </div>
+      )}
 
       {/* Danger Zone */}
       <DeleteAccountSection />
