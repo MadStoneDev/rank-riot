@@ -10,8 +10,9 @@ import {
   Settings,
   CreditCard,
   ShieldCheck,
+  ClipboardCheck,
 } from "lucide-react";
-import { type ComponentType } from "react";
+import { useEffect, useState, type ComponentType } from "react";
 
 import { createClient } from "@/utils/supabase/client";
 import { ThemeToggle } from "@/components/redesign/ThemeToggle";
@@ -42,6 +43,35 @@ export function Sidebar({
   const pathname = usePathname();
   const projectId = projectIdFrom(pathname);
 
+  // Audit projects get audit-specific nav (no SEO sections), so the sidebar
+  // needs to know the open project's type. Resolved client-side; until it loads
+  // we show the SEO sections (the common case) and collapse to the audit report
+  // link if it turns out to be an audit project.
+  const [projectType, setProjectType] = useState<string | null>(null);
+  useEffect(() => {
+    if (!projectId) {
+      setProjectType(null);
+      return;
+    }
+    let active = true;
+    setProjectType(null);
+    createClient()
+      .from("projects")
+      .select("project_type")
+      .eq("id", projectId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (active) {
+          setProjectType(
+            (data as { project_type?: string } | null)?.project_type ?? null,
+          );
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, [projectId]);
+
   const nav: Item[] = [
     { label: "Projects", href: "/overview", icon: FolderOpen },
     { label: "Fixes", href: "/fixes", icon: Wrench },
@@ -49,15 +79,17 @@ export function Sidebar({
     { label: "Settings", href: "/dashboard/settings", icon: Settings },
   ];
 
-  // Project children come from the one canonical section list (F-R06), so the
-  // sidebar and the in-page ReportTabs always offer the same sections.
-  const projectChildren: Item[] = projectId
-    ? PROJECT_SECTIONS.map((s) => ({
-        label: s.label,
-        href: sectionHref(projectId, s),
-        icon: s.icon,
-      }))
-    : [];
+  // Audit projects have a single-page report (no SEO sections); SEO projects
+  // use the canonical section list (F-R06), shared with the in-page ReportTabs.
+  const projectChildren: Item[] = !projectId
+    ? []
+    : projectType === "audit"
+      ? [{ label: "Audit report", href: `/projects/${projectId}`, icon: ClipboardCheck }]
+      : PROJECT_SECTIONS.map((s) => ({
+          label: s.label,
+          href: sectionHref(projectId, s),
+          icon: s.icon,
+        }));
 
   const isActive = (href: string | null) =>
     !!href && (pathname === href || pathname.startsWith(href + "/"));
