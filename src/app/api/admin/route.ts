@@ -47,8 +47,6 @@ async function verifyAdmin(): Promise<string | NextResponse> {
 // Action handlers
 // ---------------------------------------------------------------------------
 
-type ActionResult = { success: true; [key: string]: unknown };
-
 async function updateRole(
   params: Record<string, unknown>,
 ): Promise<NextResponse> {

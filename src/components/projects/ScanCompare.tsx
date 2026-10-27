@@ -113,7 +113,6 @@ export default function ScanCompare({
   const renderChangeIndicator = (current: number, previous: number, inverse = false) => {
     const change = current - previous;
     const isPositive = inverse ? change < 0 : change > 0;
-    const isNegative = inverse ? change > 0 : change < 0;
 
     if (change === 0) {
       return (

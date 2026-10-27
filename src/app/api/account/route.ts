@@ -74,7 +74,7 @@ export async function DELETE() {
     }
 
     // Delete paddle webhooks associated with the user's customer ID
-    const { data: profile } = await adminClient
+    const { data: _profile } = await adminClient
       .from("profiles")
       .select("paddle_customer_id")
       .eq("id", userId)

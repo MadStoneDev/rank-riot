@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   IconSitemap,
   IconChevronDown,
-  IconChevronUp,
   IconChevronRight,
 } from "@tabler/icons-react";
 import { DepthDistribution } from "@/types/site-architecture";

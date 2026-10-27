@@ -4,7 +4,6 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   IconArrowLeft,
-  IconCode,
   IconChevronDown,
   IconChevronUp,
   IconDownload,

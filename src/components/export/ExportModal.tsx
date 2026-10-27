@@ -14,7 +14,6 @@ import {
 import Modal from "@/components/ui/Modal";
 import { useHasPdfReports } from "@/hooks/useSubscription";
 import {
-  ExportColumnDefinition,
   ExportDataType,
   ExportFormat,
   ExportableData,

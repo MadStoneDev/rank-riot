@@ -2,9 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   IconSearch,
-  IconChartLine,
   IconBug,
-  IconFileAnalytics,
   IconArrowRight,
   IconCheck,
   IconBolt,

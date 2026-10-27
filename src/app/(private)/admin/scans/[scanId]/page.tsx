@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { createAdminClient } from "@/utils/supabase/admin";
-import { formatDistanceToNow, format } from "date-fns";
+import { format } from "date-fns";
 
 export const metadata: Metadata = {
   title: "Scan Detail | Admin | RankRiot",

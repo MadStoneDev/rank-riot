@@ -6,7 +6,7 @@
     "dev": "next dev --port 3123 --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
@@ -41,10 +41,13 @@
     "tw-animate-css": "^1.2.5"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^15",
     "supabase": "^2.20.12",
     "tailwindcss": "^4",
     "typescript": "^5",

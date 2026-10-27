@@ -29,7 +29,6 @@ interface PreviousFix {
 }
 
 export function ScanInProgress({
-  projectId,
   scanId,
   projectName,
   domain,

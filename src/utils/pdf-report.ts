@@ -28,7 +28,7 @@ export function generatePdfReport(
   doc.setFillColor(...PRIMARY_COLOR);
   doc.rect(0, 0, pageWidth, 28, "F");
 
-  let headerY = 10;
+  const headerY = 10;
   let leftX = 14;
 
   // Logo

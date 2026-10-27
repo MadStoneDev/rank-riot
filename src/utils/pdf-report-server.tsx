@@ -89,6 +89,7 @@ function ReportDocument(props: {
       <Page size="A4" orientation="landscape" style={styles.page}>
         <View style={styles.header} fixed>
           <View style={styles.headerLeft}>
+            {/* eslint-disable-next-line jsx-a11y/alt-text -- @react-pdf/renderer's Image is not a DOM <img> and has no alt prop */}
             {branding?.logoBase64 ? <Image style={styles.logo} src={branding.logoBase64} /> : null}
             <View>
               <Text style={styles.title}>{title}</Text>

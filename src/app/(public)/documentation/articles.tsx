@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import Link from "next/link";
 
 // Real documentation content. Each article renders inside a `prose` wrapper on
 // the article page, so bodies use plain h2/h3/p/ul elements.
@@ -43,7 +44,7 @@ export const articles: Article[] = [
           website&apos;s URL. You&apos;ll pick a <strong>project type</strong> &mdash; either
           a full <em>SEO</em> project or a lightweight <em>Audit</em> project.
           The two behave differently; see{" "}
-          <a href="/documentation/scan-types">Understanding scan types</a> to
+          <Link href="/documentation/scan-types">Understanding scan types</Link> to
           choose the right one.
         </p>
         <h2>2. Run a scan</h2>
@@ -57,9 +58,9 @@ export const articles: Article[] = [
         <p>
           When the scan finishes you&apos;ll see an overall score, a breakdown by
           category, and a prioritised list of issues. Start with{" "}
-          <a href="/documentation/understanding-your-scores">
+          <Link href="/documentation/understanding-your-scores">
             Understanding your scores
-          </a>{" "}
+          </Link>{" "}
           to interpret the numbers, then work down the issue list.
         </p>
         <h2>Plan limits</h2>
@@ -216,7 +217,7 @@ export const articles: Article[] = [
         <p>
           Answer Engine Optimization readiness: how machine-readable your pages
           are to AI answer engines. See{" "}
-          <a href="/documentation/aeo-readiness">AEO &amp; GEO readiness</a> for
+          <Link href="/documentation/aeo-readiness">AEO &amp; GEO readiness</Link> for
           the signals it measures.
         </p>
         <h2>How the overall score is formed</h2>

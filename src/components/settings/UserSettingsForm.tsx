@@ -42,7 +42,7 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
       } else {
         setSuccess("Profile updated successfully");
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred");
     } finally {
       setIsLoading(false);
@@ -68,7 +68,7 @@ export default function UserSettingsForm({ profile }: UserSettingsFormProps) {
         setAvatarUrl(result.avatarUrl || avatarUrl);
         setSuccess("Avatar updated successfully");
       }
-    } catch (err) {
+    } catch {
       setError("Failed to upload avatar");
     } finally {
       setIsUploading(false);

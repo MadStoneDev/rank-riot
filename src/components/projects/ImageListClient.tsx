@@ -1,6 +1,5 @@
 ﻿"use client";
 
-import { IconPhoto } from "@tabler/icons-react";
 import PaginatedList from "@/components/projects/PaginatedListBlock";
 import ImageItem from "@/components/projects/ImageItem";
 

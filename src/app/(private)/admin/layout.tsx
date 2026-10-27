@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
@@ -33,30 +34,30 @@ export default async function AdminLayout({
           Admin
         </span>
         <nav className="flex items-center gap-4 text-sm">
-          <a
+          <Link
             href="/admin"
             className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
           >
             Overview
-          </a>
-          <a
+          </Link>
+          <Link
             href="/admin/users"
             className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
           >
             Users
-          </a>
-          <a
+          </Link>
+          <Link
             href="/admin/projects"
             className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
           >
             Projects
-          </a>
-          <a
+          </Link>
+          <Link
             href="/admin/scans"
             className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
           >
             Scans
-          </a>
+          </Link>
         </nav>
       </div>
       {children}

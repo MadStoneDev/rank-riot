@@ -169,7 +169,7 @@ export function formatPageLimit(planId: PlanId | null): string {
 // Get upgrade recommendation based on what limit was hit
 export function getUpgradeRecommendation(
   currentPlan: PlanId,
-  limitType: "projects" | "pages" | "keywords" | "frequency"
+  _limitType: "projects" | "pages" | "keywords" | "frequency"
 ): PlanId | null {
   const planOrder: PlanId[] = ["free", "starter", "pro", "business"];
   const currentIndex = planOrder.indexOf(currentPlan);

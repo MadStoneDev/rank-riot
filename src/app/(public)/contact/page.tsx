@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { IconMail, IconBrandTwitter, IconBrandGithub } from "@tabler/icons-react";
+import { IconMail } from "@tabler/icons-react";
 import ContactForm from "@/components/contact/ContactForm";
 
 export const metadata: Metadata = {

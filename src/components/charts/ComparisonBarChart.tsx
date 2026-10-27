@@ -10,7 +10,6 @@ import {
   ResponsiveContainer,
   Legend,
   Cell,
-  ReferenceLine,
 } from "recharts";
 
 interface ComparisonDataPoint {

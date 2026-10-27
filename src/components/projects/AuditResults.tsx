@@ -9,7 +9,6 @@ import {
   IconPalette,
   IconShield,
   IconAccessible,
-  IconBolt,
   IconCheck,
   IconX,
 } from "@tabler/icons-react";

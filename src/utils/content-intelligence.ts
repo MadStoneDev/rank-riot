@@ -7,7 +7,6 @@ import {
   PageBasic,
   PageWithKeywords,
   SimilarContentGroup,
-  ThinContentPage,
 } from "@/types/content-intelligence";
 
 /**

@@ -31,7 +31,7 @@ export default async function AdminOverviewPage() {
     { count: failedLast24h },
     { count: completedLast24h },
     { count: totalPages },
-    { count: totalIssues },
+    { count: _totalIssues },
   ] = await Promise.all([
     admin
       .from("profiles")
