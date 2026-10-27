@@ -1,20 +1,14 @@
+// Types for the sitemap tool's internal link-graph view (bucket C, a raw-data
+// view over the pages / page_links tables — not recomputed issues). The orphan,
+// deep-page, depth-distribution and summary types were removed with the dead
+// client-side recompute subsystem (F-D12): those are now crawler-persisted
+// issues (orphan_page, deep_page, weak_internal_linking) read from the issues
+// table, not derived in the frontend.
 export interface PageWithDepth {
   id: string;
   url: string;
   title: string | null;
   depth: number | null;
-}
-
-export interface DepthDistribution {
-  depth: number;
-  count: number;
-  pages: PageWithDepth[];
-}
-
-export interface OrphanPage {
-  id: string;
-  url: string;
-  title: string | null;
 }
 
 export interface PageLinkStats {
@@ -30,28 +24,3 @@ export interface InternalLink {
   destination_page_id: string | null;
   destination_url?: string;
 }
-
-export interface SiteArchitectureData {
-  depthDistribution: DepthDistribution[];
-  orphanPages: OrphanPage[];
-  deepPages: PageWithDepth[];
-  pagesWithMostLinks: PageLinkStats[];
-  pagesWithFewestLinks: PageLinkStats[];
-  summary: {
-    totalPages: number;
-    avgDepth: number;
-    maxDepth: number;
-    orphanCount: number;
-    deepPageCount: number;
-  };
-}
-
-export interface SiteArchitectureThresholds {
-  deepPageThreshold: number;
-  minInternalLinks: number;
-}
-
-export const DEFAULT_SITE_ARCHITECTURE_THRESHOLDS: SiteArchitectureThresholds = {
-  deepPageThreshold: 4,
-  minInternalLinks: 3,
-};
