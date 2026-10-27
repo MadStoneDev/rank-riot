@@ -3,25 +3,37 @@ import { createClient } from "@/utils/supabase/server";
 import { ReportTabs } from "@/components/redesign/ReportTabs";
 import { ReportHeader } from "@/components/redesign/ReportHeader";
 import { MetricCard, MetricStrip } from "@/components/redesign/primitives";
-import { PageRows, type PageRowItem } from "@/components/redesign/PageRows";
+import { SpeedTable, type SpeedRow } from "@/components/redesign/SpeedTable";
 import { ReportExport } from "@/components/redesign/ReportExport";
 import { fetchAllProjectPages } from "@/lib/server/project-pages";
-import type { PageFlag } from "@/lib/fixes";
+import { flagFor, type PageFlag } from "@/lib/fixes";
 
-interface SpeedRow {
+interface SpeedPageRow {
   id: string;
   url: string;
   title: string | null;
   first_byte_time_ms: number | null;
   load_time_ms: number | null;
   size_bytes: number | null;
+  scan_method: string | null;
 }
 
-// Thresholds kept in sync with the crawler's issue detector: TTFB > 600ms
-// (slow_server_response), load > 3s (slow_page), payload > 3MB (large_page_size).
-const TTFB_SLOW_MS = 600;
-const LOAD_SLOW_MS = 3000;
-const HEAVY_BYTES = 3_000_000;
+// The speed report is sourced from the crawler's facts (F-D12). Per-page flags
+// come only from the persisted slow_page / large_page_size issues — the page no
+// longer recomputes "slow" from metrics with its own thresholds. TTFB / load /
+// size are shown as plain, sortable raw-data columns. slow_server_response is a
+// single site-level issue, surfaced as one banner. Only HTTP-timed pages carry
+// comparable timing, so medians and the heaviest-page figure are computed over
+// HTTP pages (matching the crawler, which raises slow_page/large_page_size for
+// HTTP-timed pages only).
+const SPEED_ISSUE_TYPES = ["slow_page", "large_page_size"] as const;
+const ROW_LIMIT = 200;
+
+interface SlowServerDetails {
+  median_ttfb_ms?: number;
+  pages_measured?: number;
+  pages_over_600ms?: number;
+}
 
 function pathOf(url: string): string {
   try {
@@ -65,46 +77,95 @@ export default async function SpeedPage({
     .single();
   if (!project) notFound();
 
-  // Paginated so medians and the slow/heavy counts cover every page, not just
-  // the first 1000 PostgREST would otherwise return (F-P01).
-  const all = await fetchAllProjectPages<SpeedRow>(
+  // Paginated so medians cover every page, not just the first 1000 PostgREST
+  // would otherwise return (F-P01).
+  const all = await fetchAllProjectPages<SpeedPageRow>(
     supabase,
     projectId,
-    "id, url, title, first_byte_time_ms, load_time_ms, size_bytes, word_count, js_count, css_count",
+    // word_count/js_count/css_count are unused here but kept so the client-side
+    // "performance" export (fed `all`) keeps its columns.
+    "id, url, title, first_byte_time_ms, load_time_ms, size_bytes, word_count, js_count, css_count, scan_method",
   );
-  const ttfbs = all
+
+  // Persisted speed issues: per-page slow_page / large_page_size become row
+  // flags; the single slow_server_response becomes the site-level banner.
+  const { data: issueRows } = await supabase
+    .from("issues")
+    .select("page_id, issue_type, severity, details")
+    .eq("project_id", projectId)
+    .eq("is_fixed", false)
+    .eq("dismissed", false)
+    .in("issue_type", [...SPEED_ISSUE_TYPES, "slow_server_response"]);
+
+  const flagsByPage = new Map<string, PageFlag[]>();
+  let slowServer: SlowServerDetails | null = null;
+  for (const r of issueRows ?? []) {
+    if (r.issue_type === "slow_server_response") {
+      slowServer = (r.details ?? {}) as SlowServerDetails;
+      continue;
+    }
+    if (!r.page_id) continue;
+    const list = flagsByPage.get(r.page_id) ?? [];
+    list.push(flagFor(r.issue_type, r.severity));
+    flagsByPage.set(r.page_id, list);
+  }
+
+  const isHttp = (p: SpeedPageRow) => p.scan_method === "http";
+
+  // Medians / heaviest over HTTP-timed pages only (headless size is the rendered
+  // DOM length, headless TTFB a different vantage — not comparable, PF-01/PF-03).
+  const httpTtfbs = all
+    .filter(isHttp)
     .map((p) => p.first_byte_time_ms ?? 0)
     .filter((v) => v > 0);
-  const sizes = all.map((p) => p.size_bytes ?? 0).filter((v) => v > 0);
-  const medianTtfb = median(ttfbs);
-  const medianSize = median(sizes);
-  const heaviest = sizes.length ? Math.max(...sizes) : 0;
+  const httpSizes = all
+    .filter(isHttp)
+    .map((p) => p.size_bytes ?? 0)
+    .filter((v) => v > 0);
+  const medianTtfb = median(httpTtfbs);
+  const medianSize = median(httpSizes);
+  const heaviest = httpSizes.length ? Math.max(...httpSizes) : 0;
+  const flaggedCount = flagsByPage.size;
 
-  const rows: (PageRowItem & { sortKey: number })[] = [];
-  for (const p of all) {
-    const ttfb = p.first_byte_time_ms ?? 0;
-    const load = p.load_time_ms ?? 0;
-    const size = p.size_bytes ?? 0;
-    const flags: PageFlag[] = [];
-    if (ttfb > TTFB_SLOW_MS) flags.push({ label: "Slow TTFB", severity: "medium" });
-    if (load > LOAD_SLOW_MS) flags.push({ label: "Slow load", severity: "medium" });
-    if (size > HEAVY_BYTES) flags.push({ label: "Heavy page", severity: "medium" });
-    if (flags.length === 0) continue;
+  // One row per page that carries a flag or any timing signal. Ordered for the
+  // cap so the most relevant rows survive truncation: flagged first, then HTTP
+  // pages by TTFB (slowest first), then headless pages (incomparable timing).
+  const candidates = all
+    .map((p) => {
+      const flags = flagsByPage.get(p.id) ?? [];
+      return {
+        page: p,
+        flags,
+        hasTiming:
+          (p.first_byte_time_ms ?? 0) > 0 ||
+          (p.load_time_ms ?? 0) > 0 ||
+          (p.size_bytes ?? 0) > 0,
+      };
+    })
+    .filter((c) => c.flags.length > 0 || c.hasTiming);
 
-    const metaParts: string[] = [];
-    if (ttfb > 0) metaParts.push(`${ttfb} ms`);
-    if (size > 0) metaParts.push(formatBytes(size));
-    rows.push({
-      id: p.id,
-      title: p.title || "Untitled page",
-      path: pathOf(p.url),
-      meta: metaParts.join(" · "),
-      flags,
-      sortKey: Math.max(ttfb, load) + size / 1000,
-    });
-  }
-  rows.sort((a, b) => b.sortKey - a.sortKey);
-  const slowCount = rows.length;
+  candidates.sort((a, b) => {
+    const af = a.flags.length > 0 ? 1 : 0;
+    const bf = b.flags.length > 0 ? 1 : 0;
+    if (af !== bf) return bf - af; // flagged first
+    const ah = isHttp(a.page) ? 1 : 0;
+    const bh = isHttp(b.page) ? 1 : 0;
+    if (ah !== bh) return bh - ah; // HTTP (comparable) before headless
+    return (b.page.first_byte_time_ms ?? 0) - (a.page.first_byte_time_ms ?? 0);
+  });
+
+  const total = candidates.length;
+  const rows: SpeedRow[] = candidates.slice(0, ROW_LIMIT).map((c) => ({
+    id: c.page.id,
+    title: c.page.title || "Untitled page",
+    path: pathOf(c.page.url),
+    ttfbMs: c.page.first_byte_time_ms,
+    loadMs: c.page.load_time_ms,
+    sizeBytes: c.page.size_bytes,
+    isHttp: isHttp(c.page),
+    flags: c.flags,
+  }));
+  const truncated = total > rows.length;
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto" }}>
@@ -126,6 +187,49 @@ export default async function SpeedPage({
       <div style={{ padding: "18px 32px 0" }}>
         <ReportTabs projectId={projectId} />
       </div>
+
+      {slowServer && (
+        <div style={{ padding: "20px 32px 0" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 14,
+              padding: "14px 16px",
+              borderRadius: 9,
+              border: "1px solid var(--rr-warn)",
+              background: "color-mix(in srgb, var(--rr-warn) 8%, transparent)",
+            }}
+          >
+            <div
+              aria-hidden
+              style={{
+                width: 8,
+                height: 8,
+                marginTop: 6,
+                borderRadius: "50%",
+                background: "var(--rr-warn)",
+                flex: "none",
+              }}
+            />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "var(--rr-warn)" }}>
+                Slow server response
+              </div>
+              <div style={{ fontSize: 13, color: "var(--rr-text-2)", marginTop: 3 }}>
+                {slowServer.median_ttfb_ms
+                  ? `Median server response time (TTFB) is ${slowServer.median_ttfb_ms} ms across ${slowServer.pages_measured ?? "the"} pages${
+                      slowServer.pages_over_600ms
+                        ? ` (${slowServer.pages_over_600ms} over 600 ms)`
+                        : ""
+                    }. This is server response time, not page weight — usually a hosting, caching or backend fix.`
+                  : "The site's median server response time (TTFB) is slow. This is a server/hosting fix, not a per-page one."}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div style={{ padding: "20px 32px 0" }}>
         <MetricStrip>
           <MetricCard
@@ -134,10 +238,10 @@ export default async function SpeedPage({
             delta={medianTtfb > 0 ? "ms" : undefined}
           />
           <MetricCard
-            label="Slow pages"
-            value={slowCount}
-            delta={slowCount > 0 ? "to fix" : undefined}
-            deltaTone={slowCount > 0 ? "critical" : "muted"}
+            label="Flagged pages"
+            value={flaggedCount}
+            delta={flaggedCount > 0 ? "to fix" : undefined}
+            deltaTone={flaggedCount > 0 ? "critical" : "muted"}
           />
           <MetricCard
             label="Median size"
@@ -149,12 +253,16 @@ export default async function SpeedPage({
           />
         </MetricStrip>
       </div>
-      <div style={{ padding: "20px 32px 96px" }}>
-        <PageRows
-          projectId={projectId}
-          rows={rows}
-          emptyText={`No slow or heavy pages in ${all.length} scanned.`}
-        />
+
+      <div style={{ padding: "20px 32px 8px", fontSize: 12, color: "var(--rr-text-3)" }}>
+        Flags come from the crawler&apos;s slow_page and large_page_size checks
+        (HTTP-timed pages). TTFB, load and size are raw measurements.
+        {truncated
+          ? ` Showing the ${rows.length} most relevant of ${total} timed pages.`
+          : ""}
+      </div>
+      <div style={{ padding: "0 32px 96px" }}>
+        <SpeedTable projectId={projectId} rows={rows} />
       </div>
     </div>
   );
